@@ -1,9 +1,9 @@
-import './App.css';
+import './Home.css';
 import inicioImagen from './assets/imagen_inicio.webp';
-import image1 from './assets/image 1.png';
 import Header from './components/header';
+import { Link } from 'react-router-dom';
 
-function App() {
+function Home() {
 
   const scrollToVideo = () => {
     document.getElementById('videoSection').scrollIntoView({ behavior: 'smooth' });
@@ -14,6 +14,18 @@ function App() {
   return (
     <div className="App">
       <Header />
+
+      <div className='Borrar'>
+        <p>Temporal</p>
+        <Link to="/AdminMod">
+          <button>Admin Modo</button>
+        </Link>
+        <Link to="/TrabajadorMod">
+          <button>TrabajadorModo</button>
+        </Link>
+      </div>
+
+
       <div className="content">
         <img src={inicioImagen} alt="Imagen Inicio" className="image" />
         <div className='info'>
@@ -23,7 +35,9 @@ function App() {
           </div>
           <div className='solicitudUser'>
             <p>Ya cuentas con esta informacion?</p>
-            <button className='btn' id='soliBtn'>Solicitar Petición</button>
+            <Link to="/TomaSoli">
+              <button className='btn' id='soliBtn'>Solicitar Petición</button>
+            </Link>
           </div>
         </div>
       </div>
@@ -49,4 +63,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;

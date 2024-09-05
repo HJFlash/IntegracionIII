@@ -1,0 +1,63 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.login{
+    background-color: #EBF5FB;
+    width: 50%;
+    height: 100vh;
+}
+
+.contentl{
+    display: flex;
+    flex-direction: column;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    border: none;
+    outline: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 4px 10px;
+    margin: 0;
+    font: inherit;
+    width: 200px;
+}
+
+label{
+    padding: 0px 10px;
+}
+
+.rutContainer,
+.contrasenaContainer{
+    border: 2px solid #E74C3C;
+    display: flex;
+}
+.IconRed{
+    width: 5px;
+    background-color: #E74C3C;
+}
+.rut,
+.contrasena{
+    display: flex;
+    flex-direction: column;
+}
+  
+
+.initRegister{
+    background-color: #5499C7;
+    width: 50%;
+    height: 100vh;
+}
