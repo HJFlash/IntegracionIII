@@ -1,0 +1,73 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+.Register{
+    display: flex;
+    flex-direction: column;
+    background-color: #EBF5FB;
+    width: 50%;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.initlogin{
+    background-color: #5499C7;
+    width: 50%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.containerInitL{
+    display: flex;
+    flex-direction: column;
+    min-width: 80%;
+}
+
+.regresar1{
+    margin-bottom:3rem ;
+}
+
+.regresar1 .btn-inicio1{
+    color: #EBF5FB;
+    text-decoration: none;
+}
+
+.regresar1 .btn-inicio1:hover{
+    text-decoration: underline;
+}
+
+.infoSoli1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.infoSoli1 p{
+    font-size: 24px;
+    color: #EBF5FB;
+    font-weight: bold;
+    margin-bottom: 4rem;
+}
+
+.btn-orange1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.btn-orange1 button{
+    background-color: #E74C3C;
+    border: 1px solid #E74C3C;
+    color: #EBF5FB;
+    padding: 1rem;
+    font-size: 16px;
+    border-radius: 1rem;
+    font-weight: bold;
+}
