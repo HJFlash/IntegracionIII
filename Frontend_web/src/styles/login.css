@@ -90,10 +90,14 @@ label{
     color: #EBF5FB;
     padding: 1rem;
     font-size: 16px;
-    border-radius: 1rem;
+    border-radius: 5px;
     font-weight: bold;
+    cursor: pointer;
 }
 
+.btn-orange button:hover{
+    background-color: #cd4739fe;
+}
 
 .mostrarContrasena {
     display: flex;

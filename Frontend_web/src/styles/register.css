@@ -7,8 +7,8 @@
     display: flex;
     flex-direction: column;
     background-color: #EBF5FB;
-    width: 50%;
     height: 100vh;
+    min-width: 50%;
     justify-content: center;
     align-items: center;
 }
@@ -68,6 +68,91 @@
     color: #EBF5FB;
     padding: 1rem;
     font-size: 16px;
-    border-radius: 1rem;
+    border-radius: 5px;
     font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-orange1 button:hover {
+    background-color: #cd4739fe;
+}
+
+
+.nombresContainer,
+.rutContainer1,
+.apellidoContainer,
+.contrasenaContainer,
+.telContainer,
+.sectorContainer{
+    border: 2px solid #E74C3C;
+    display: flex;
+    margin: 0.5rem 0 0.4rem 0;
+}
+.IconRed{
+    width: 5px;
+    background-color: #E74C3C;
+}
+.rut1,
+.nombres,
+.apellido,
+.contrasena1,
+.tel,
+.sector,
+.calle,
+.Ncasa{
+    display: flex;
+    flex-direction: column;
+    max-width: 350px;
+}
+.numeros{
+    display: flex;
+}
+
+.calleContainer,
+.NcasaContainer{
+    border: 2px solid #E74C3C;
+    display: flex;  
+    justify-content: space-evenly;
+    margin: 0.5rem 0 0.4rem 0;
+}
+
+.calleContainer{
+    margin-right: 1rem;
+}
+
+.archContainer p{
+    margin-bottom: 0.4rem;
+}
+
+.archivo{
+    display: flex;
+    align-items: center;
+}
+
+input[type="file"] {
+    display: none; /* Oculta el input de archivo */
+  }
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #E74C3C;
+    color: #EBF5FB;
+    border-radius: 5px;
+    font-size: 16px;
+    border: none;
+    text-align: center;
+}
+  
+.custom-file-upload:hover {
+    background-color: #cd4739fe;
+}
+
+.archivo span {
+    margin-left: 0.4rem;
+}
+
+#enviar {
+    margin-top: 1rem;
 }
