@@ -2,19 +2,15 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
 
-const LoginScreen: React.FC = () => {
+const RegisterScreen: React.FC = () => {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <Text style={styles.title}>Inicio de sesión</Text>
+      <Text style={styles.title}>Registro</Text>
 
       <View style={styles.inputContainer}>
-        <Image
-          source={require('../assets/images/user.png')}
-          style={styles.icon}
-        />
         <TextInput
           placeholder="Ingrese rut"
           style={styles.input}
@@ -23,10 +19,14 @@ const LoginScreen: React.FC = () => {
       </View>
 
       <View style={styles.inputContainer}>
-        <Image
-          source={require('../assets/images/lock.png')}
-          style={styles.icon}
+        <TextInput
+          placeholder="Ingrese correo electrónico"
+          style={styles.input}
+          placeholderTextColor="#999"
         />
+      </View>
+
+      <View style={styles.inputContainer}>
         <TextInput
           placeholder="Contraseña"
           secureTextEntry
@@ -35,28 +35,35 @@ const LoginScreen: React.FC = () => {
         />
       </View>
 
-      <TouchableOpacity style={styles.forgotPasswordContainer}>
-        <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Confirmar contraseña"
+          secureTextEntry
+          style={styles.input}
+          placeholderTextColor="#999"
+        />
+      </View>
+
+      <TouchableOpacity style={styles.loginButton}>
+        <Text style={styles.loginText}>Subir Documento Registro Social de Hogares</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.loginButton}>
-        <Text style={styles.loginText}>Iniciar sesión</Text>
+        <Text style={styles.loginText}>Subir Documento Registro Social de Hogares</Text>
       </TouchableOpacity>
 
-      <Text style={styles.orText}>O inicia sesión con</Text>
-
-      <TouchableOpacity>
-        <Image
-          source={require('../assets/images/outlook.png')}
-          style={styles.outlookIcon}
-        />
-      </TouchableOpacity>
-
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Ingrese rut"
+          style={styles.input}
+          placeholderTextColor="#999"
+        />  
+      </View>
+      
       <View style={styles.footerContainer}>
-        <Text style={styles.noAccountText}>¿Aún no tienes una cuenta?</Text>
-        {/* Navegación a la pantalla de registro */}
-        <TouchableOpacity onPress={() => router.push('/register')}>
-          <Text style={styles.registerText}>Registrarse</Text>
+        <Text style={styles.noAccountText}>¿Ya tienes una cuenta?</Text>
+        <TouchableOpacity onPress={() => router.push('/login')}>
+          <Text style={styles.registerText}>Iniciar sesión</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -93,23 +100,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-  icon: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
-  },
-  forgotPasswordContainer: {
-    alignSelf: 'flex-end',
-    marginBottom: 20,
-  },
-  forgotPassword: {
-    color: '#ff4d4d',
-    fontSize: 14,
-  },
   loginButton: {
     backgroundColor: '#ff4d4d',
     paddingVertical: 15,
-    paddingHorizontal: 80,
+    paddingHorizontal: 40,
     borderRadius: 10,
     marginBottom: 20,
   },
@@ -117,6 +111,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   orText: {
     fontSize: 16,
@@ -141,4 +136,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default RegisterScreen;
