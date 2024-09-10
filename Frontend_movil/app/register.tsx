@@ -49,16 +49,9 @@ const RegisterScreen: React.FC = () => {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.loginButton}>
-        <Text style={styles.loginText}>Subir Documento Registro Social de Hogares</Text>
+        <Text style={styles.loginText}>Enviar Solicitud de Registro</Text>
       </TouchableOpacity>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Ingrese rut"
-          style={styles.input}
-          placeholderTextColor="#999"
-        />  
-      </View>
       
       <View style={styles.footerContainer}>
         <Text style={styles.noAccountText}>¿Ya tienes una cuenta?</Text>

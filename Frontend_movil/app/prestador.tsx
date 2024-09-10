@@ -46,7 +46,14 @@ const ActivitiesScreen: React.FC = () => {
   );
 };
 
-const ActivityCard = ({ color, email, time, service }) => (
+interface ActivityCardProps {
+  color: string;
+  email: string;
+  time: string;
+  service: string;
+}
+
+const ActivityCard: React.FC<ActivityCardProps> = ({ color, email, time, service }) => (
   <View style={styles.card}>
     <View style={[styles.circle, { backgroundColor: color }]} />
     <View style={styles.cardText}>

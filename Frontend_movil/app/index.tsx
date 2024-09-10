@@ -18,6 +18,14 @@ const IndexScreen: React.FC = () => {
         title="Registrarse" 
         onPress={() => router.push('/register')} // Navegar a la pantalla de registro
       />
+      <Button 
+        title="Prestador" 
+        onPress={() => router.push('/prestador')} // Navegar a la pantalla de prestador
+      />
+      <Button 
+        title="Usuario" 
+        onPress={() => router.push('/user')} // Navegar a la pantalla de usuario
+      />
     </View>
   );
 };
