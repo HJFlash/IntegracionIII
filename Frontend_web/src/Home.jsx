@@ -2,6 +2,7 @@ import './Home.css';
 import inicioImagen from './assets/imagen_inicio.webp';
 import Header from './components/header';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 function Home() {
 
@@ -9,23 +10,17 @@ function Home() {
     document.getElementById('videoSection').scrollIntoView({ behavior: 'smooth' });
   };
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
 
 
   return (
     <div className="App">
       <Header />
-
-      <div className='Borrar'>
-        <p>Temporal</p>
-        <Link to="/AdminMod">
-          <button>Admin Modo</button>
-        </Link>
-        <Link to="/TrabajadorMod">
-          <button>TrabajadorModo</button>
-        </Link>
-      </div>
-
-
       <div className="content">
         <img src={inicioImagen} alt="Imagen Inicio" className="image" />
         <div className='info'>
@@ -41,6 +36,21 @@ function Home() {
           </div>
         </div>
       </div>
+
+
+
+      <div className='Borrar'>
+        <p>Temporal</p>
+        <Link to="/AdminMod">
+          <button>Admin Modo</button>
+        </Link>
+        <Link to="/TrabajadorMod">
+          <button>TrabajadorModo</button>
+        </Link>
+      </div>
+
+
+      
       <div className='content2'>
         <h3>informacion de uso</h3>
         <p>En el siguente video encontrar la informacion de como realizar  una peticion de servicio </p>

@@ -1,11 +1,13 @@
 import React from 'react';
+import SideBar from '../../components/sidebar';
 
 
 function AdminMod() {
 
   return (
     <div>
-      <h1>AdminMod</h1>
+      <SideBar />
+
     </div>
   );
 }
