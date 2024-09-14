@@ -2,21 +2,12 @@ import './Home.css';
 import inicioImagen from './assets/imagen_inicio.webp';
 import Header from './components/header';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 
 function Home() {
 
   const scrollToVideo = () => {
     document.getElementById('videoSection').scrollIntoView({ behavior: 'smooth' });
   };
-
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-
 
   return (
     <div className="App">
