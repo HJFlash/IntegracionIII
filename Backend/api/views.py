@@ -6,4 +6,4 @@ def api(request):
 # Create your views here.
 
 def login(request):
-    return HttpResponse("<h1>Pagina de login<h1>")
+    return render(request, )
