@@ -32,7 +32,7 @@ function Home() {
 
       <div className='Borrar'>
         <p>Temporal</p>
-        <Link to="/AdminMod">
+        <Link to="/Admin">
           <button>Admin Modo</button>
         </Link>
         <Link to="/TrabajadorMod">
