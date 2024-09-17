@@ -1,0 +1,22 @@
+# Entorno virtual
+venv/
+
+# Archivos de configuración de IDEs
+.vscode/
+.idea/
+
+# Archivos de compilación
+*.pyc
+*.pyo
+__pycache__/
+node_modules/
+
+# Archivos de configuración de dependencias
+package-lock.json
+yarn.lock
+
+# Archivos de logs
+*.log
+
+# Otros archivos
+.DS_Store
