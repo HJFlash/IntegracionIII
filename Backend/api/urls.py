@@ -1,7 +1,8 @@
 from django.urls import path
-from . import views
+from .views import login_vista, registro, logout_vista
 
 urlpatterns = [
-    path('', views.api),
-    path('login/', views.login)
+    path('login/', login_vista, name='login'),
+    path('registro/', registro, name='registro'),
+    path('logout/', logout_vista, name='logout'),
 ]

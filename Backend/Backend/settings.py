@@ -38,9 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'Backend',
     'api',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -129,3 +129,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # cors authorized 
 CORS_ALLOWED_ORIGINS = []
+
+APPEND_SLASH = False
