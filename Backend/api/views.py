@@ -8,7 +8,7 @@ import json
 def registro(request):
     if request.method == 'POST':
         datos = json.loads(request.body)
-        username = datos.get('username')  # Cambiado 'nombre' a 'username'
+        username = datos.get('username')
         password = datos.get('password')
         email = datos.get('email')
         if username and password and email:
@@ -22,8 +22,8 @@ def registro(request):
 def login_vista(request):
     if request.method == 'POST':
         datos = json.loads(request.body)
-        username = datos.get('username')  # Cambiado 'nombre' a 'username'
-        password = datos.get('password')  # Cambiado 'contraseña' a 'password'
+        username = datos.get('username')
+        password = datos.get('password')
         usuario = authenticate(username=username, password=password)
         if usuario is not None and usuario.is_active:
             login(request, usuario)
