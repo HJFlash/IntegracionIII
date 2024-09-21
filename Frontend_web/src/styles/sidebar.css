@@ -1,0 +1,81 @@
+.sidebar {
+  width: 250px;
+  background-color: #2D3250;
+  padding: 20px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userBienvenida {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.userBienvenida p {
+  margin: 0;
+  color: #F8F2E8;
+}
+
+.userBienvenida span {
+  font-weight: bold;
+  margin: 0;
+  color: #F97A7A;
+}
+
+.IconAdmin {
+  width: 100px; 
+  max-width: 150px;
+  height: 100px;
+  margin-top: 10px; 
+  border-radius: 50%;
+  object-fit: cover;
+  border: #F97A7A 1px solid;
+}
+
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+li {
+  margin-bottom: 15px;
+}
+
+
+.sidebar-link {
+  text-decoration: none;
+  color: #F8F2E8;
+  display: block;
+  padding: 10px 15px;
+  border-radius: 4px;
+}
+
+.sidebar-link:hover {
+  background-color: #F97A7A;
+}
+
+
+.BottonCerrarSesion {
+  margin-top: auto;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.BottonCerrarSesion p {
+  font-size: 0.9em;
+  color: #F97A7A;
+  cursor: pointer;
+}
+
+.BottonCerrarSesion p:hover {
+  text-decoration: underline;
+}
