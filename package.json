@@ -11,9 +11,3 @@
   "author": "",
   "license": "ISC"
 }
-
-{
-  "dependencies": {
-    "react-router-dom": "^6.26.1"
-  }
-}
