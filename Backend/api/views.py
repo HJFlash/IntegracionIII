@@ -35,28 +35,41 @@ def registro(request):
             usuario.last_name = apellidos
             usuario.save()
 
-            # Aquí podrías almacenar más datos en un perfil de usuario personalizado si es necesario
+            # Aquí se pueden almacenar más datos en un perfil de usuario personalizado si es necesario
 
             return JsonResponse({'message': 'Usuario creado exitosamente'}, status=201)
 
         return JsonResponse({'error': 'Datos inválidos'}, status=400)
 
-
 @csrf_exempt
 def login_vista(request):
     if request.method == 'POST':
         datos = json.loads(request.body)
-        rut = datos.get('Rut')  # Usamos RUT en lugar de nombre de usuario
+        rut = datos.get('Rut')
         password = datos.get('Contraseña')
+        
+        # Intentar autenticar al usuario
         usuario = authenticate(username=rut, password=password)
-        if usuario is not None and usuario.is_active:
+        
+        if usuario is None:
+            # Si el usuario no se encuentra, verificamos si el RUT es válido
+            if User.objects.filter(username=rut).exists():
+                return JsonResponse({'error': 'Contraseña incorrecta'}, status=401)
+            else:
+                return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+
+        # Si el usuario existe y está activo
+        if usuario.is_active:
             login(request, usuario)
             return JsonResponse({'message': 'Inicio de sesión exitoso'})
-        return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
-
+        
+        return JsonResponse({'error': 'Usuario inactivo'}, status=403)
 
 @csrf_exempt
 def logout_vista(request):
     if request.method == 'POST':
+        # Si estás utilizando sesiones
         logout(request)
         return JsonResponse({'message': 'Desconexión exitosa'})
+    else:
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
