@@ -11,7 +11,7 @@ function Header() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const [UserLogin, setUserLogin] = useState(true);
+  const [UserLogin, setUserLogin] = useState(false);
 
   const handleLogout = () => {
     setUserLogin(false);
@@ -31,19 +31,19 @@ function Header() {
       <div className="apartadoUsuario">
         {UserLogin ? (
           <div>
-            <div className="IconUser" onClick={toggleMenu}></div>
-
+            <Link to="/Login" className="InitSesion">Iniciar Sesion</Link>
+          </div>
+        ) : (
+          <div className="IconUser" onClick={toggleMenu}>
             {isMenuOpen && (
               <div className="dropdown-menu">
                 <ul>
                   <li onClick={handleLogout}>Cerrar sesión</li>
-                  <li>Ver perfil</li>
+                  <li><Link to="/ProfileUser">Ver perfil</Link></li>
                 </ul>
               </div>
             )}
           </div>
-        ) : (
-          <Link to="/Login" className="InitSesion">Iniciar Sesion</Link>
         )}
       </div>
     </header>

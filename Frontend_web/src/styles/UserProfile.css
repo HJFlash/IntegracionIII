@@ -1,0 +1,17 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.ContainerUserProfile {
+  display: flex;
+  height: 100vh;
+}
+
+.ContainerContenUserProfile{
+  flex: 1;
+  padding: 20px;
+  background-color: #fff;
+  overflow-y: auto;
+}

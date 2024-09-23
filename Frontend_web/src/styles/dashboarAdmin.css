@@ -1,13 +1,12 @@
 .dashboard-admin {
-    display: flex; /* Usar flexbox para alinear la barra lateral y el contenido */
-    height: 100vh; /* Altura completa de la ventana de visualización */
-    margin-left: 250px; /* Deja espacio para la barra lateral */
-  }
-  
-  .main-content {
-    flex: 1; /* El contenido principal ocupará el resto del espacio disponible */
-    padding: 20px; /* Espaciado interno */
-    background-color: #fff; /* Color de fondo del contenido principal */
-    overflow-y: auto; /* Habilita el desplazamiento vertical si el contenido es largo */
-  }
-  
+  display: flex;
+  height: 100vh;
+  margin-left: 250px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  background-color: #fff;
+  overflow-y: auto;
+}
