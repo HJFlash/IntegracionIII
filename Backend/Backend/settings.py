@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'Backend',
     'api',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -131,3 +132,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = []
 
 APPEND_SLASH = False
+
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'Backend_cookie',
+    'JWT_AUTH_REFRESH_COOKIE': 'Backend_cookie_refresh'
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication"
+    )
+}

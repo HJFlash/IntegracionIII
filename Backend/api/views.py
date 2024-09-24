@@ -4,18 +4,31 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+from .models import Usuario
+from .serializers import UsuarioSerializador
+from rest_framework.authtoken.models import Token
+
+
 @csrf_exempt
 def registro(request):
     if request.method == 'POST':
         datos = json.loads(request.body)
-        username = datos.get('username')
-        password = datos.get('password')
-        email = datos.get('email')
-        if username and password and email:
-            if User.objects.filter(username=username).exists():
-                return JsonResponse({'error': 'Username already exists'}, status=400)
-            usuario = User.objects.create_user(username=username, password=password, email=email)
-            return JsonResponse({'message': 'User created successfully'}, status=201)
+        rut = datos.get('rut')
+        nombres = datos.get('nombres')
+        apellidos = datos.get('apellidos')
+        contrasena = datos.get('contrasena')
+        contacto = datos.get('contacto')
+        calle = datos.get('calle')
+        num_casa = datos.get('num_casa')
+        num_apar = datos.get('num_apar')
+        id_centro = datos.get('id_centro')
+        if rut and nombres and apellidos:
+            if Usuario.objects.filter(rut=rut).exists():
+                return JsonResponse({'error': 'Rut already exists'}, status=400)
+            validUser = Usuario(rut=rut, nombres=nombres, apellidos=apellidos, contrasena=contrasena, contacto=contacto, calle=calle, num_casa=num_casa, num_apar=num_apar, id_centro=id_centro)
+            validUser.save()
+            #token = Token.objects.create(user=validUser) Intento de JWT
+            return JsonResponse({'message': 'User created successfully', "user": validUser}, status=201)
         return JsonResponse({'error': 'Invalid data'}, status=400)
 
 @csrf_exempt
@@ -35,3 +48,4 @@ def logout_vista(request):
     if request.method == 'POST':
         logout(request)
         return JsonResponse({'message': 'Logged out successfully'})
+    
