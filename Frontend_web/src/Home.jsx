@@ -1,4 +1,3 @@
-import './Home.css';
 import inicioImagen from './assets/imagen_inicio.webp';
 import Header from './components/header';
 import { Link } from 'react-router-dom';
@@ -12,17 +11,17 @@ function Home() {
   return (
     <div className="App">
       <Header />
-      <div className="content">
+      <div className="flex items-center bg-celeste-claro mt-16 ">
         <img src={inicioImagen} alt="Imagen Inicio" className="image" />
-        <div className='info'>
-          <div className='infoUser'>
-            <h2>Aqui encontraras informacion de uso</h2>
-            <button className='btn' id='infoBtn' onClick={scrollToVideo}>ir a informaciones</button>
+        <div className='flex items-center flex-col  flex-grow'>
+          <div className='flex justify-center items-center flex-col mb-16'>
+            <h2 className='mb-4 text-3xl'>Aqui encontraras informacion de uso</h2>
+            <button className='bg-naranja-claro text-white font-semibold py-2 px-4 rounded shadow border-2 border-naranja-claro hover:bg-colors-claro hover:text-black transition duration-200' id='infoBtn' onClick={scrollToVideo}>ir a informaciones</button>
           </div>
-          <div className='solicitudUser'>
-            <p>Ya cuentas con esta informacion?</p>
+          <div className='flex justify-center items-center flex-col'>
+            <p className='mb-4 text-2xl' >Ya cuentas con esta informacion?</p>
             <Link to="/TomaSoli">
-              <button className='btn' id='soliBtn'>Solicitar Petición</button>
+              <button className='bg-naranja-claro text-white font-semibold py-2 px-4 rounded shadow border-2 border-naranja-claro hover:bg-colors-claro hover:text-black transition duration-200' id='soliBtn'>Solicitar Petición</button>
             </Link>
           </div>
         </div>
@@ -42,10 +41,10 @@ function Home() {
 
 
       
-      <div className='content2'>
-        <h3>informacion de uso</h3>
-        <p>En el siguente video encontrar la informacion de como realizar  una peticion de servicio </p>
-        <div className="video-container">
+      <div className='flex justify-center items-center flex-col mt-48 mb-48 '>
+        <h3 className='mb-4 mt-4 text-3xl'>informacion de uso</h3>
+        <p className='mb-4 mt-4 text-2xl'>En el siguente video encontrar la informacion de como realizar  una peticion de servicio </p>
+        <div className='mb-16 mt-16'>
           <iframe 
             className="video-container" 
             id="videoSection"

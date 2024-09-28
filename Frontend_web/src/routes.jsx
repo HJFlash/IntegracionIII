@@ -29,7 +29,7 @@ function AppRoutes() {
 
         {/* Dashboard Admin */}
         <Route path="/admin" element={<DashboardAdmin />}>
-          <Route index element={<HomeAdmin />} />
+          <Route index element={<Navigate to="HomeAdmin" />} />
           <Route path="HomeAdmin" element={<HomeAdmin />} />
           <Route path="CrudAdmin" element={<CrudAdmin />} />
           <Route path="GraficosAdmin" element={<GraficosAdmin />} />
