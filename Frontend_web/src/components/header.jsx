@@ -22,10 +22,12 @@ function Header() {
   return (
     <header className="flex justify-between items-center h-16 bg-turquesaClaro fixed top-0 left-0 w-full px-5 z-50  ">
       <div className="logo">
-         <img src={LogoMuni} alt="Logotipo Municipalidad de Temuco" className="w-24" />
+        <Link to="/">
+          <img src={LogoMuni} alt="Logotipo Municipalidad de Temuco" className="w-24" />
+        </Link>
       </div>
       <div className="flex-1 text-center">
-        <h1 className="text-white">Temuco Esta con Tigo</h1>
+        <h1 className="text-white">Temuco Esta Contigo</h1>
       </div>
 
       <div>

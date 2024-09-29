@@ -16,6 +16,7 @@ import PerfilUser from './pages/pagesClient/perfilUser';
 import InfoProfileUser from './pages/pagesClient/InfoProfileUser';
 import InfoSoliUser from './pages/pagesClient/infoSoliUser';
 
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -25,6 +26,7 @@ function AppRoutes() {
         <Route path="/Register" element={<Register />} />
         <Route path="/TomaSoli" element={<Tomasoli />} />
         <Route path="/TrabajadorMod" element={<ModTrabajador />} />
+
 
 
         {/* Dashboard Admin */}
