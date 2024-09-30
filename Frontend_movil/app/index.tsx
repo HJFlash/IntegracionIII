@@ -26,6 +26,10 @@ const IndexScreen: React.FC = () => {
         title="Usuario" 
         onPress={() => router.push('/user')} // Navegar a la pantalla de usuario
       />
+      <Button
+        title="Inicio"
+        onPress={() => router.push('/home')} // Navegar a la pantalla de inicio
+        />
     </View>
   );
 };
