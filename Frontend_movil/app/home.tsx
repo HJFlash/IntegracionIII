@@ -1,13 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Image, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Button, Image} from 'react-native';
 import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar style="dark" />
       <Text style={styles.title}>Página de inicio</Text>
 
       <View style={styles.imageContainer}>
@@ -31,6 +32,22 @@ const HomeScreen: React.FC = () => {
           color="#ff4d4d"
         />
       </View>
+      <Button 
+        title="Iniciar sesión" 
+        onPress={() => router.push('/login')} // Navegar a la pantalla de login
+      />
+      <Button 
+        title="Registrarse" 
+        onPress={() => router.push('/register')} // Navegar a la pantalla de registro
+      />
+      <Button 
+        title="Prestador" 
+        onPress={() => router.push('/prestador')} // Navegar a la pantalla de prestador
+      />
+      <Button 
+        title="Usuario" 
+        onPress={() => router.push('/user')} // Navegar a la pantalla de usuario
+      />
     </View>
   );
 };
