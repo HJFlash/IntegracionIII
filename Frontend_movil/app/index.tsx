@@ -29,7 +29,7 @@ const IndexScreen: React.FC = () => {
         <Text style={styles.buttonText}>Ir a Informaciones</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/request')}>
+      <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/ejemplo_noti')}>
         <Text style={styles.buttonText}>Solicitar Petición</Text>
       </TouchableOpacity>
 
