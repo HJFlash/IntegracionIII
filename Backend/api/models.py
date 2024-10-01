@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.hashers import make_password
-
+from django.contrib.auth.models import Permission
 
 class Centro_Comunitario(models.Model):
     id_centro = models.IntegerField()  # max_length eliminado
@@ -43,13 +43,16 @@ class Usuario(models.Model):
     USERNAME_FIELD = 'rut'
     REQUIRED_FIELDS = ['nombres', 'apellidos']  # Campos requeridos
     
+    class Meta:
+        permissions = [
+            ("can_view_sensitive_data", "Puede ver datos sensibles"),
+        ]
+    
     def save(self, *args, **kwargs):
         if self.contrasena and not self.contrasena.startswith('pbkdf2_'):  # Evitar hashear si ya está encriptada
             self.contrasena = make_password(self.contrasena)
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f'{self.nombres} {self.apellidos}'
     
 
 class Prestador(models.Model):

@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required, user_passes_test
 import json
 
 from .models import Usuario, Consultas_Agendadas
@@ -21,6 +22,10 @@ from rest_framework.authtoken.models import Token
         
         validUser = Usuario(rut=rut, Fnombre=Fnombre, Snombre=Snombre, Fapellido=Fapellido, Sapellido=Sapellido, contrasena=contrasena, contacto=contacto, calle=calle, num_casa=num_casa, num_apar=num_apar, id_centro=id_centro)
 """
+
+# Decorador, verifica si el usuario tiene permiso para ver los datos sensibles
+def has_permission_to_view_sensitive_data(user):
+    return user.has_perm('api.can_view_sensitive_data')  # Cambia 'tu_aplicacion' por el nombre de tu aplicación
 
 
 @csrf_exempt
