@@ -1,19 +1,24 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, BackHandler} from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 const IndexScreen: React.FC = () => {
   const router = useRouter();
 
+  const handleBackButton = () => {
+    BackHandler.exitApp();
+    return true;
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
-      <Text style={styles.title}>Página de inicio</Text>
+      <Text style={styles.title}>Inicio</Text>
 
       <View style={styles.imageContainer}>
         <Image
-          //source={require('../assets/images/your-image.png')} // Cambia a la ruta de tu imagen
+          source={require('../assets/images/logo_muni.jpg')} // Cambia a la ruta de tu imagen
           style={styles.image}
         />
       </View>
@@ -43,6 +48,9 @@ const IndexScreen: React.FC = () => {
       <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/user')}>
         <Text style={styles.buttonText}>Usuario</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.buttonContainer} onPress={handleBackButton}>
+        <Text style={styles.buttonText}>Salir</Text>
+      </TouchableOpacity>
       </View>
     </View>
   );
@@ -54,21 +62,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f4f8',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: 10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
+    textAlign: 'center',
+    padding: 8,
+    marginBottom: '15%',
+    marginTop: '10%',
+    backgroundColor: '#5499C7',
+    width: '120%',
+    height: '10%',
   },
   imageContainer: {
-    marginBottom: 20,
+    marginBottom: 10,
     alignItems: 'center',
   },
   image: {
-    width: '100%',
-    height: 150,
-    marginBottom: 20,
+    width: 200,
+    height: 100,
+    marginBottom: 30,
   },
   infoText: {
     fontSize: 18,
@@ -77,7 +91,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     fontSize: 20,
-    width: '50%',
     marginBottom: 20,
   },
   buttonText: {
@@ -86,6 +99,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     backgroundColor: '#E74C3C',
     padding: 10,
+    width: 300,
     borderRadius: 5,
   },
   videoContainer: {
