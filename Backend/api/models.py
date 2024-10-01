@@ -15,8 +15,10 @@ class Usuario(models.Model):
             MinValueValidator(10000000)
         ]
     )
-    nombres = models.CharField(max_length=100, blank=True, null=True)
-    apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
+    Fnombre = models.CharField(max_length=100, blank=True, null=True)
+    Snombre = models.CharField(max_length=100, default='ApellidoDesconocido')
+    Fapellido = models.CharField(max_length=100, blank=True, null=True)
+    Sapellido = models.CharField(max_length=100, default='ApellidoDesconocido')
     contrasena = models.CharField(max_length=25, blank=True)
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
     calle = models.CharField(max_length=25, default='CalleDesconocida')
@@ -44,13 +46,13 @@ class Horario_Prestadores(models.Model):
     hora_termino = models.TimeField()
 
 class Consultas_Agendadas(models.Model):
-    id_consulta = models.IntegerField(unique=True, primary_key=True)
+    id_consulta = models.AutoField(primary_key=True)
     servicio = models.CharField(max_length=30)
     rut_prestador = models.ForeignKey(Prestador, on_delete=models.CASCADE)
     rut_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)  # Corregido el nombre del campo
     fecha = models.DateField()
     hora_inicio = models.TimeField()
-    hora_termino = models.TimeField()
+#    hora_termino = models.TimeField() //hora termino siempre sera la misma dependiendo del servicio y hora de inicio
 
 class Admin(models.Model):
     rut = models.IntegerField(unique=True, primary_key=True)
