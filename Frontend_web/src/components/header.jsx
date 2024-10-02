@@ -6,6 +6,7 @@ import LogoMuni from '../assets/logo-temuco-1024x791.webp';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [UserLogin, setUserLogin] = useState(true); // esto se cambia segun el estado de la autentificacion
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -14,10 +15,29 @@ function Header() {
   const [UserLogin, setUserLogin] = useState(false);
 
   const handleLogout = () => {
-    setUserLogin(false);
+    fetch('http://localhost:8000/logout/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // 'Authorization': `Bearer ${localStorage.getItem('token')}` //Cuando empezemos con los Tokens hay que descomentar esto
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message) {
+        alert(data.message); // Mensaje de éxito
+        // Elimina el token del almacenamiento si corresponde
+        localStorage.removeItem('token'); // Si usas tokens
+        setUserLogin(false); // Actualiza el estado de usuario
+      } else {
+        alert('Error al cerrar sesión.'); // Manejo de errores
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al cerrar sesión.');
+    });
   };
-
-
 
   return (
     <header className="flex justify-between items-center h-16 bg-turquesaClaro fixed top-0 left-0 w-full px-5 z-50  ">

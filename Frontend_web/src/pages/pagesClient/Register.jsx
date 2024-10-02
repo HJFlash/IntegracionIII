@@ -1,26 +1,77 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-
-import { useState } from 'react';
-
+import '../../styles/register.css';
 
 function Register() {
   const [fileName, setFileName] = useState('Ningún archivo seleccionado');
+  const [formData, setFormData] = useState({
+    rut: '',
+    contrasena: '',
+    email: '',
+    nombres: '',
+    apellidos: '',
+    tel: '',
+    sector: '',
+    calle: '',
+    Ncasa: ''
+  });
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setFileName(file ? file.name : 'Ningún archivo seleccionado');
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  
+    // Estructura de los datos que se enviarán al backend
+    const dataToSend = {
+      Rut: formData.rut,
+      Contraseña: formData.contrasena,
+      Email: formData.email,
+      Nombre: formData.nombres,
+      Apellidos: formData.apellidos,
+      Telefono: formData.tel,
+      Sector: formData.sector,
+      Calle: formData.calle,
+      Ncasa: formData.Ncasa
+    };
+  
+    // Petición POST al backend
+    fetch('http://localhost:8000/registro/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dataToSend)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert(`Error: ${data.error}`);
+      } else {
+        alert('Registro exitoso');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  };
 
   return (
-    <div className='flex'>
-
-      <div className='flex flex-col justify-center items-center h-screen bg-[#095b92] w-[50%]'>
-        <div className='containerInitL'> 
-          <div className="self-start mb-12 text-2xl">
-            <Link to="/" className="text-[#E74C3C] hover:underline">
+    <div className='container'>
+      <div className='initlogin'>
+        <div className='containerInitL'>
+          <div className='regresar1'>
+            <Link to="/" className='btn-inicio1'>
               Regresar al Inicio
             </Link>
           </div>
@@ -33,126 +84,182 @@ function Register() {
               <button className='text-2xl underline underline-offset-[6px]'>Ir a Iniciar Sesión</button>
             </Link>
           </div>
-          
         </div>
       </div>
 
-
-      <div className="flex flex-col items-center justify-center bg-[#EBF5FB] w-[50%] mx-auto">
-        <p className="mb-2 text-2xl flex justify-center items-center">Iniciar Proceso de Registro  </p>
-        <div className="max-w-md mx-auto">
-        <form action="">
-        <div className="flex border-2 border-[#E74C3C] mb-4">
-            <div className="w-1 p-0 bg-[#E74C3C]"></div>
-            <div className="flex flex-col min-w-[350px]">
-              <label for="rut1" className="text-gray-500 text-sm px-2">Ingrese su RUT</label>
+      <div className='Register'>
+        <h2> Iniciar Proceso de Registro  </h2>
+        <form onSubmit={handleSubmit}>
+          {/* RUT */}
+          <div className='rutContainer1'>
+            <div className='IconRed'></div>
+            <div className='rut1'>
+              <label htmlFor="rut1">Ingrese su RUT</label>
               <input 
                 type="text" 
                 id="rut1" 
-                name="rut1"
-                className="outline-none bg-transparent px-2" 
-                required/>
+                name="rut" 
+                required 
+                onChange={handleChange} 
+                value={formData.rut} 
+              />
             </div>
           </div>
 
-          <div className="flex border-2 border-[#E74C3C] mb-4">
-            <div className="w-1 p-0 bg-[#E74C3C]"></div>
-            <div className="flex flex-col min-w-[350px]">
-              <label htmlFor="rut" className="text-gray-500 text-sm px-2">Ingrese su RUT</label>
-              <input type="text" id="rut" name="rut" required className="outline-none bg-transparent px-2" />
+          {/* Email */}
+          <div className='emailContainer'>
+            <div className='IconRed'></div>
+            <div className='email'>
+              <label htmlFor="email">Ingrese su Email</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                required 
+                onChange={handleChange} 
+                value={formData.email} 
+              />
             </div>
           </div>
-          <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="rut" className="text-gray-500 text-sm px-2">Ingrese su RUT</label>
-                <input type="text" id="rut" name="rut" required className="outline-none bg-transparent px-2" />
-              </div>
+
+          {/* Nombres */}
+          <div className='nombresContainer'>
+            <div className='IconRed'></div>
+            <div className='nombres'>
+              <label htmlFor="nombres">Ingrese sus Nombres</label>
+              <input 
+                type="text" 
+                id="nombres" 
+                name="nombres" 
+                required 
+                onChange={handleChange} 
+                value={formData.nombres} 
+              />
+            </div>
+          </div>
+
+          {/* Apellidos */}
+          <div className='apellidoContainer'>
+            <div className='IconRed'></div>
+            <div className='apellido'>
+              <label htmlFor="apellido">Ingrese sus Apellidos</label>
+              <input 
+                type="text" 
+                id="apellido" 
+                name="apellidos" 
+                required 
+                onChange={handleChange} 
+                value={formData.apellidos} 
+              />
             </div>
 
-
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="rut" className="text-gray-500 text-sm px-2">Ingrese su RUT</label>
-                <input type="text" id="rut" name="rut" required className="outline-none bg-transparent px-2" />
-              </div>
+          {/* Contraseña */}
+          <div className='contrasenaContainer'>
+            <div className='IconRed'></div>
+            <div className='contrasena1'>
+              <label htmlFor="contrasena1">Ingrese su Contraseña</label>
+              <input 
+                type="password" 
+                id="contrasena1" 
+                name="contrasena" 
+                required 
+                onChange={handleChange} 
+                value={formData.contrasena} 
+              />
             </div>
 
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="rut" className="text-gray-500 text-sm px-2">Ingrese su RUT</label>
-                <input type="text" id="rut" name="rut" required className="outline-none bg-transparent px-2" />
-              </div>
+          {/* Teléfono */}
+          <div className='telContainer'>
+            <div className='IconRed'></div>
+            <div className='tel'>
+              <label htmlFor="tel">Ingrese su Contacto Telefónico</label>
+              <input 
+                type="tel" 
+                id="tel" 
+                name="tel" 
+                required 
+                onChange={handleChange} 
+                value={formData.tel} 
+              />
             </div>
 
+          {/* Residencia */}
           <div className='residencia'>
             <p className='text-xl'>Ingrese sus datos de residencia</p>
             <div className='residenciacontainer'>
-              
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label for="sector" className="text-gray-500 text-sm px-2">Sector</label>
-                <input type="text" id="sector" name="sector"  className="outline-none bg-transparent px-2" required/>
+              <div className='sectorContainer'>
+                <div className='IconRed'></div>
+                <div className='sector'>
+                  <label htmlFor="sector">Sector</label>
+                  <input 
+                    type="text" 
+                    id="sector" 
+                    name="sector" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.sector} 
+                  />
+                </div>
               </div>
             </div>
 
-              <div className='flex items-center justify-between'>
-
-                <div className="flex border-2 border-[#E74C3C] mb-4 max-w-[49%]">
-                  <div className="w-1 p-0 bg-[#E74C3C] min-w-1"></div>
-                  <div className="flex flex-col">
-                    <label for="calle" className="text-gray-500 text-sm px-2">Calle</label>
-                    <input type="text" id="calle" name="calle" className="outline-none bg-transparent px-2" required/>
+              <div className='numeros'>
+                <div className='calleContainer'>
+                  <div className='IconRed'></div>
+                  <div className='calle'>
+                    <label htmlFor="calle">Calle</label>
+                    <input 
+                      type="text" 
+                      id="calle" 
+                      name="calle" 
+                      required 
+                      onChange={handleChange} 
+                      value={formData.calle} 
+                    />
                   </div>
                 </div>
 
-                <div className="flex border-2 border-[#E74C3C] mb-4 max-w-[49%]">
-                  <div className="w-1 p-0 bg-[#E74C3C] min-w-1"></div>
-                  <div className="flex flex-col">
-                    <label for="Ncasa" className="text-gray-500 text-sm px-2">N° Casa</label>
-                    <input type="text" id="Ncasa" name="Ncasa" className="outline-none bg-transparent px-2" required/>
+                <div className='NcasaContainer'>
+                  <div className='IconRed'></div>
+                  <div className='Ncasa'>
+                    <label htmlFor="Ncasa">N° Casa</label>
+                    <input 
+                      type="text" 
+                      id="Ncasa" 
+                      name="Ncasa" 
+                      required 
+                      onChange={handleChange} 
+                      value={formData.Ncasa} 
+                    />
                   </div>
                 </div>
               </div>
-
-
             </div>
           </div>
 
+          {/* Archivo opcional */}
           <div className='archContainer'>
-            <p className='text-xl'>Subir registro social de hogares</p>
-            <div className='pb-4'>
-              <label for="file" 
-              className='inline-block px-4 py-2 cursor-pointer bg-[#E74C3C] text-[#EBF5FB] rounded-md text-lg text-center'>
-                Subir archivo</label>
+            <p>Subir registro social de hogares (opcional)</p>
+            <div className='archivo'>
+              <label htmlFor="file" className="custom-file-upload">Subir archivo</label>
               <input 
                 type="file" 
                 id="file" 
                 name="file" 
                 className="hidden"
                 onChange={handleFileChange}
-                />
-                <span className='ml-2'>{fileName}</span>
-
+              />
+              <span>{fileName}</span>
             </div>
           </div>
-          
-          <div id='enviar' className='flex justify-center items-center'>
-            <button type='submit' className="bg-[#E74C3C] border border-[#E74C3C] text-[#EBF5FB] py-2 px-4 rounded-lg font-bold hover:bg-red-600">enviar peticion de registro</button>
+
+          {/* Botón de enviar */}
+          <div id='enviar' className='btn-orange1'>
+            <button type='submit'>Enviar petición de registro</button>
           </div>
-
         </form>
-        </div>
-        
-
-
-
       </div>
     </div>
-
   );
 }
 
