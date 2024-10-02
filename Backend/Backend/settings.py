@@ -146,7 +146,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # cors authorized 
-CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Añade la URL de tu frontend
+]
 
 APPEND_SLASH = False
 
