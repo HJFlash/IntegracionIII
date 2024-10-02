@@ -36,7 +36,7 @@ class Usuario(models.Model):
     calle = models.CharField(max_length=25, default='CalleDesconocida')
     num_casa = models.CharField(max_length=50, blank=True, null=True)
     num_apar = models.CharField(max_length=50, blank=True, null=True)
-    id_centro = models.ForeignKey(Centro_Comunitario, on_delete=models.CASCADE, null=True, blank=True)
+    #id_centro = models.ForeignKey(Centro_Comunitario, on_delete=models.CASCADE, null=True, blank=True)
     
     last_login = models.DateTimeField(null=True, blank=True)  # Agrega este campo
 
@@ -81,7 +81,6 @@ class Horario_Prestadores(models.Model):
 
 class Consultas_Agendadas(models.Model):
     id_consulta = models.AutoField(primary_key=True)
-    servicio = models.CharField(max_length=30)
     rut_prestador = models.ForeignKey(Prestador, on_delete=models.CASCADE)
     rut_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)  # Corregido el nombre del campo
     fecha = models.DateField()

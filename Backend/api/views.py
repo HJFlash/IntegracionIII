@@ -32,17 +32,17 @@ def has_permission_to_view_sensitive_data(user):
 def registro(request):
     if request.method == 'POST':
         datos = json.loads(request.body)
-        
+        print(datos)
         # Extraer datos del cuerpo de la solicitud
-        rut = datos.get('rut')
-        nombres = datos.get('nombres')
-        apellidos = datos.get('apellidos')
-        contrasena = datos.get('contrasena')
-        contacto = datos.get('contacto')
-        calle = datos.get('calle')
-        num_casa = datos.get('num_casa')
-        num_apar = datos.get('num_apar')
-        id_centro = datos.get('id_centro')
+        rut = datos.get('Rut')
+        nombres = datos.get('Nombre')
+        apellidos = datos.get('Apellidos')
+        contrasena = datos.get('Contraseña')
+        contacto = datos.get('Telefono')
+        calle = datos.get('Sector')
+        num_casa = datos.get('Calle')
+        num_apar = datos.get('Ncasa')
+        print(rut)
         
         # Verificar que los campos necesarios estén presentes
         if rut and nombres and apellidos and contrasena:
@@ -62,8 +62,7 @@ def registro(request):
                 contacto=contacto,
                 calle=calle,
                 num_casa=num_casa,
-                num_apar=num_apar,
-                id_centro=id_centro
+                num_apar=num_apar
             )
             validUser.save()
 
@@ -74,8 +73,8 @@ def registro(request):
 def login_vista(request):
     if request.method == 'POST':
         datos = json.loads(request.body)
-        rut = datos.get('rut')  # Autenticación basada en el rut
-        contrasena = datos.get('contrasena')
+        rut = datos.get('Rut')  # Autenticación basada en el rut
+        contrasena = datos.get('Contraseña')
         
         try:
             # Buscar el usuario por rut
