@@ -1,0 +1,12 @@
+.dashboard-admin {
+  display: flex;
+  height: 100vh;
+  margin-left: 250px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  background-color: #fff;
+  overflow-y: auto;
+}

@@ -1,0 +1,62 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.SidebarUserProfiles {
+  width: 250px;
+  background-color: #ebf5fb;
+  padding: 20px;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.UserProfilesBienvenida {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
+
+
+.IconUserProfile {
+  width: 100px;
+  max-width: 150px;
+  height: 100px;
+  margin-top: 10px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: #f97a7a 1px solid;
+}
+
+.sidebarUserLinklink {
+  text-decoration: none;
+  color: #f8f2e8;
+  display: block;
+  padding: 10px 15px;
+  border-radius: 4px;
+}
+
+.sidebarUserLink:hover {
+  background-color: #f97a7a;
+}
+
+.btnUserProfiles {
+  margin-top: auto;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.btnUserProfiles p {
+  font-size: 0.9em;
+  color: #f97a7a;
+  cursor: pointer;
+}
+
+.btnUserProfiles p:hover {
+  text-decoration: underline;
+}
