@@ -2,13 +2,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 import json
 
 @csrf_exempt
 def registro(request):
     if request.method == 'POST':
         datos = json.loads(request.body)
-        
+
         print(datos)
         
         # Campos obligatorios
@@ -23,23 +24,24 @@ def registro(request):
         ncasa = datos.get('Ncasa')
 
         # Validación de campos
-        if rut and password and email and nombre and apellidos and telefono and sector and calle and ncasa:
-            if User.objects.filter(username=rut).exists():  # Usamos RUT como nombre de usuario
-                return JsonResponse({'error': 'El RUT ya está registrado'}, status=400)
-            
-            # Crear el usuario usando el RUT como nombre de usuario
-            usuario = User.objects.create_user(username=rut, password=password, email=email)
+        if not all([rut, password, email, nombre, apellidos, telefono, sector, calle, ncasa]):
+            return JsonResponse({'error': 'Todos los campos son obligatorios'}, status=400)
 
-            # Guardar información adicional en el perfil del usuario
+        # Verificación de que el RUT sea único
+        if User.objects.filter(username=rut).exists():
+            return JsonResponse({'error': 'El RUT ya está registrado'}, status=400)
+
+        # Crear el usuario
+        try:
+            usuario = User.objects.create_user(username=rut, password=password, email=email)
             usuario.first_name = nombre
             usuario.last_name = apellidos
             usuario.save()
-
-            # Aquí se pueden almacenar más datos en un perfil de usuario personalizado si es necesario
-
             return JsonResponse({'message': 'Usuario creado exitosamente'}, status=201)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
-        return JsonResponse({'error': 'Datos inválidos'}, status=400)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 @csrf_exempt
 def login_vista(request):
@@ -73,3 +75,16 @@ def logout_vista(request):
         return JsonResponse({'message': 'Desconexión exitosa'})
     else:
         return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
+@login_required
+def obtener_usuario(request):
+    usuario = request.user
+    return JsonResponse({
+        'first_name': usuario.first_name,
+        'last_name': usuario.last_name,
+        'username': usuario.username,
+        'email': usuario.email,
+    })

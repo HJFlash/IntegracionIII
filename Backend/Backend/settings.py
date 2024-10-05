@@ -129,7 +129,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # cors authorized 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Añade la URL de tu frontend
+    "http://localhost:3000",  # Frontend web
+    "http://localhost:8000",  # Expo para la app móvil
+    "http://localhost:8081",  # Servidor web de Expo
 ]
 
 APPEND_SLASH = False
