@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
+from rest_framework_simplejwt.tokens import RefreshToken
+from .utils import obtener_tokens_para_usuario
 import json
 
 from .models import Usuario, Consultas_Agendadas
@@ -82,8 +84,12 @@ def login_vista(request):
             
             # Verificar la contraseña usando check_password
             if check_password(contrasena, usuario.contrasena):
-                login(request, usuario)  # Iniciar sesión
-                return JsonResponse({'message': 'Inicio de sesión exitoso'}, status=200)
+                tokens = obtener_tokens_para_usuario(usuario)
+                return JsonResponse({
+                    'message': 'Inicio de sesión exitoso',
+                    'refresh': tokens['refresh'],
+                    'access': tokens['access']
+                    }, status=200)
             else:
                 return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
         except Usuario.DoesNotExist:
