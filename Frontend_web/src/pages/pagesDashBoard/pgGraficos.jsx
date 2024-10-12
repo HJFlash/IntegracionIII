@@ -6,10 +6,11 @@ import GraficoArea from '../../components/GraficoArea'
 
 const pgGraficos = () => {
   return (
-    <div>
+    <div className='flex justify-center items-center flex-col'>
       <GraficoTorta/>
       <GraficoBarras/>
-      <GraficoArea/><GraficoTorta/>
+      <GraficoArea/>
+
     </div>
   )
 }

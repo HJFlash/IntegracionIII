@@ -13,7 +13,7 @@ const GraficoBarras = () => {
     ];
 
   return (
-    <ResponsiveContainer width="100%" aspect={2}>
+    <ResponsiveContainer width="40%" aspect={2}>
         <BarChart 
             data={data}
             width={500}  

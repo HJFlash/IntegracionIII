@@ -25,7 +25,7 @@ export const GraficoTorta = () => {
     ];
 
     return (
-    <ResponsiveContainer aspect={2}>
+    <ResponsiveContainer width="40%" aspect={2}>
         <PieChart>
             <Pie
                 dataKey="Value"

@@ -13,7 +13,7 @@ function PerfilUser() {
     <div className='flex h-screen'>
         <SidebarProfiles content={userContent} />
 
-        <div className='flex-1 p-[20px] bg-white overflow-y-auto'>
+        <div className='flex-1 p-[20px] pt-[80px] bg-gray-200 overflow-y-auto'>
             <Outlet />
         </div>
     </div>
