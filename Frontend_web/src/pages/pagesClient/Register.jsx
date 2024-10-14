@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import {validarRut, validarNombre, validarApellidos, validarTel, validarEmail} from '../../auth/valicion';
 
 function Register() {
   // const [fileName, setFileName] = useState('Ningún archivo seleccionado');
@@ -9,6 +10,7 @@ function Register() {
   //   const file = event.target.files[0];
   //   setFileName(file ? file.name : 'Ningún archivo seleccionado');
   // };
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     rut: '',
@@ -34,6 +36,41 @@ function Register() {
   
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    //validacion error mensajes
+    const errors = {};
+    for (const field of ['rut','nombres','apellidos', 'tel','mail']){
+      switch (field) {
+        case 'rut':
+          const rutError = validarRut(formData.rut);
+          if (rutError) errors.rut = rutError;
+          break;
+        case 'nombres':
+          const nombreError = validarNombre(formData.nombres);
+          if (nombreError) errors.nombres = nombreError;
+          break;
+        case 'apellidos':
+          const apellidoError = validarApellidos(formData.apellidos);
+          if (apellidoError) errors.apellidos = apellidoError;
+          break;
+        case 'tel':
+          const telError = validarTel(formData.tel);
+          if (telError) errors.tel = telError;
+          break;
+        case 'mail':
+          const emailError = validarEmail(formData.email);
+          if (emailError) errors.email = emailError;
+          break;
+        default:
+          return alert ('no se que pasa');
+      }
+    }
+
+    if (Object.keys(errors).length > 0){
+      setErrors(errors)
+      return;
+    }
+
   
     // Estructura de los datos que se enviarán al backend
     const dataToSend = {
@@ -94,148 +131,176 @@ function Register() {
         <p className="mb-2 text-2xl flex justify-center items-center">Iniciar Proceso de Registro</p>
         <div className="max-w-md mx-auto">
           <form onSubmit={handleSubmit}>
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="rut" className="text-gray-500 text-sm px-2">Ingrese su RUT</label>
-                <input 
-                  type="text" 
-                  id="rut" 
-                  name="rut"
-                  required 
-                  onChange={handleChange} 
-                  value={formData.rut} 
-                  className="outline-none bg-transparent px-2" 
-                />
-              </div>
-            </div>
+            <div>
 
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="email" className="text-gray-500 text-sm px-2">Ingrese su email</label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  name="email" 
-                  required 
-                  onChange={handleChange} 
-                  value={formData.email} 
-                  className="outline-none bg-transparent px-2" 
-                />
-              </div>
-            </div>
-
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="nombres" className="text-gray-500 text-sm px-2">Ingrese sus nombres</label>
-                <input 
-                  type="text" 
-                  id="nombres" 
-                  name="nombres" 
-                  required 
-                  onChange={handleChange} 
-                  value={formData.nombres} 
-                  className="outline-none bg-transparent px-2" 
-                />
-              </div>
-            </div>
-
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="apellidos" className="text-gray-500 text-sm px-2">Ingrese sus apellidos</label>
-                <input 
-                  type="text" 
-                  id="apellidos" 
-                  name="apellidos" 
-                  required 
-                  onChange={handleChange} 
-                  value={formData.apellidos} 
-                  className="outline-none bg-transparent px-2" 
-                />
-              </div>
-            </div>
-
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="contrasena" className="text-gray-500 text-sm px-2">Ingrese su contraseña</label>
-                <input 
-                  type="password" 
-                  id="contrasena" 
-                  name="contrasena" 
-                  required 
-                  onChange={handleChange} 
-                  value={formData.contrasena} 
-                  className="outline-none bg-transparent px-2" 
-                />
-              </div>
-            </div>
-
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="tel" className="text-gray-500 text-sm px-2">Ingrese su teléfono</label>
-                <input 
-                  type="tel" 
-                  id="tel" 
-                  name="tel" 
-                  required 
-                  onChange={handleChange} 
-                  value={formData.tel} 
-                  className="outline-none bg-transparent px-2" 
-                />
-              </div>
-            </div>
-
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="sector" className="text-gray-500 text-sm px-2">Ingrese su sector</label>
-                <input 
+              {errors.rut && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.rut}</p>}
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="rut" className="text-gray-500 text-sm px-2">Ingrese su RUT</label>
+                  <input 
                     type="text" 
-                    id="sector" 
-                    name="sector" 
-                  required 
-                  onChange={handleChange} 
-                  value={formData.sector} 
-                  className="outline-none bg-transparent px-2" 
-                />
+                    id="rut" 
+                    name="rut"
+                    required 
+                    onChange={handleChange} 
+                    value={formData.rut} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="calle" className="text-gray-500 text-sm px-2">calle</label>
-                <input 
-                  type="text" 
-                  id="calle" 
-                  name="calle" 
-                  required 
-                  onChange={handleChange} 
-                  value={formData.calle} 
-                  className="outline-none bg-transparent px-2" 
-                />
+            <div>
+              {errors.email && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.email}</p>}
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="email" className="text-gray-500 text-sm px-2">Ingrese su email</label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.email} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              {errors.nombres && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.nombres}</p>}
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="nombres" className="text-gray-500 text-sm px-2">Ingrese sus nombres</label>
+                  <input 
+                    type="text" 
+                    id="nombres" 
+                    name="nombres" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.nombres} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              {errors.apellidos && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.apellidos}</p>}
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="apellidos" className="text-gray-500 text-sm px-2">Ingrese sus apellidos</label>
+                  <input 
+                    type="text" 
+                    id="apellidos" 
+                    name="apellidos" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.apellidos} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="contrasena" className="text-gray-500 text-sm px-2">Ingrese su contraseña</label>
+                  <input 
+                    type="password" 
+                    id="contrasena" 
+                    name="contrasena" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.contrasena} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              {errors.tel && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.tel}</p>}
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="tel" className="text-gray-500 text-sm px-2">Ingrese su teléfono</label>
+                  <input 
+                    type="tel" 
+                    id="tel" 
+                    name="tel" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.tel} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="sector" className="text-gray-500 text-sm px-2">Ingrese su sector</label>
+                  <input 
+                      type="text" 
+                      id="sector" 
+                      name="sector" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.sector} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="calle" className="text-gray-500 text-sm px-2">calle</label>
+                  <input 
+                    type="text" 
+                    id="calle" 
+                    name="calle" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.calle} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
               </div>
             </div>
 
             
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="Ncasa" className="text-gray-500 text-sm px-2">Ingrese sus Ncasa</label>
-                <input 
-                  type="text" 
-                  id="Ncasa" 
-                  name="Ncasa" 
-                  required 
-                  onChange={handleChange} 
-                  value={formData.Ncasa} 
-                  className="outline-none bg-transparent px-2" 
-                />
+            <div>
+
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="Ncasa" className="text-gray-500 text-sm px-2">Ingrese sus Ncasa</label>
+                  <input 
+                    type="text" 
+                    id="Ncasa" 
+                    name="Ncasa" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.Ncasa} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
               </div>
             </div>
 

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-
+import {validarRut} from '../../auth/valicion';
 
 function Login() {
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     rut: '',
@@ -26,7 +27,14 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+    
+    const rutError = validarRut(formData.rut);
+    if(rutError){
+      setErrors({rut: rutError})
+      return
+    };
+
+
     const dataToSend = {
       Rut: formData.rut,
       Contraseña: formData.password
@@ -70,18 +78,21 @@ function Login() {
           <p className="mb-2 text-2xl">Ingrese sus datos para</p>
           <p className="mb-8 text-2xl">Iniciar Sesion</p>
           <form id="formLogin" onSubmit={handleSubmit} >
-            <div className="flex border-2 border-[#E74C3C] mb-4">
-              <div className="w-1 p-0 bg-[#E74C3C]"></div>
-              <div className="flex flex-col min-w-[350px]">
-                <label htmlFor="rut" className="text-gray-500 text-sm px-2">Ingrese su RUT</label>
-                <input 
-                  type="text" 
-                  id="rut" 
-                  name="rut" 
-                  required 
-                  onChange={handleChange}
-                  value={formData.rut}
-                  className="outline-none bg-transparent px-2" />
+            <div>
+            {errors.rut && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.rut}</p>}
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="rut" className="text-gray-500 text-sm px-2">Ingrese su RUT</label>
+                  <input 
+                    type="text" 
+                    id="rut" 
+                    name="rut" 
+                    required 
+                    onChange={handleChange}
+                    value={formData.rut}
+                    className="outline-none bg-transparent px-2" />
+                </div>
               </div>
             </div>
 
