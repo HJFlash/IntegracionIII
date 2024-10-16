@@ -94,7 +94,8 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Datos_Para_Graficos
-from django.db.models import Count
+from django.db.models import Count, Case, When, IntegerField, Value
+from django.db.models.functions import ExtractMonth, TruncMonth
 
 
 @csrf_exempt
@@ -135,10 +136,64 @@ def DatosGraficos(request):
 
 
 
-def obtener_datos_grafico(request):
+def obtener_datos_grafico_torta(request):
     datos = Datos_Para_Graficos.objects.values('t_consulta').annotate(cantidad=Count('t_consulta'))
     return JsonResponse(list(datos), safe=False)
 
+
+def obtener_datos_grafico_barras(request):
+    datos = Datos_Para_Graficos.objects.values('t_consulta').annotate(
+        hombres=Count(Case(When(genero_persona='m', then=1))),
+        mujeres=Count(Case(When(genero_persona='f', then=1)))
+    )
+    return JsonResponse(list(datos), safe=False)
+    
+
+def obtener_datos_grafico_linea(request):
+    datos_hombres = (
+        Datos_Para_Graficos.objects.filter(genero_persona='m')
+        .annotate(mes=TruncMonth('fechas'))
+        .values('mes')
+        .annotate(cantidad_solicitudes=Count('id_consultas'))
+        .order_by('mes')
+    )
+
+    datos_mujeres = (
+        Datos_Para_Graficos.objects.filter(genero_persona='f')
+        .annotate(mes=TruncMonth('fechas'))
+        .values('mes')
+        .annotate(cantidad_solicitudes=Count('id_consultas'))
+        .order_by('mes')
+    )
+
+
+    meses_nombres = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ]
+
+
+    datos_finales = {mes: {'hombres': 0, 'mujeres': 0} for mes in meses_nombres}
+
+
+    for dato in datos_hombres:
+        mes_num = dato['mes'].month 
+        datos_finales[meses_nombres[mes_num - 1]]['hombres'] = dato['cantidad_solicitudes']
+
+
+    for dato in datos_mujeres:
+        mes_num = dato['mes'].month
+        datos_finales[meses_nombres[mes_num - 1]]['mujeres'] = dato['cantidad_solicitudes']
+
+    respuesta_final = []
+    for mes, conteo in datos_finales.items():
+        respuesta_final.append({
+            'mes': mes,
+            'cantidad_hombres': conteo['hombres'],
+            'cantidad_mujeres': conteo['mujeres']
+        })
+
+    return JsonResponse(respuesta_final, safe=False)
 
 from .models import Prestador
 

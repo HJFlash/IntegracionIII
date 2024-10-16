@@ -1,38 +1,38 @@
-import React from 'react';
-import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
-
+import React, { useEffect, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const GraficoBarras = () => {
-    const data = [
-        { name: "maria", age: "10", weigh: 60 },
-        { name: "pedro", age: "12", weigh: 55 },
-        { name: "luisa", age: "9", weigh: 50 },
-        { name: "jose", age: "11", weigh: 62 },
-        { name: "sofia", age: "8", weigh: 48 },
-        { name: "carlos", age: "13", weigh: 70 },
-    ];
+    const [data, setData] = useState([]);
 
-  return (
-    <ResponsiveContainer width="40%" aspect={2}>
-        <BarChart 
-            data={data}
-            width={500}  
-            height={300}
-            margin={
-                {top:5,right:30,left:20,bottom:5}
-            }> 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/obtener-datos-graficos-barra/');
+                const result = await response.json();
+                setData(result);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, []);
 
-        <CartesianGrid strokeDasharray="4 1 2" />
-        <XAxis dataKey="name"/>
-        <YAxis />
-        <Tooltip/> 
-        <Legend/>
-        <Bar dataKey="weigh" fill='#52be80'/>
-        <Bar dataKey="age" fill='#f7dc6f'/>
-        
-        </BarChart>
-    </ResponsiveContainer>
-  )
+    return (
+        <ResponsiveContainer width="100%" height={400}>
+            <BarChart 
+                data={data}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            > 
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="t_consulta" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="hombres" fill="#52be80" />
+                <Bar dataKey="mujeres" fill="#f7dc6f" />
+            </BarChart>
+        </ResponsiveContainer>
+    );
 }
 
-export default GraficoBarras
+export default GraficoBarras;
