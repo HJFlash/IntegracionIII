@@ -88,3 +88,96 @@ def logout_vista(request):
     if request.method == 'POST':
         logout(request)  # Cerrar sesión
         return JsonResponse({'message': 'Cierre de sesión exitoso'}, status=200)
+    
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Datos_Para_Graficos
+from django.db.models import Count
+
+
+@csrf_exempt
+def DatosGraficos(request):
+    if request.method == 'POST':
+        try:
+            # Cargar los datos del cuerpo de la solicitud
+            datos = json.loads(request.body)
+            print(datos)
+            
+            # Extraer datos del cuerpo de la solicitud
+            fechas = datos.get('fechas')
+            horas = datos.get('horas')
+            t_consulta = datos.get('t_consulta')
+            genero_persona = datos.get('genero_persona')
+            
+            # Verificar que los datos obligatorios están presentes
+            if not (fechas and horas and genero_persona):
+                return JsonResponse({'error': 'Faltan campos obligatorios'}, status=400)
+            
+            # Crear y guardar la nueva instancia de Datos_Para_Graficos
+            nueva_dato = Datos_Para_Graficos.objects.create(
+                fechas=fechas,
+                horas=horas,
+                t_consulta=t_consulta,
+                genero_persona=genero_persona
+            )
+
+            # Retornar una respuesta exitosa con el id de la nueva instancia
+            return JsonResponse({'mensaje': 'Dato creado con éxito', 'id': nueva_dato.id_consultas}, status=201)
+        
+        except Exception as e:
+            # Manejar errores y retornar una respuesta de error
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    # Si no es un método POST, devolver error
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+
+def obtener_datos_grafico(request):
+    datos = Datos_Para_Graficos.objects.values('t_consulta').annotate(cantidad=Count('t_consulta'))
+    return JsonResponse(list(datos), safe=False)
+
+
+from .models import Prestador
+
+@csrf_exempt
+def registroTrabajador(request):
+    if request.method == 'POST':
+        try:
+            # Cargar los datos del cuerpo de la solicitud
+            datos = json.loads(request.body)
+            print(datos)
+            
+            # Extraer datos del cuerpo de la solicitud
+            rut = datos.get('rut')
+            nombres = datos.get('nombres')
+            apellidos = datos.get('apellidos')
+            contrasena = datos.get('contrasena')
+            contacto = datos.get('contacto')
+            servicio = datos.get('servicio')
+            calle = datos.get('calle')
+            num_casa = datos.get('num_casa')
+            num_apar = datos.get('num_apar')
+    
+            # Crear y guardar la nueva instancia de 
+            nueva_datos = Prestador.objects.create(
+                rut=rut,
+                nombres=nombres,
+                apellidos=apellidos,
+                contrasena=contrasena,
+                contacto=contacto,
+                servicio=servicio,
+                calle=calle,
+                num_casa=num_casa,
+                num_apar=num_apar,
+            )
+            return JsonResponse({'mensaje': 'Dato creado con éxito', 'id': nueva_datos.rut}, status=201)
+
+        except Exception as e:
+            # Manejar errores y retornar una respuesta de error
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    # Si no es un método POST, devolver error
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

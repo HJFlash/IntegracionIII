@@ -1,47 +1,63 @@
-import React from 'react';
-import {Cell, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
-
-
-
+import React, { useEffect, useState } from 'react';
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 export const GraficoTorta = () => {
-    const data = [
-        { name: "Grupo A", Value: 2000 },
-        { name: "Grupo B", Value: 1500 },
-        { name: "Grupo C", Value: 3000 },
-        { name: "Grupo D", Value: 2500 },
-        { name: "Grupo E", Value: 1800 },
-        { name: "Grupo F", Value: 2200 },
-    ];
+    const [data, setData] = useState([]);
 
-
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/obtener-datos-grafico/');
+                const result = await response.json();
+                setData(result);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, []);
+    
     const colors = [
-        "#FFB3BA", // Rosa pastel
-        "#FFDFBA", // Amarillo pastel
-        "#FFFABA", // Amarillo suave
-        "#BAFFC9", // Verde pastel
-        "#BAE1FF", // Azul pastel
-        "#FFABAB", // Rojo claro pastel
+        "#e67e22",
+        "#FFDFBA",
+        "#bb8fce",
+        "#BAFFC9",
+        "#BAE1FF",
+        "#2ecc71",
+        "#FFABAB",
     ];
+
+    // Función para personalizar el contenido del tooltip
+    const renderTooltip = ({ active, payload }) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="custom-tooltip" style={{ backgroundColor: '#fff', padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
+                    <p>{`Solicitud: ${payload[0].payload.t_consulta || 'Sin dato'}`}</p>
+                    <p>{`Cantidad de Solicitudes: ${payload[0].payload.cantidad}`}</p>
+                </div>
+            );
+        }
+        return null;
+    };
 
     return (
-    <ResponsiveContainer width="40%" aspect={2}>
-        <PieChart>
-            <Pie
-                dataKey="Value"
-                data={data}
-                innerRadius={60}
-                outerRadius={80}
-                fill='#34495e'
-            >
-                {data.map((entry, index) =>(
-                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]}/>
-                ))}
-            <Tooltip/>
-            </Pie> 
-        </PieChart>
-    </ResponsiveContainer>
-  )
+        <ResponsiveContainer width="40%" aspect={2}>
+            <PieChart>
+                <Pie
+                    dataKey="cantidad"
+                    data={data}
+                    innerRadius={60}
+                    outerRadius={80}
+                    fill='#34495e'
+                >
+                    {data.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                    ))}
+                </Pie>
+                <Tooltip content={renderTooltip} />
+            </PieChart>
+        </ResponsiveContainer>
+    );
 }
 
 export default GraficoTorta;

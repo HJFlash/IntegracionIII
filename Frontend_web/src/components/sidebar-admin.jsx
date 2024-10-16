@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import LogoMuni from '../assets/logo-temuco-1024x791.webp';
 
@@ -13,25 +13,37 @@ function SideBar() {
 
       <ul className="list-none p-0 m-0 w-[100%]">
         <li className="mb-[15px]">
-          <Link to="HomeAdmin" className="no-underline text-[#F8F2E8] block py-2 px-4 rounded-[4px] hover:bg-naranja-claro">
+          <NavLink to="HomeAdmin" className="no-underline text-[#F8F2E8] block py-2 px-4 rounded-[4px] hover:bg-naranja-claro">
             Home Admin
-          </Link>
+          </NavLink>
         </li>
         <li className="mb-[15px]"> 
-          <Link to="CrudAdmin" className="no-underline text-[#F8F2E8] block py-2 px-4 rounded-[4px] hover:bg-naranja-claro">
+          <NavLink to="CrudAdmin" className="no-underline text-[#F8F2E8] block py-2 px-4 rounded-[4px] hover:bg-naranja-claro">
             Crud
-          </Link>
+          </NavLink>
         </li>
         <li className="mb-[15px]">
-          <Link to="GraficosAdmin" className="no-underline text-[#F8F2E8] block py-2 px-4 rounded-[4px] hover:bg-naranja-claro">
+          <NavLink to="GraficosAdmin" className="no-underline text-[#F8F2E8] block py-2 px-4 rounded-[4px] hover:bg-naranja-claro">
             Graficos
-          </Link>
+          </NavLink>
+        </li>
+        <li className="mb-[15px]">
+          <NavLink
+            to="RegistrarTrabajador"
+            className={({ isActive }) =>
+              `no-underline block py-2 px-4 rounded-[4px] ${
+                isActive ? 'bg-naranja-opaco-claro text-white' : 'text-[#F8F2E8] hover:bg-naranja-claro'
+              }`
+            }
+          >
+            Registro Trabajador
+          </NavLink>
         </li>
       </ul>
       <div className="flex items-center justify-center flex-col mt-auto p-[10px] border-t border-[#dddddd] rounded">
-            <Link to="/" className='text-[#dddddd] hover:underline'>Ir al Inicio</Link>
+            <NavLink to="/" className='text-[#dddddd] hover:underline'>Ir al Inicio</NavLink>
             <p className='text-sm text-[#f97a7a] cursor-pointer hover:underline'>CerrarSesion</p>
-        </div>
+      </div>
 
     </div>
   );

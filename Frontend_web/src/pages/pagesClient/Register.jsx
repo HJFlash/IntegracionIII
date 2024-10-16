@@ -90,7 +90,7 @@ function Register() {
     })
     .then(data => {
       alert('Registro exitoso');
-      navigate('/TomaSoli');
+      navigate('/');
     })
     .catch(error => {
       console.error('Error:', error);

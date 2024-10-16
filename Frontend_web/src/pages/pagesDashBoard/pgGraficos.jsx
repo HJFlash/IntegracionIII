@@ -1,12 +1,14 @@
-import React from 'react'
-import { GraficoTorta } from '../../components/GraficoTorta'
-import GraficoBarras from '../../components/GraficoBarras'
-import GraficoArea from '../../components/GraficoArea'
+import React from 'react';
+import { GraficoTorta } from '../../components/GraficoTorta';
+import GraficoBarras from '../../components/GraficoBarras';
+import GraficoArea from '../../components/GraficoArea';
 
 
-const pgGraficos = () => {
+const PgGraficos = () => {
+
+
   return (
-    <div className='flex justify-center items-center flex-col'>
+    <div className='flex justify-center items-center flex-col'>      
       <GraficoTorta/>
       <GraficoBarras/>
       <GraficoArea/>
@@ -15,4 +17,4 @@ const pgGraficos = () => {
   )
 }
 
-export default pgGraficos
+export default PgGraficos

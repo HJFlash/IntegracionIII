@@ -53,7 +53,7 @@ function Login() {
       alert(data.message);
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
-      navigate('/TomaSoli');
+      navigate('/');
     })
     .catch(error => {
       alert(`Error: ${error.message}`);

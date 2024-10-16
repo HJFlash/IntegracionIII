@@ -94,3 +94,10 @@ class Admin(models.Model):
     apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
     direccion = models.CharField(max_length=150)
+
+class Datos_Para_Graficos(models.Model):
+    id_consultas = models.AutoField(primary_key=True)
+    fechas = models.DateField()
+    horas = models.TimeField()
+    t_consulta = models.CharField(max_length=100, blank=True, null=True)
+    genero_persona = models.CharField(max_length=100, blank=True, null=True)
