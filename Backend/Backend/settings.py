@@ -169,8 +169,11 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'USER_ID_FIELD': 'rut',  # Aquí especificamos que 'rut' es el identificador
     'USER_ID_CLAIM': 'rut',  # Aquí especificamos que el 'claim' del JWT será el 'rut'
 }
+
+AUTH_USER_MODEL = 'api.Usuario'

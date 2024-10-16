@@ -7,10 +7,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import obtener_tokens_para_usuario
 import json
 
-from .models import Usuario, Consultas_Agendadas
+from .models import Usuario,Prestador ,Consultas_Agendadas
 from django.contrib.auth.hashers import check_password, make_password
-from .serializers import UsuarioSerializador
+from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer
 from rest_framework.authtoken.models import Token
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 
 """
     ---------------registro----------            
@@ -100,3 +102,34 @@ def logout_vista(request):
     if request.method == 'POST':
         logout(request)  # Cerrar sesión
         return JsonResponse({'message': 'Cierre de sesión exitoso'}, status=200)
+    
+# -------------------- CRUD para Consultas Agendadas --------------------
+
+class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
+    queryset = Consultas_Agendadas.objects.all()
+    serializer_class = ConsultaAgendadaSerializer
+    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
+
+    def create(self, request, *args, **kwargs):
+        datos = request.data  # Usamos request.data para obtener los datos
+        print(datos)
+        try:
+        # Asegúrate de que las claves coincidan con las enviadas en el JSON
+            usuario = Usuario.objects.get(rut=datos['usuario'])
+            prestador = Prestador.objects.get(rut=datos['prestador'])
+
+            nueva_cita = Consultas_Agendadas.objects.create(
+                rut_usuario=usuario,
+                rut_prestador=prestador,
+                fecha=datos['fecha'],
+                hora_inicio=datos['hora_inicio'],
+                estado=datos.get('estado', 'pendiente'),
+            )
+            return JsonResponse({'message': 'Cita creada exitosamente'}, status=201)
+        except Usuario.DoesNotExist:
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=400)
+        except Prestador.DoesNotExist:
+            return JsonResponse({'error': 'Prestador no encontrado'}, status=400)
+        except Exception as e:
+            print(str(e))  # Imprimir el error para diagnóstico
+            return JsonResponse({'error': str(e)}, status=400)

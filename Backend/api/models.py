@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.hashers import make_password
@@ -15,7 +16,38 @@ class Centro_Comunitario(models.Model):
     Sapellido = models.CharField(max_length=100, default='ApellidoDesconocido')
 """ 
 
+class UsuarioManager(BaseUserManager):
+    def create_user(self, rut, nombres, apellidos, contacto, contrasena=None):
+        if not rut:
+            raise ValueError("El rut debe ser proporcionado")
+        user = self.model(
+            rut=rut,
+            nombres=nombres,
+            apellidos=apellidos,
+            contacto=contacto,
+        )
+        if contrasena:
+            user.set_password(contrasena)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, rut, nombres, apellidos, contacto, contrasena):
+        user = self.create_user(
+            rut=rut,
+            nombres=nombres,
+            apellidos=apellidos,
+            contacto=contacto,
+            contrasena=contrasena,
+        )
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
+    
 class Usuario(models.Model):
+    
+    is_active = models.BooleanField(default=True)  # Agrega este campo
     
     def __str__(self):
         return f'{self.nombres} {self.apellidos}'  # Cambia nombres por Fnombre
@@ -38,10 +70,29 @@ class Usuario(models.Model):
     num_apar = models.CharField(max_length=50, blank=True, null=True)
     #id_centro = models.ForeignKey(Centro_Comunitario, on_delete=models.CASCADE, null=True, blank=True)
     
+
     last_login = models.DateTimeField(null=True, blank=True)  # Agrega este campo
 
     USERNAME_FIELD = 'rut'
     REQUIRED_FIELDS = ['nombres', 'apellidos']  # Campos requeridos
+    
+    def __str__(self):
+        return f'{self.nombres} {self.apellidos}'
+
+    # Métodos requeridos
+    def get_full_name(self):
+        return f'{self.nombres} {self.apellidos}'
+
+    def get_short_name(self):
+        return self.nombres
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
     
     class Meta:
         permissions = [
@@ -82,9 +133,10 @@ class Horario_Prestadores(models.Model):
 class Consultas_Agendadas(models.Model):
     id_consulta = models.AutoField(primary_key=True)
     rut_prestador = models.ForeignKey(Prestador, on_delete=models.CASCADE)
-    rut_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)  # Corregido el nombre del campo
+    rut_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha = models.DateField()
     hora_inicio = models.TimeField()
+    estado = models.CharField(max_length=20, default='pendiente')  # Nuevo campo agregado
     # hora_termino = models.TimeField() //hora termino siempre sera la misma dependiendo del servicio y hora de inicio
 
 
