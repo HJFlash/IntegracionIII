@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import {validarRut, validarNombre, validarApellidos, validarTel, validarEmail} from '../../auth/valicion';
+import { Link, useNavigate } from 'react-router-dom';
+import { validarRut, validarNombre, validarApellidos, validarTel, validarEmail } from '../../auth/valicion';
 
 function Register() {
-  // const [fileName, setFileName] = useState('Ningún archivo seleccionado');
-
-  
-  // const handleFileChange = (event) => {
-  //   const file = event.target.files[0];
-  //   setFileName(file ? file.name : 'Ningún archivo seleccionado');
-  // };
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
-
+  
   const [formData, setFormData] = useState({
     rut: '',
     contrasena: '',
@@ -24,8 +18,6 @@ function Register() {
     Ncasa: ''
   });
 
-  
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -37,9 +29,9 @@ function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    //validacion error mensajes
+    // Validación de errores
     const errors = {};
-    for (const field of ['rut','nombres','apellidos', 'tel','mail']){
+    for (const field of ['rut', 'nombres', 'apellidos', 'tel', 'email']) { // Asegúrate de que los nombres de los campos coincidan
       switch (field) {
         case 'rut':
           const rutError = validarRut(formData.rut);
@@ -57,52 +49,52 @@ function Register() {
           const telError = validarTel(formData.tel);
           if (telError) errors.tel = telError;
           break;
-        case 'mail':
+        case 'email':
           const emailError = validarEmail(formData.email);
           if (emailError) errors.email = emailError;
           break;
         default:
-          return alert ('no se que pasa');
+          return alert('No se qué pasa');
       }
     }
 
-    if (Object.keys(errors).length > 0){
-      setErrors(errors)
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
       return;
     }
 
-  
     // Estructura de los datos que se enviarán al backend
     const dataToSend = {
-      Rut: formData.rut,
-      Contraseña: formData.contrasena,
-      Email: formData.email,
-      Nombre: formData.nombres,
-      Apellidos: formData.apellidos,
-      Telefono: formData.tel,
-      Sector: formData.sector,
-      Calle: formData.calle,
-      Ncasa: formData.Ncasa
+      rut: formData.rut,
+      contrasena: formData.contrasena,
+      contacto: formData.tel,
+      nombres: formData.nombres,
+      apellidos: formData.apellidos,
+      calle: formData.calle,
+      num_casa: formData.Ncasa,
     };
 
     // Petición POST al backend
     fetch('http://localhost:8000/registro/', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(dataToSend)
+      body: JSON.stringify(dataToSend),
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.error) {
-        alert(`Error: ${data.error}`);
-      } else {
-        alert('Registro exitoso');
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(err => { throw new Error(JSON.stringify(err)); });
       }
+      return response.json();
+    })
+    .then(data => {
+      alert('Registro exitoso');
+      navigate('/TomaSoli');
     })
     .catch(error => {
       console.error('Error:', error);
+      alert(`Error: ${error.message}`);
     });
   };
 

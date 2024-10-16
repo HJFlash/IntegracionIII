@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import '../../styles/login.css';
-import { Link, useNavigate } from 'react-router-dom'; // Cambia useHistory por useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
-  const navigate = useNavigate(); // Inicializa useNavigate
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     rut: '',
     password: ''
   });
-
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState({}); // Estado para manejar errores
 
   const handleCheckboxChange = () => {
     setShowPassword(!showPassword);
@@ -43,20 +42,17 @@ function Login() {
       return response.json().then(data => {
         if (!response.ok) {
           // Manejo de errores
+          setErrors({ rut: data.error || 'Error en el inicio de sesión' });
           throw new Error(data.error || 'Error en el inicio de sesión');
         }
         return data;
       });
     })
     .then(data => {
-      console.log(data); // Esto imprime el objeto que recibes del servidor
-      alert(data.message); // Mensaje de éxito
-    
-      // Guardar tokens en localStorage
+      console.log(data);
+      alert(data.message);
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
-    
-      // Redirigir a la página deseada
       navigate('/TomaSoli');
     })
     .catch(error => {
