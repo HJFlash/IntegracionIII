@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import {validarRut} from '../../auth/valicion';
+import '../../styles/login.css';
+import { Link, useNavigate } from 'react-router-dom'; // Cambia useHistory por useNavigate
 
 function Login() {
-  const [errors, setErrors] = useState({});
+  const navigate = useNavigate(); // Inicializa useNavigate
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     rut: '',
@@ -27,19 +26,12 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    const rutError = validarRut(formData.rut);
-    if(rutError){
-      setErrors({rut: rutError})
-      return
-    };
-
 
     const dataToSend = {
       Rut: formData.rut,
       Contraseña: formData.password
     };
-  
+
     fetch('http://localhost:8000/login/', {
       method: 'POST',
       headers: {
@@ -50,15 +42,22 @@ function Login() {
     .then(response => {
       return response.json().then(data => {
         if (!response.ok) {
+          // Manejo de errores
           throw new Error(data.error || 'Error en el inicio de sesión');
         }
         return data;
       });
     })
     .then(data => {
-      alert(data.message);
-      localStorage.setItem('token', data.token); 
-      navigate('/');
+      console.log(data); // Esto imprime el objeto que recibes del servidor
+      alert(data.message); // Mensaje de éxito
+    
+      // Guardar tokens en localStorage
+      localStorage.setItem('access_token', data.access);
+      localStorage.setItem('refresh_token', data.refresh);
+    
+      // Redirigir a la página deseada
+      navigate('/TomaSoli');
     })
     .catch(error => {
       alert(`Error: ${error.message}`);
