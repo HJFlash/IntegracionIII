@@ -136,8 +136,14 @@ class Consultas_Agendadas(models.Model):
     rut_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha = models.DateField()
     hora_inicio = models.TimeField()
-    estado = models.CharField(max_length=20, default='pendiente')  # Nuevo campo agregado
+    estado = models.CharField(max_length=20, default='pendiente')
+    servicio = models.CharField(max_length=30, blank=True)  # Puedes dejarlo como opcional por ahora
     # hora_termino = models.TimeField() //hora termino siempre sera la misma dependiendo del servicio y hora de inicio
+
+    def save(self, *args, **kwargs):
+        # Asignar el servicio del prestador antes de guardar
+        self.servicio = self.rut_prestador.servicio
+        super().save(*args, **kwargs)
 
 
 class Admin(models.Model):

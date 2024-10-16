@@ -10,4 +10,4 @@ class UsuarioSerializador(serializers.ModelSerializer):
 class ConsultaAgendadaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consultas_Agendadas
-        fields = ['id_consulta', 'rut_usuario', 'rut_prestador', 'fecha', 'hora_inicio', 'estado']
+        fields = ['id_consulta', 'rut_usuario', 'rut_prestador', 'fecha', 'hora_inicio', 'estado', 'servicio']

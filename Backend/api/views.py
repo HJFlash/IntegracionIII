@@ -106,25 +106,31 @@ def logout_vista(request):
     
 # -------------------- CRUD para Consultas Agendadas --------------------
 
+# -------------------- CRUD para Consultas Agendadas --------------------
+
 class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
     queryset = Consultas_Agendadas.objects.all()
     serializer_class = ConsultaAgendadaSerializer
     permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
+    
+    def perform_create(self, serializer):
+        consulta = serializer.save()
+        # Ya no necesitas asignar el servicio aquí, lo harás en el método create
 
     def create(self, request, *args, **kwargs):
-        datos = request.data  # Usamos request.data para obtener los datos
-        print(datos)
+        datos = request.data
         try:
-        # Asegúrate de que las claves coincidan con las enviadas en el JSON
-            usuario = Usuario.objects.get(rut=datos['usuario'])
-            prestador = Prestador.objects.get(rut=datos['prestador'])
+            usuario = Usuario.objects.get(rut=datos['rut_usuario'])
+            prestador = Prestador.objects.get(rut=datos['rut_prestador'])
 
+            # Crear la cita, el servicio se tomará automáticamente
             nueva_cita = Consultas_Agendadas.objects.create(
                 rut_usuario=usuario,
                 rut_prestador=prestador,
                 fecha=datos['fecha'],
                 hora_inicio=datos['hora_inicio'],
                 estado=datos.get('estado', 'pendiente'),
+                servicio=prestador.servicio  # Asignar el servicio del prestador
             )
             return JsonResponse({'message': 'Cita creada exitosamente'}, status=201)
         except Usuario.DoesNotExist:
@@ -132,5 +138,54 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
         except Prestador.DoesNotExist:
             return JsonResponse({'error': 'Prestador no encontrado'}, status=400)
         except Exception as e:
-            print(str(e))  # Imprimir el error para diagnóstico
             return JsonResponse({'error': str(e)}, status=400)
+
+
+
+# -------------------- LEER --------------------
+@csrf_exempt
+def obtener_citas(request):
+    if request.method == 'GET':
+        citas = Consultas_Agendadas.objects.all()
+        serializer = ConsultaAgendadaSerializer(citas, many=True)
+        return JsonResponse(serializer.data, safe=False, status=200)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+@csrf_exempt
+def obtener_cita_por_id(request, id):  # Cambié el parámetro a 'id'
+    if request.method == 'GET':
+        try:
+            # Buscamos la cita por 'id_consulta' usando el valor de 'id' que recibimos
+            cita = Consultas_Agendadas.objects.get(id_consulta=id)
+            serializer = ConsultaAgendadaSerializer(cita)
+            return JsonResponse(serializer.data, safe=False, status=200)
+        except Consultas_Agendadas.DoesNotExist:
+            return JsonResponse({'error': 'Cita no encontrada'}, status=404)
+
+# -------------------- ACTUALIZAR --------------------
+@csrf_exempt
+def actualizar_cita(request, id_consulta):
+    if request.method == 'PUT':
+        try:
+            # Buscamos la cita por id_consulta
+            cita = Consultas_Agendadas.objects.get(id_consulta=id_consulta)
+            data = json.loads(request.body)
+            serializer = ConsultaAgendadaSerializer(cita, data=data, partial=True)  # partial=True permite actualización parcial
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, safe=False, status=200)
+            return JsonResponse(serializer.errors, status=400)
+        except Consultas_Agendadas.DoesNotExist:
+            return JsonResponse({'error': 'Cita no encontrada'}, status=404)
+
+# -------------------- ELIMINAR --------------------
+
+@csrf_exempt
+def eliminar_cita(request, id):
+    if request.method == 'DELETE':
+        try:
+            cita = Consultas_Agendadas.objects.get(id=id)
+            cita.delete()  # Elimina la cita de la base de datos
+            return JsonResponse({'message': 'Cita eliminada exitosamente'}, status=200)
+        except Consultas_Agendadas.DoesNotExist:
+            return JsonResponse({'error': 'Cita no encontrada'}, status=404)

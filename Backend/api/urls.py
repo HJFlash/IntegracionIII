@@ -10,5 +10,7 @@ urlpatterns = [
     path('login/', login_vista, name='login'),
     path('registro/', registro, name='registro'),
     path('logout/', logout_vista, name='logout'),
-    path('', include(router.urls)),  # Incluir las rutas generadas por el router
+
+    # Incluir las rutas generadas por el router para las operaciones CRUD
+    path('', include(router.urls)),  
 ]
