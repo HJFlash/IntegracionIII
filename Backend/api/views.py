@@ -7,9 +7,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import obtener_tokens_para_usuario
 import json
 
-from .models import Usuario,Prestador ,Consultas_Agendadas
+from .models import Usuario,Prestador ,Consultas_Agendadas, Horario_Prestadores
 from django.contrib.auth.hashers import check_password, make_password
-from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer
+from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, HorarioPrestadorSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -189,3 +189,30 @@ def eliminar_cita(request, id):
             return JsonResponse({'message': 'Cita eliminada exitosamente'}, status=200)
         except Consultas_Agendadas.DoesNotExist:
             return JsonResponse({'error': 'Cita no encontrada'}, status=404)
+
+
+# ---------------------------------------------------------------------------
+
+
+# --------------------- Horario Prestador ---------------------------------------
+class HorarioPrestadoresViewSet(viewsets.ModelViewSet):
+    queryset = Horario_Prestadores.objects.all()
+    serializer_class = HorarioPrestadorSerializer
+
+    def create(self, request, *args, **kwargs):
+        datos = request.data
+        try:
+            prestador = Prestador.objects.get(rut=datos['rut_prestador'])
+            nuevo_horario = Horario_Prestadores.objects.create(
+                rut_prestador=prestador,
+                dia=datos['dia'],
+                hora_inicio=datos['hora_inicio'],
+                hora_fin=datos['hora_fin'],
+                hora_termino=datos['hora_termino'],
+                descanso=datos['descanso']
+            )
+            return JsonResponse({'message': 'Horario creado exitosamente'}, status=201)
+        except Prestador.DoesNotExist:
+            return JsonResponse({'error': 'Prestador no registrado'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)

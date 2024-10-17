@@ -3,6 +3,8 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Permission
+from django.core.exceptions import ValidationError
+
 
 class Centro_Comunitario(models.Model):
     id_centro = models.IntegerField()  # max_length eliminado
@@ -124,10 +126,21 @@ class Prestador(models.Model):
 
 
 class Horario_Prestadores(models.Model):
-    rut_prestador = models.OneToOneField(Prestador, on_delete=models.CASCADE)
-    descanso = models.TimeField()
-    hora_inicio = models.TimeField()
-    hora_termino = models.TimeField()
+    rut_prestador = models.ForeignKey('Prestador', on_delete=models.CASCADE)
+    dia = models.CharField(max_length=15)  # Día de la semana, sin valor por defecto
+    hora_inicio = models.TimeField()  # Hora de inicio de la jornada, sin valor por defecto
+    hora_fin = models.TimeField()  # Hora de fin de la jornada, sin valor por defecto
+    hora_termino = models.TimeField()  # Hora en que termina definitivamente la jornada, sin valor por defecto
+    descanso = models.TimeField()  # Hora del descanso, sin valor por defecto
+
+
+    def clean(self):
+        # Validar si el prestador existe en la tabla 'api_prestadores'
+        if not Prestador.objects.filter(rut=self.rut_prestador).exists():
+            raise ValidationError(f"El prestador con RUT {self.rut_prestador} no está registrado.")
+
+    def __str__(self):
+        return f"{self.rut_prestador} - {self.dia} ({self.hora_inicio} - {self.hora_termino})"
 
 
 class Consultas_Agendadas(models.Model):
@@ -152,3 +165,4 @@ class Admin(models.Model):
     apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
     direccion = models.CharField(max_length=150)
+
