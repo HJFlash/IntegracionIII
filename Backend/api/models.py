@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
+from datetime import timedelta, datetime
 
 
 class Centro_Comunitario(models.Model):
@@ -149,14 +150,23 @@ class Consultas_Agendadas(models.Model):
     rut_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha = models.DateField()
     hora_inicio = models.TimeField()
+    hora_termino = models.TimeField(blank=True, null=True)  # Calculado al guardar
     estado = models.CharField(max_length=20, default='pendiente')
-    servicio = models.CharField(max_length=30, blank=True)  # Puedes dejarlo como opcional por ahora
-    # hora_termino = models.TimeField() //hora termino siempre sera la misma dependiendo del servicio y hora de inicio
+    servicio = models.CharField(max_length=30, blank=True)  # Dejar opcional
 
     def save(self, *args, **kwargs):
         # Asignar el servicio del prestador antes de guardar
         self.servicio = self.rut_prestador.servicio
+        
+        # Calcular hora de término en función de la duración del servicio
+        duracion_servicio = timedelta(minutes=self.rut_prestador.duracion_servicio)  # Asume que tienes un campo en Prestador con la duración
+        hora_inicio_datetime = datetime.combine(self.fecha, self.hora_inicio)
+        self.hora_termino = (hora_inicio_datetime + duracion_servicio).time()
+
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.rut_usuario} - {self.fecha} a las {self.hora_inicio}"
 
 
 class Admin(models.Model):

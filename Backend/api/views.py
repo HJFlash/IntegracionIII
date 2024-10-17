@@ -7,6 +7,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import obtener_tokens_para_usuario
 import json
 
+
+from rest_framework.response import Response
+from rest_framework import status
+from django.utils.timezone import localtime
+from datetime import timedelta, datetime
 from .models import Usuario,Prestador ,Consultas_Agendadas, Horario_Prestadores
 from django.contrib.auth.hashers import check_password, make_password
 from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, HorarioPrestadorSerializer
@@ -216,3 +221,57 @@ class HorarioPrestadoresViewSet(viewsets.ModelViewSet):
             return JsonResponse({'error': 'Prestador no registrado'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+        
+# -------------- Validacion de disponibilidad ------------------------
+def validar_disponibilidad(rut_prestador, fecha, hora, duracion):
+    # Obtén el prestador y su horario
+    prestador = Prestador.objects.get(rut=rut_prestador)
+    horario_prestador = Horario_Prestadores.objects.filter(rut_prestador=prestador, dia=fecha.strftime('%A')).first()
+    
+    if not horario_prestador:
+        return False, "El prestador no tiene horario disponible en ese día."
+
+    # Verifica si la hora solicitada está dentro del rango del horario del prestador
+    if not (horario_prestador.hora_inicio <= hora <= horario_prestador.hora_fin):
+        return False, "La hora solicitada está fuera del horario de trabajo del prestador."
+
+    # Verifica si hay citas existentes que choquen con la hora solicitada
+    hora_fin_solicitada = (datetime.combine(fecha, hora) + timedelta(minutes=duracion)).time()
+    citas = Consultas_Agendadas.objects.filter(rut_prestador=prestador, fecha=fecha).exclude(estado="cancelada")
+
+    for cita in citas:
+        hora_cita_fin = (datetime.combine(cita.fecha, cita.hora) + timedelta(minutes=duracion)).time()
+        # Comprobar solapamiento entre la cita y el rango solicitado
+        if hora < hora_cita_fin and hora_fin_solicitada > cita.hora:
+            return False, "El prestador ya tiene una cita en ese horario."
+
+    return True, "El horario está disponible."
+
+# Clase para la creación de consultas
+class CrearConsulta(APIView):
+    def post(self, request):
+        # Obtener los datos del request
+        rut_prestador = request.data.get('rut_prestador')
+        fecha = request.data.get('fecha')
+        hora = request.data.get('hora')
+        duracion = 60  # Ejemplo, 60 minutos de duración
+
+        # Convertir fecha y hora a objetos datetime si es necesario
+        fecha = datetime.strptime(fecha, '%Y-%m-%d').date()  # Si está en string
+        hora = datetime.strptime(hora, '%H:%M').time()  # Si está en string
+
+        # Validar disponibilidad
+        disponible, mensaje = validar_disponibilidad(rut_prestador, fecha, hora, duracion)
+        if not disponible:
+            return Response({"error": mensaje}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Si está disponible, proceder a crear la consulta
+        consulta = Consultas_Agendadas.objects.create(
+            rut_usuario=request.data.get('rut_usuario'),
+            rut_prestador=rut_prestador,
+            fecha=fecha,
+            hora_inicio=hora,
+            estado='pendiente'
+        )
+
+        return Response({"success": "Consulta agendada correctamente."}, status=status.HTTP_201_CREATED)
