@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, BackHandler} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, BackHandler } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
@@ -24,34 +24,30 @@ const IndexScreen: React.FC = () => {
       </View>
 
       <Text style={styles.infoText}>Aquí encontrarás información de uso</Text>
-      <View>
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/information')}>
-        <Text style={styles.buttonText}>Ir a Informaciones</Text>
-      </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/ejemplo_noti')}>
-        <Text style={styles.buttonText}>Solicitar Petición</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/login')}>
+          <Text style={styles.buttonText}>Iniciar sesión</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/login')}>
-        <Text style={styles.buttonText}>Iniciar sesión</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/register')}>
+          <Text style={styles.buttonText}>Registrarse</Text>
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/register')}>
-        <Text style={styles.buttonText}>Registrarse</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/prestador')}>
+          <Text style={styles.buttonText}>Prestador</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/prestador')}>
-        <Text style={styles.buttonText}>Prestador</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/user')}>
+          <Text style={styles.buttonText}>Usuario</Text>
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/user')}>
-        <Text style={styles.buttonText}>Usuario</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.buttonContainer} onPress={handleBackButton}>
+      <TouchableOpacity style={styles.buttonContainerExit} onPress={handleBackButton}>
         <Text style={styles.buttonText}>Salir</Text>
       </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -67,8 +63,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    textAlign: 'center', // se puede colocar center
-    alignItems: 'flex-end',
+    textAlign: 'center',
     padding: 20,
     marginBottom: '5%',
     marginTop: '-18%',
@@ -90,19 +85,34 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start', // Cambia a 'flex-start' para que los botones estén más cerca
+    width: '90%',
+  },
   buttonContainer: {
-    fontSize: 20,
-    marginBottom: 20,
+    flex: 1,
     alignItems: 'center',
+    marginHorizontal: 5, // Ajusta el margen horizontal entre botones
+    paddingTop: '5%',
   },
   buttonText: {
-    width: '200%',
+    paddingVertical: '10%',
     fontSize: 18,
     textAlign: 'center',
     color: '#fff',
     backgroundColor: '#E74C3C',
-    padding: 10,
-    borderRadius: 5,
+    borderRadius: 15,
+    width: '100%', // Asegúrate de que el botón ocupe todo el espacio disponible
+  },
+  buttonContainerExit: {
+    width: '88%',
+    height: '20%',
+    alignItems: 'center',
+    marginHorizontal: 5,
+    marginTop: '2%',
+    paddingTop: '5%',
+
   },
 });
 
