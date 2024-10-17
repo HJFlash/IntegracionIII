@@ -1,9 +1,51 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, StatusBar } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 
 const RegisterScreen: React.FC = () => {
+  const [rut, setRut] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [apellidos, setApellidos] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [sector, setSector] = useState('');
+  const [calle, setCalle] = useState('');
+  const [ncasa, setNcasa] = useState('');
+
   const router = useRouter();
+
+  const handleRegister = async () => {
+    try {
+        const response = await fetch('http://localhost:8000/registro/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                Rut: rut,
+                Contraseña: password,
+                Email: email,
+                Nombre: nombre,
+                Apellidos: apellidos,
+                Telefono: telefono,
+                Sector: sector,
+                Calle: calle,
+                Ncasa: ncasa,
+            }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            console.log('Usuario registrado con éxito:', data);
+        } else {
+            console.log('Error en el registro:', data);  // Captura detalles de error
+        }
+    } catch (error) {
+        console.error('Error al enviar la solicitud:', error);
+    }
+};
 
   return (
     <View style={styles.container}>
@@ -15,6 +57,8 @@ const RegisterScreen: React.FC = () => {
           placeholder="Ingrese rut"
           style={styles.input}
           placeholderTextColor="#999"
+          value={rut}
+          onChangeText={setRut}
         />
       </View>
 
@@ -23,6 +67,8 @@ const RegisterScreen: React.FC = () => {
           placeholder="Ingrese correo electrónico"
           style={styles.input}
           placeholderTextColor="#999"
+          value={email}
+          onChangeText={setEmail}
         />
       </View>
 
@@ -32,6 +78,8 @@ const RegisterScreen: React.FC = () => {
           secureTextEntry
           style={styles.input}
           placeholderTextColor="#999"
+          value={password}
+          onChangeText={setPassword}
         />
       </View>
 
@@ -41,18 +89,75 @@ const RegisterScreen: React.FC = () => {
           secureTextEntry
           style={styles.input}
           placeholderTextColor="#999"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
         />
       </View>
 
-      <TouchableOpacity style={styles.loginButton}>
-        <Text style={styles.loginText}>Subir Documento Registro Social de Hogares</Text>
-      </TouchableOpacity>
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Nombre"
+          style={styles.input}
+          placeholderTextColor="#999"
+          value={nombre}
+          onChangeText={setNombre}
+        />
+      </View>
 
-      <TouchableOpacity style={styles.loginButton}>
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Apellidos"
+          style={styles.input}
+          placeholderTextColor="#999"
+          value={apellidos}
+          onChangeText={setApellidos}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Teléfono"
+          style={styles.input}
+          placeholderTextColor="#999"
+          value={telefono}
+          onChangeText={setTelefono}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Sector"
+          style={styles.input}
+          placeholderTextColor="#999"
+          value={sector}
+          onChangeText={setSector}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Calle"
+          style={styles.input}
+          placeholderTextColor="#999"
+          value={calle}
+          onChangeText={setCalle}
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Número de casa"
+          style={styles.input}
+          placeholderTextColor="#999"
+          value={ncasa}
+          onChangeText={setNcasa}
+        />
+      </View>
+
+      <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
         <Text style={styles.loginText}>Enviar Solicitud de Registro</Text>
       </TouchableOpacity>
 
-      
       <View style={styles.footerContainer}>
         <Text style={styles.noAccountText}>¿Ya tienes una cuenta?</Text>
         <TouchableOpacity onPress={() => router.push('/login')}>
@@ -105,15 +210,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-  },
-  orText: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  outlookIcon: {
-    width: 48,
-    height: 48,
-    marginBottom: 30,
   },
   footerContainer: {
     flexDirection: 'row',

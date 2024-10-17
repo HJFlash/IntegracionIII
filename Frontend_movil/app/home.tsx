@@ -31,7 +31,6 @@ const HomeScreen: React.FC = () => {
           //onPress={() => router.push('/request')} // Cambia a la ruta de la pantalla de solicitud
           color="#ff4d4d"
         />
-      </View>
       <Button 
         title="Iniciar sesión" 
         onPress={() => router.push('/login')} // Navegar a la pantalla de login
@@ -48,15 +47,16 @@ const HomeScreen: React.FC = () => {
         title="Usuario" 
         onPress={() => router.push('/user')} // Navegar a la pantalla de usuario
       />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: 'flex',
+    flexWrap: 'wrap',
     backgroundColor: '#f0f4f8',
-    alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
   },
@@ -67,39 +67,22 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     marginBottom: 20,
-    alignItems: 'center',
+    alignItems: 'flex-end', // Puedes usar 'flex-start', 'flex-end', 'center', 'stretch', 'baseline'
   },
   image: {
-    width: '100%',
-    height: 150,
+    width: '10%',
+    height: 15,
     marginBottom: 20,
   },
   infoText: {
-    fontSize: 18,
+    fontSize: 28,
     textAlign: 'center',
     marginBottom: 10,
   },
   buttonContainer: {
     width: '100%',
-    marginBottom: 20,
-  },
-  videoContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  videoText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  videoDescription: {
-    textAlign: 'center',
-    marginVertical: 10,
-  },
-  video: {
-    width: '100%',
-    height: 200,
-    backgroundColor: '#ccc', // Color de fondo como marcador
-  },
-});
+    marginBottom: 2,
+  },}
+);
 
 export default HomeScreen;

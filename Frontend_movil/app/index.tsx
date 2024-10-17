@@ -62,15 +62,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f4f8',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
+    width: '100%',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 8,
-    marginBottom: '15%',
-    marginTop: '10%',
+    textAlign: 'center', // se puede colocar center
+    alignItems: 'flex-end',
+    padding: 20,
+    marginBottom: '5%',
+    marginTop: '-18%',
     backgroundColor: '#5499C7',
     width: '120%',
     height: '10%',
@@ -92,32 +93,16 @@ const styles = StyleSheet.create({
   buttonContainer: {
     fontSize: 20,
     marginBottom: 20,
+    alignItems: 'center',
   },
   buttonText: {
+    width: '200%',
     fontSize: 18,
     textAlign: 'center',
     color: '#fff',
     backgroundColor: '#E74C3C',
     padding: 10,
-    width: 300,
     borderRadius: 5,
-  },
-  videoContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  videoText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  videoDescription: {
-    textAlign: 'center',
-    marginVertical: 10,
-  },
-  video: {
-    width: '100%',
-    height: 200,
-    backgroundColor: '#ccc', // Color de fondo como marcador
   },
 });
 
