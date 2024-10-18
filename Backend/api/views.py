@@ -40,6 +40,15 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth import logout  # Asegúrate de que esta línea esté presente
 from django.http import JsonResponse
 
+
+"correo"
+from django.core.mail import send_mail
+from django.conf import settings
+# from django.http import JsonResponse tambien se importa arriba
+from django.views.decorators.csrf import csrf_exempt
+# import json ya se importó arriba
+
+
 @csrf_exempt
 def logout_vista(request):
     if request.method == 'POST':
@@ -216,3 +225,27 @@ class HorarioPrestadoresViewSet(viewsets.ModelViewSet):
             return JsonResponse({'error': 'Prestador no registrado'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+        
+# Función para enviar correos
+def enviar_notificacion_correo(destinatario, asunto, mensaje):
+    send_mail(
+        asunto,
+        mensaje,
+        settings.EMAIL_HOST_USER,
+        [destinatario],
+        fail_silently=False,
+    )
+
+# Vista que recibe la solicitud y envía el correo
+@csrf_exempt
+def enviar_correo(request):
+    if request.method == 'POST':
+        datos = json.loads(request.body)
+        destinatario = datos['destinatario']
+        asunto = datos['asunto']
+        mensaje = datos['mensaje']
+        
+        enviar_notificacion_correo(destinatario, asunto, mensaje)
+        
+        return JsonResponse({'mensaje': 'Correo enviado correctamente'})
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

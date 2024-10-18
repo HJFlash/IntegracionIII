@@ -10,3 +10,4 @@ def obtener_tokens_para_usuario(usuario):
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
+    
