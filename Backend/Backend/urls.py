@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('api.urls')),
     path('login/', include('api.urls')),
-    path('registro_JWT', include('api.urls'))
+    path('registro/', include('api.urls'))
 ]
