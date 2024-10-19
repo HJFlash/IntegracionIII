@@ -125,21 +125,55 @@ class Prestador(models.Model):
             self.contrasena = make_password(self.contrasena)
         super().save(*args, **kwargs)
 
-
 class Horario_Prestadores(models.Model):
-    rut_prestador = models.ForeignKey('Prestador', on_delete=models.CASCADE)
-    dia = models.CharField(max_length=15)  # Día de la semana, sin valor por defecto
-    hora_inicio = models.TimeField()  # Hora de inicio de la jornada, sin valor por defecto
-    hora_fin = models.TimeField()  # Hora de fin de la jornada, sin valor por defecto
-    hora_termino = models.TimeField()  # Hora en que termina definitivamente la jornada, sin valor por defecto
-    descanso = models.TimeField()  # Hora del descanso, sin valor por defecto
+    DIAS = [
+        ('lunes', 'Lunes'),
+        ('martes', 'Martes'),
+        ('miércoles', 'Miércoles'),
+        ('jueves', 'Jueves'),
+        ('viernes', 'Viernes'),
+        ('sábado', 'Sábado'),
+        ('domingo', 'Domingo'),
+    ]
 
+    rut_prestador = models.ForeignKey('Prestador', on_delete=models.CASCADE)
+    dia = models.CharField(max_length=15, choices=DIAS)  # Día de la semana
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+    hora_termino = models.TimeField()
+    descanso = models.TimeField()
 
     def clean(self):
-        # Validar si el prestador existe en la tabla 'api_prestadores'
+        # Validar si el prestador existe
         if not Prestador.objects.filter(rut=self.rut_prestador).exists():
             raise ValidationError(f"El prestador con RUT {self.rut_prestador} no está registrado.")
 
+        # Validar que la hora de inicio sea anterior a la hora de fin
+        if self.hora_inicio >= self.hora_fin:
+            raise ValidationError("La hora de inicio debe ser anterior a la hora de fin.")
+
+        # Validar que la hora de descanso esté dentro del horario
+        if not (self.hora_inicio < self.descanso < self.hora_fin):
+            raise ValidationError("La hora de descanso debe estar dentro del horario laboral.")
+
+    @staticmethod
+    def traducir_dia(fecha):
+        # Obtener el día de la semana de la fecha en español
+        dia_semana = datetime.strptime(fecha, '%Y-%m-%d').strftime('%A')
+
+        # Mapa para traducir el día de la semana a español
+        dias_traducidos = {
+            'Monday': 'lunes',
+            'Tuesday': 'martes',
+            'Wednesday': 'miércoles',
+            'Thursday': 'jueves',
+            'Friday': 'viernes',
+            'Saturday': 'sábado',
+            'Sunday': 'domingo'
+        }
+
+        return dias_traducidos.get(dia_semana)
+    
     def __str__(self):
         return f"{self.rut_prestador} - {self.dia} ({self.hora_inicio} - {self.hora_termino})"
 
