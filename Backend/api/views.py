@@ -2,22 +2,21 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required, user_passes_test
 from rest_framework_simplejwt.tokens import RefreshToken
-from .utils import obtener_tokens_para_usuario
-import json
-
-
-from rest_framework.response import Response
-from rest_framework import status
 from django.utils.timezone import localtime
 from datetime import timedelta, datetime
-from .models import Usuario,Prestador ,Consultas_Agendadas, Horario_Prestadores
-from django.contrib.auth.hashers import check_password, make_password
-from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, HorarioPrestadorSerializer
-from rest_framework.authtoken.models import Token
-from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.hashers import check_password
+from rest_framework.decorators import api_view, permission_classes
+from django.contrib.auth import logout 
+import json
+
+from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores
+from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, HorarioPrestadorSerializer
+from .utils import obtener_tokens_para_usuario
+
 
 """
     ---------------registro----------            
@@ -31,19 +30,6 @@ from rest_framework.permissions import IsAuthenticated
         
         validUser = Usuario(rut=rut, Fnombre=Fnombre, Snombre=Snombre, Fapellido=Fapellido, Sapellido=Sapellido, contrasena=contrasena, contacto=contacto, calle=calle, num_casa=num_casa, num_apar=num_apar, id_centro=id_centro)
 """
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-import json
-
-from .models import Usuario
-from .serializers import UsuarioSerializador
-from .utils import obtener_tokens_para_usuario
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth import logout  # Asegúrate de que esta línea esté presente
-from django.http import JsonResponse
 
 @csrf_exempt
 def logout_vista(request):
@@ -114,6 +100,7 @@ def logout_vista(request):
 # -------------------- CRUD para Consultas Agendadas --------------------
 
 class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Consultas_Agendadas.objects.all()
     serializer_class = ConsultaAgendadaSerializer
     permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
