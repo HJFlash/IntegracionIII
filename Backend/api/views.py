@@ -43,12 +43,41 @@ def vista_protegida(request):
 
 @csrf_exempt
 def registro(request):
+    def validarRut(rut):
+        listed_rut = [int(n) for n in str(rut)]
+        #######
+        if (len(listed_rut) == 5):  # Si queremos meter usuarios de prueba hagamoslo con ruts de 5 numeros ### DELETEAR EN EL FUTURO ###
+            return True
+        #######
+        if (len(listed_rut) < 8 or len(listed_rut) > 9): # Tiene que tener entre 8 y 9 digitos
+            return False
+        reversed_rut = listed_rut[::-1]
+        dig_verificador = reversed_rut.pop(0)
+        multiplicator = 2
+        suma = 0
+        while (len(reversed_rut) > 0):
+            for x in range(0, len(listed_rut) - 1):
+                suma += multiplicator * reversed_rut.pop(0)  
+                multiplicator += 1
+                if (multiplicator == 8):
+                    multiplicator = 2
+        resto = suma % 11
+        if resto == 1 or resto == 0:
+            resto = 11
+        if (11 - resto == dig_verificador):
+            return True
+        else:
+            return False
+
     if request.method == 'POST':
         datos = json.loads(request.body)
         
         serializer = UsuarioSerializador(data=datos)
 
         if serializer.is_valid():
+
+            if not validarRut(serializer.validated_data['rut']) and serializer.validated_data['rut'] < 2000000:
+                return JsonResponse({'error': 'Este rut no es valido'}, status=400)
             # Verificar si el RUT ya existe
             if Usuario.objects.filter(rut=serializer.validated_data['rut']).exists():
                 return JsonResponse({'error': 'El rut ya existe'}, status=400)

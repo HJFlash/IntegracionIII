@@ -22,11 +22,7 @@ class Usuario(models.Model):
 
     rut = models.IntegerField(
         unique=True,
-        primary_key=True,
-        validators=[
-            MaxValueValidator(999999999),
-            MinValueValidator(10000000)
-        ]
+        primary_key=True
     )
 
     nombres = models.CharField(max_length=100, blank=True, null=True)
