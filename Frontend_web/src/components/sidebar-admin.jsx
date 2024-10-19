@@ -13,30 +13,38 @@ function SideBar() {
 
       <ul className="list-none p-0 m-0 w-[100%]">
         <li className="mb-[15px]">
-          <NavLink to="HomeAdmin" className="no-underline text-[#F8F2E8] block py-2 px-4 rounded-[4px] hover:bg-naranja-claro">
+          <NavLink to="HomeAdmin"
+                className={({ isActive }) => `no-underline block py-2 px-4 rounded-[4px] ${
+                isActive ? 'bg-naranja-opaco-claro text-white' : 'text-[#F8F2E8] hover:bg-naranja-claro'}`}>
             Home Admin
           </NavLink>
         </li>
         <li className="mb-[15px]"> 
-          <NavLink to="CrudAdmin" className="no-underline text-[#F8F2E8] block py-2 px-4 rounded-[4px] hover:bg-naranja-claro">
+          <NavLink to="CrudAdmin"
+                className={({ isActive }) => `no-underline block py-2 px-4 rounded-[4px] ${
+                isActive ? 'bg-naranja-opaco-claro text-white' : 'text-[#F8F2E8] hover:bg-naranja-claro'}`}>
             Crud
           </NavLink>
         </li>
         <li className="mb-[15px]">
-          <NavLink to="GraficosAdmin" className="no-underline text-[#F8F2E8] block py-2 px-4 rounded-[4px] hover:bg-naranja-claro">
+          <NavLink to="GraficosAdmin"
+                className={({ isActive }) => `no-underline block py-2 px-4 rounded-[4px] ${
+                isActive ? 'bg-naranja-opaco-claro text-white' : 'text-[#F8F2E8] hover:bg-naranja-claro'}`}>
             Graficos
           </NavLink>
         </li>
         <li className="mb-[15px]">
-          <NavLink
-            to="RegistrarTrabajador"
-            className={({ isActive }) =>
-              `no-underline block py-2 px-4 rounded-[4px] ${
-                isActive ? 'bg-naranja-opaco-claro text-white' : 'text-[#F8F2E8] hover:bg-naranja-claro'
-              }`
-            }
-          >
+          <NavLink to="RegistrarTrabajador" 
+                className={({ isActive }) => `no-underline block py-2 px-4 rounded-[4px] ${
+                isActive ? 'bg-naranja-opaco-claro text-white' : 'text-[#F8F2E8] hover:bg-naranja-claro'}`}>
             Registro Trabajador
+          </NavLink>
+        </li>
+        <li className="mb-[15px]">
+          <NavLink to="SoliRegistroUsuario" 
+                className={({ isActive }) => `no-underline block py-2 px-4 rounded-[4px] ${
+                isActive ? 'bg-naranja-opaco-claro text-white' : 'text-[#F8F2E8] hover:bg-naranja-claro'}`}>
+            Solitudes Registro
           </NavLink>
         </li>
       </ul>

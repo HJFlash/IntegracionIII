@@ -32,6 +32,7 @@ class Usuario(models.Model):
     calle = models.CharField(max_length=25, default='CalleDesconocida')
     num_casa = models.CharField(max_length=50, blank=True, null=True)
     num_apar = models.CharField(max_length=50, blank=True, null=True)
+
     #id_centro = models.ForeignKey(Centro_Comunitario, on_delete=models.CASCADE, null=True, blank=True)
     
     last_login = models.DateTimeField(null=True, blank=True)  # Agrega este campo

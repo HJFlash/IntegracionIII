@@ -118,10 +118,6 @@ def logout_vista(request):
         logout(request)  # Cerrar sesión
         return JsonResponse({'message': 'Cierre de sesión exitoso'}, status=200)
     
-
-import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from .models import Datos_Para_Graficos
 from django.db.models import Count, Case, When, IntegerField, Value
 from django.db.models.functions import ExtractMonth, TruncMonth
@@ -224,7 +220,7 @@ def obtener_datos_grafico_linea(request):
 
     return JsonResponse(respuesta_final, safe=False)
 
-from .models import Prestador
+from .models import Prestador, Usuario
 
 @csrf_exempt
 def registroTrabajador(request):
@@ -265,3 +261,7 @@ def registroTrabajador(request):
     
     # Si no es un método POST, devolver error
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+def obtener_datos_soli_registro(request):
+    datos = Usuario.objects.values()
+    return JsonResponse(list(datos), safe=False)
