@@ -36,10 +36,6 @@ const IndexScreen: React.FC = () => {
       </View>
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/prestador')}>
-          <Text style={styles.buttonText}>Prestador</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/user')}>
           <Text style={styles.buttonText}>Usuario</Text>
         </TouchableOpacity>
@@ -61,17 +57,18 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
     padding: 20,
     marginBottom: '5%',
-    marginTop: '-18%',
+    marginTop: '-42%',
     backgroundColor: '#5499C7',
     width: '120%',
     height: '10%',
   },
   imageContainer: {
+    paddingTop: 20,
     marginBottom: 10,
     alignItems: 'center',
   },
@@ -83,7 +80,6 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 18,
     textAlign: 'center',
-    marginBottom: 10,
   },
   buttonRow: {
     flexDirection: 'row',
