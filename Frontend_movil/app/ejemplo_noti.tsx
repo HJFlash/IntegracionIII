@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { Text, View, Button, Platform } from 'react-native';
+import { Text, View, Button, Platform, Alert } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 
-
+// Configurar el manejador de notificaciones
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -13,35 +13,74 @@ Notifications.setNotificationHandler({
   }),
 });
 
-
-
+// Función para enviar notificación push
 async function sendPushNotification(expoPushToken: string) {
   const message = {
     to: expoPushToken,
     sound: 'default',
-    title: 'Original Title',
-    body: 'And here is the body!',
-    data: { someData: 'goes here' },
+    title: '¡Hola!',
+    body: 'Aquí está el cuerpo de la notificación',
+    data: { extraData: 'Datos adicionales aquí' },
   };
 
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
-  });
+  try {
+    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+    if (!response.ok) {
+      throw new Error(`Error al enviar la notificación: ${response.statusText}`);
+    }
+    Alert.alert('Notificación enviada correctamente');
+  } catch (error) {
+    console.error(error);
+    Alert.alert('Error al enviar notificación', error.message);
+  }
 }
 
-
+// Función para manejar errores de registro
 function handleRegistrationError(errorMessage: string) {
-  alert(errorMessage);
-  throw new Error(errorMessage);
+  Alert.alert('Error de Registro', errorMessage);
 }
 
+// Función para registrar el dispositivo y obtener el token de notificaciones
 async function registerForPushNotificationsAsync() {
+  let token;
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      handleRegistrationError('¡Permisos de notificaciones no concedidos!');
+      return;
+    }
+
+    const projectId =
+      Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+
+    if (!projectId) {
+      handleRegistrationError('¡No se encontró el ID del proyecto de EAS!');
+      return;
+    }
+
+    try {
+      token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+      console.log('Token de Notificaciones Expo:', token);
+    } catch (error) {
+      handleRegistrationError(`Error al obtener token: ${error}`);
+    }
+  } else {
+    handleRegistrationError('Debes usar un dispositivo físico para recibir notificaciones');
+  }
+
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync('default', {
       name: 'default',
@@ -51,79 +90,59 @@ async function registerForPushNotificationsAsync() {
     });
   }
 
-  if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      handleRegistrationError('Permission not granted to get push token for push notification!');
-      return;
-    }
-    const projectId =
-      Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
-    if (!projectId) {
-      handleRegistrationError('Project ID not found');
-    }
-    try {
-      const pushTokenString = (
-        await Notifications.getExpoPushTokenAsync({
-          projectId,
-        })
-      ).data;
-      console.log(pushTokenString);
-      return pushTokenString;
-    } catch (e: unknown) {
-      handleRegistrationError(`${e}`);
-    }
-  } else {
-    handleRegistrationError('Must use physical device for push notifications');
-  }
+  return token;
 }
 
 export default function App() {
-  const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
-    undefined
-  );
+  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(undefined);
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
 
   useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then(token => setExpoPushToken(token ?? ''))
-      .catch((error: any) => setExpoPushToken(`${error}`));
+    // Registrar para notificaciones push
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token ?? null));
 
+    // Escuchar notificaciones recibidas
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
 
+    // Escuchar respuestas del usuario a las notificaciones
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
+      console.log('Respuesta a la notificación:', response);
     });
 
+    // Limpiar los listeners al desmontar el componente
     return () => {
-      notificationListener.current &&
+      if (notificationListener.current) {
         Notifications.removeNotificationSubscription(notificationListener.current);
-      responseListener.current &&
+      }
+      if (responseListener.current) {
         Notifications.removeNotificationSubscription(responseListener.current);
+      }
     };
   }, []);
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
-      <Text>Your Expo push token: {expoPushToken}</Text>
+      <Text>Tu token de notificaciones Expo:</Text>
+      <Text>{expoPushToken ?? 'Esperando token...'}</Text>
+
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Title: {notification && notification.request.content.title} </Text>
-        <Text>Body: {notification && notification.request.content.body}</Text>
-        <Text>Data: {notification && JSON.stringify(notification.request.content.data)}</Text>
+        <Text>Título: {notification?.request.content.title ?? 'Sin notificaciones'}</Text>
+        <Text>Cuerpo: {notification?.request.content.body ?? 'Sin cuerpo de notificación'}</Text>
+        <Text>Datos: {notification ? JSON.stringify(notification.request.content.data) : 'Sin datos'}</Text>
       </View>
+
       <Button
-        title="Press to Send Notification"
+        title="Enviar Notificación"
         onPress={async () => {
-          await sendPushNotification(expoPushToken);
+          if (expoPushToken) {
+            await sendPushNotification(expoPushToken);
+          } else {
+            Alert.alert('Error', 'No se ha obtenido el token de notificación.');
+          }
         }}
       />
     </View>
