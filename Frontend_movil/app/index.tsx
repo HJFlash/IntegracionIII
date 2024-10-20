@@ -36,7 +36,7 @@ const IndexScreen: React.FC = () => {
       </View>
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/ejemplo_noti')}>
+        <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/agend')}>
           <Text style={styles.buttonText}>Tests</Text>
         </TouchableOpacity>
       </View>
