@@ -17,6 +17,8 @@ import json
 from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores
 from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, HorarioPrestadorSerializer
 from .utils import obtener_tokens_para_usuario
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
 
 """
@@ -95,8 +97,6 @@ def logout_vista(request):
     if request.method == 'POST':
         logout(request)  # Cerrar sesión
         return JsonResponse({'message': 'Cierre de sesión exitoso'}, status=200)
-    
-# -------------------- CRUD para Consultas Agendadas --------------------
 
 # -------------------- CRUD para Consultas Agendadas --------------------
 
@@ -105,10 +105,21 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
     queryset = Consultas_Agendadas.objects.all()
     serializer_class = ConsultaAgendadaSerializer
     permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
-    
-    def perform_create(self, serializer):
-        consulta = serializer.save()
-        # Ya no necesitas asignar el servicio aquí, lo harás en el método create
+
+    def list(self, request, *args, **kwargs):
+        # Intentar obtener los datos de la caché
+        citas_cache = cache.get('todas_las_citas')
+
+        if not citas_cache:
+            # Si no hay datos en la caché, obtener de la base de datos
+            citas = Consultas_Agendadas.objects.all()
+            serializer = self.get_serializer(citas, many=True)
+            # Guardar en caché los resultados
+            cache.set('todas_las_citas', serializer.data, 60 * 15)  # 15 minutos
+            return JsonResponse(serializer.data, safe=False, status=200)
+
+        # Si ya están en caché, devolverlos directamente
+        return JsonResponse(citas_cache, safe=False, status=200)
 
     def create(self, request, *args, **kwargs):
         datos = request.data
@@ -125,6 +136,10 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
                 estado=datos.get('estado', 'pendiente'),
                 servicio=prestador.servicio  # Asignar el servicio del prestador
             )
+
+            # Invalida el caché porque hemos creado una nueva cita
+            cache.delete('todas_las_citas')
+
             return JsonResponse({'message': 'Cita creada exitosamente'}, status=201)
         except Usuario.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=400)
@@ -133,10 +148,23 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        # Invalida el caché porque hemos actualizado una cita
+        cache.delete('todas_las_citas')
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        # Invalida el caché porque hemos eliminado una cita
+        cache.delete('todas_las_citas')
+        return response
+
 
 
 # -------------------- LEER --------------------
 @csrf_exempt
+@cache_page(60 * 15)  # Cachear por 15 minutos
 def obtener_citas(request):
     if request.method == 'GET':
         citas = Consultas_Agendadas.objects.all()
@@ -210,7 +238,6 @@ class HorarioPrestadoresViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
         
-# -------------- Validacion de disponibilidad ------------------------
 
 # -------------- Validación de disponibilidad ------------------------
 
