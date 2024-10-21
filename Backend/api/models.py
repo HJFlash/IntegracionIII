@@ -17,7 +17,7 @@ class Usuario(models.Model):
         unique=True,
         primary_key=True
     )
-    tipo_usuario = models.CharField(choices={
+    tipo_usuario = models.CharField(max_length=30,choices={
                                             "admin": "Administrador",
                                             "adultomayor": "Adulto mayor",
                                             "prestador": "Profesional"
@@ -49,7 +49,7 @@ class Usuario(models.Model):
             self.contrasena = make_password(self.contrasena)
         super().save(*args, **kwargs)
 
-class AdultoMayor(models.Models):
+class AdultoMayor(models.Model):
     rut = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
     peluqueriaBloqueo = models.DateField()
     podologiaBloqueo = models.DateField()

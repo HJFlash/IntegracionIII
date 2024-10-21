@@ -39,21 +39,21 @@ function Register() {
           const rutError = validarRut(formData.rut);
           if (rutError) errors.rut = rutError;
           break;
-        case 'nombres':
-          const primernombreError = validarNombre(formData.nombres);
-          if (primernombreError) errors.nombres = primernombreError;
+        case 'primer_nombre':
+          const primernombreError = validarNombre(formData.primer_nombre);
+          if (primernombreError) errors.primer_nombre = primernombreError;
           break;
-        case 'apellidos':
-          const primerapellidoError = validarApellidos(formData.apellidos);
-          if (primerapellidoError) errors.apellidos = primerapellidoError;
+        case 'primer_apellido':
+          const primerapellidoError = validarApellidos(formData.primer_apellido);
+          if (primerapellidoError) errors.primer_apellido = primerapellidoError;
           break;
-        case 'nombres':
-          const segundonombreError = validarNombre(formData.nombres);
-          if (segundonombreError) errors.nombres = segundonombreError;
+        case 'segundo_nombre':
+          const segundonombreError = validarNombre(formData.segundo_nombre);
+          if (segundonombreError) errors.segundo_nombre = segundonombreError;
           break;
-        case 'apellidos':
-          const segundoapellidoError = validarApellidos(formData.apellidos);
-          if (segundoapellidoError) errors.apellidos = segundoapellidoError;
+        case 'segundo_apellido':
+          const segundoapellidoError = validarApellidos(formData.segundo_apellido);
+          if (segundoapellidoError) errors.segundo_apellido = segundoapellidoError;
           break;
         case 'tel':
           const telError = validarTel(formData.tel);
@@ -78,8 +78,10 @@ function Register() {
       rut: formData.rut,
       contrasena: formData.contrasena,
       contacto: formData.tel,
-      nombres: formData.nombres,
-      apellidos: formData.apellidos,
+      primer_nombre: formData.primer_nombre,
+      segundo_nombre: formData.segundo_nombre,
+      primer_apellido: formData.primer_apellido,
+      segundo_apellido: formData.segundo_apellido,
       calle: formData.calle,
       num_casa: formData.Ncasa,
     };

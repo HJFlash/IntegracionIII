@@ -232,8 +232,10 @@ def registroTrabajador(request):
             
             # Extraer datos del cuerpo de la solicitud
             rut = datos.get('rut')
-            nombres = datos.get('nombres')
-            apellidos = datos.get('apellidos')
+            primer_nombre = datos.get('primer_nombre')
+            segundo_nombre = datos.get('segundo_nombre')
+            primer_apellido = datos.get('primer_apellido')
+            segundo_apellido = datos.get('segundo_apellido')
             contrasena = datos.get('contrasena')
             contacto = datos.get('contacto')
             servicio = datos.get('servicio')
@@ -244,8 +246,10 @@ def registroTrabajador(request):
             # Crear y guardar la nueva instancia de 
             nueva_datos = Prestador.objects.create(
                 rut=rut,
-                nombres=nombres,
-                apellidos=apellidos,
+                primer_nombre=primer_nombre,
+                segundo_nombre=segundo_nombre,
+                primer_apellido=primer_apellido,
+                segundo_apellido=segundo_apellido,
                 contrasena=contrasena,
                 contacto=contacto,
                 servicio=servicio,
