@@ -32,10 +32,13 @@ function Home() {
       <div className='Borrar'>
         <p>Temporal</p>
         <Link to="/Admin">
-          <button>Admin Modo</button>
+          <button className='mx-2'>Admin Modo</button>
         </Link>
         <Link to="/TrabajadorMod">
-          <button>TrabajadorModo</button>
+          <button className='mx-2'>TrabajadorModo</button>
+        </Link>
+        <Link to="/profileUser">
+          <button className='mx-2'>Prerfil</button>
         </Link>
       </div>
 

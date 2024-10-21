@@ -4,8 +4,8 @@ import { Outlet} from 'react-router-dom';
 
 function PerfilUser() {
     const userContent = [
-        { label: "Profile", path: "/ProfileUser/InfoProfileUser" },
-        { label: "Settings", path: "/ProfileUser/InfoSoliUser" }
+        { label: "Mi informacion", path: "/ProfileUser/InfoProfileUser" },
+        { label: "Historial e Informacion", path: "/ProfileUser/InfoSoliUser" }
     ];
 
 
