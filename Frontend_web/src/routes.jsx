@@ -12,6 +12,7 @@ import HomeAdmin from './pages/pagesDashBoard/pgPrincipal';
 import CrudAdmin from './pages/pagesDashBoard/pgCrud';
 import GraficosAdmin from './pages/pagesDashBoard/pgGraficos';
 import RegistrarTrabajador from "./pages/pagesDashBoard/RegistrarTrabajador";
+import SoliRegistroUsuario from "./pages/pagesDashBoard/SoliRegistroUsuario";
 
 import PerfilUser from './pages/pagesClient/perfilUser';
 import InfoProfileUser from './pages/pagesClient/InfoProfileUser';
@@ -37,6 +38,7 @@ function AppRoutes() {
           <Route path="CrudAdmin" element={<CrudAdmin />} />
           <Route path="GraficosAdmin" element={<GraficosAdmin />} />
           <Route path="RegistrarTrabajador" element={<RegistrarTrabajador />} />
+          <Route path="SoliRegistroUsuario" element={<SoliRegistroUsuario />} />
         </Route>
 
         {/* UserProfile */}

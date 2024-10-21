@@ -15,7 +15,7 @@ const SidebarProfiles = ({ content }) => {
             {content.map((item, index) =>(
                 
                 <li key={index}>
-                    <Link to={item.path} className='no-underline block py-2 px-4 border rounded-[4px] hover:bg-[#f97a7a] hover:text-[#f8f2e8]'>{item.label}</Link>
+                    <Link to={item.path} className='no-underline block py-2 px-4 my-4 border rounded-[4px] hover:bg-[#f97a7a] hover:text-[#f8f2e8]'>{item.label}</Link>
                 </li>
                 
             ))}
