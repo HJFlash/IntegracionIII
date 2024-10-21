@@ -10,8 +10,10 @@ function Register() {
     rut: '',
     contrasena: '',
     email: '',
-    nombres: '',
-    apellidos: '',
+    primer_nombre: '',
+    segundo_nombre: '',
+    primer_apellido: '',
+    segundo_apellido: '',
     tel: '',
     sector: '',
     calle: '',
@@ -31,19 +33,27 @@ function Register() {
 
     // Validación de errores
     const errors = {};
-    for (const field of ['rut', 'nombres', 'apellidos', 'tel', 'email']) { // Asegúrate de que los nombres de los campos coincidan
+    for (const field of ['rut', 'primer_nombre', 'segundo_nombre', 'primer_apellido', 'segundo_apellido', 'tel', 'email']) { // Asegúrate de que los nombres de los campos coincidan
       switch (field) {
         case 'rut':
           const rutError = validarRut(formData.rut);
           if (rutError) errors.rut = rutError;
           break;
         case 'nombres':
-          const nombreError = validarNombre(formData.nombres);
-          if (nombreError) errors.nombres = nombreError;
+          const primernombreError = validarNombre(formData.nombres);
+          if (primernombreError) errors.nombres = primernombreError;
           break;
         case 'apellidos':
-          const apellidoError = validarApellidos(formData.apellidos);
-          if (apellidoError) errors.apellidos = apellidoError;
+          const primerapellidoError = validarApellidos(formData.apellidos);
+          if (primerapellidoError) errors.apellidos = primerapellidoError;
+          break;
+        case 'nombres':
+          const segundonombreError = validarNombre(formData.nombres);
+          if (segundonombreError) errors.nombres = segundonombreError;
+          break;
+        case 'apellidos':
+          const segundoapellidoError = validarApellidos(formData.apellidos);
+          if (segundoapellidoError) errors.apellidos = segundoapellidoError;
           break;
         case 'tel':
           const telError = validarTel(formData.tel);
@@ -163,18 +173,18 @@ function Register() {
             </div>
 
             <div>
-              {errors.nombres && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.nombres}</p>}
+              {errors.primer_nombre && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.primer_nombre}</p>}
               <div className="flex border-2 border-[#E74C3C] mb-4">
                 <div className="w-1 p-0 bg-[#E74C3C]"></div>
                 <div className="flex flex-col min-w-[350px]">
-                  <label htmlFor="nombres" className="text-gray-500 text-sm px-2">Ingrese sus nombres</label>
+                  <label htmlFor="primer_nombre" className="text-gray-500 text-sm px-2">Ingrese su primer nombre</label>
                   <input 
                     type="text" 
-                    id="nombres" 
-                    name="nombres" 
+                    id="primer_nombre" 
+                    name="primer_nombre" 
                     required 
                     onChange={handleChange} 
-                    value={formData.nombres} 
+                    value={formData.primer_nombre} 
                     className="outline-none bg-transparent px-2" 
                   />
                 </div>
@@ -182,18 +192,56 @@ function Register() {
             </div>
 
             <div>
-              {errors.apellidos && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.apellidos}</p>}
+              {errors.segundo_nombre && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.segundo_nombre}</p>}
               <div className="flex border-2 border-[#E74C3C] mb-4">
                 <div className="w-1 p-0 bg-[#E74C3C]"></div>
                 <div className="flex flex-col min-w-[350px]">
-                  <label htmlFor="apellidos" className="text-gray-500 text-sm px-2">Ingrese sus apellidos</label>
+                  <label htmlFor="segundo_nombre" className="text-gray-500 text-sm px-2">Ingrese su segundo nombre</label>
                   <input 
                     type="text" 
-                    id="apellidos" 
-                    name="apellidos" 
+                    id="segundo_nombre" 
+                    name="segundo_nombre" 
                     required 
                     onChange={handleChange} 
-                    value={formData.apellidos} 
+                    value={formData.segundo_nombre} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              {errors.primer_apellido && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.primer_apellido}</p>}
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="primer_apellido" className="text-gray-500 text-sm px-2">Ingrese su primer apellido</label>
+                  <input 
+                    type="text" 
+                    id="primer_apellido" 
+                    name="primer_apellido" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.primer_apellido} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              {errors.segund_apellido && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.segundo_apellido}</p>}
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="segundo_apellido" className="text-gray-500 text-sm px-2">Ingrese su segundo apellido</label>
+                  <input 
+                    type="text" 
+                    id="segundo_apellido" 
+                    name="segundo_apellido" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.segundo_apellido} 
                     className="outline-none bg-transparent px-2" 
                   />
                 </div>
