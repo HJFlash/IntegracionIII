@@ -188,17 +188,6 @@ class Consultas_Agendadas(models.Model):
     estado = models.CharField(max_length=20, default='pendiente')
     servicio = models.CharField(max_length=30, blank=True)  # Dejar opcional
 
-    def save(self, *args, **kwargs):
-        # Asignar el servicio del prestador antes de guardar
-        self.servicio = self.rut_prestador.servicio
-        
-        # Calcular hora de término en función de la duración del servicio
-        duracion_servicio = timedelta(minutes=self.rut_prestador.duracion_servicio)  # Asume que tienes un campo en Prestador con la duración
-        hora_inicio_datetime = datetime.combine(self.fecha, self.hora_inicio)
-        self.hora_termino = (hora_inicio_datetime + duracion_servicio).time()
-
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return f"{self.rut_usuario} - {self.fecha} a las {self.hora_inicio}"
 

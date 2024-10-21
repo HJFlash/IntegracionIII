@@ -101,10 +101,12 @@ def logout_vista(request):
 # -------------------- CRUD para Consultas Agendadas --------------------
 
 class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
     queryset = Consultas_Agendadas.objects.all()
     serializer_class = ConsultaAgendadaSerializer
-    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
+
+    def get_permissions(self):
+        # No requiere autenticación para ninguna acción
+        return []
 
     def list(self, request, *args, **kwargs):
         # Intentar obtener los datos de la caché
