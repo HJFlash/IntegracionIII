@@ -76,7 +76,7 @@ def registro(request):
 
         if serializer.is_valid():
 
-            if not validarRut(serializer.validated_data['rut']) and serializer.validated_data['rut'] < 2000000:
+            if not validarRut(serializer.validated_data['rut']):
                 return JsonResponse({'error': 'Este rut no es valido'}, status=400)
             # Verificar si el RUT ya existe
             if Usuario.objects.filter(rut=serializer.validated_data['rut']).exists():

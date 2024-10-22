@@ -15,7 +15,7 @@ function Register() {
     primer_apellido: '',
     segundo_apellido: '',
     tel: '',
-    sector: '',
+    num_apar: '',
     calle: '',
     Ncasa: ''
   });
@@ -83,6 +83,7 @@ function Register() {
       primer_apellido: formData.primer_apellido,
       segundo_apellido: formData.segundo_apellido,
       calle: formData.calle,
+      num_apar:formData.num_apar,
       num_casa: formData.Ncasa,
     };
 
@@ -293,14 +294,14 @@ function Register() {
               <div className="flex border-2 border-[#E74C3C] mb-4">
                 <div className="w-1 p-0 bg-[#E74C3C]"></div>
                 <div className="flex flex-col min-w-[350px]">
-                  <label htmlFor="sector" className="text-gray-500 text-sm px-2">Ingrese su sector</label>
+                  <label htmlFor="num_apar" className="text-gray-500 text-sm px-2">Ingrese su sector</label>
                   <input 
                       type="text" 
-                      id="sector" 
-                      name="sector" 
+                      id="num_apar" 
+                      name="num_apar" 
                     required 
                     onChange={handleChange} 
-                    value={formData.sector} 
+                    value={formData.num_apar} 
                     className="outline-none bg-transparent px-2" 
                   />
                 </div>

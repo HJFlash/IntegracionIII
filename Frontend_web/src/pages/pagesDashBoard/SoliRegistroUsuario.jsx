@@ -32,6 +32,7 @@ const SoliRegistroUsuario = () => {
                          <th className='px-6 py-3 text-left text-gray-700 font-semibold'>calle</th>
                          <th className='px-6 py-3 text-left text-gray-700 font-semibold'>num_apar </th>
                          <th className='px-6 py-3 text-left text-gray-700 font-semibold'>num_casa </th>
+                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>Estado</th>
                          <th className='px-6 py-3 text-left text-gray-700 font-semibold'>tipo usuario</th>
 
                     </tr>
@@ -49,6 +50,7 @@ const SoliRegistroUsuario = () => {
                             <td className='px-2 py-1 text-gray-950'>{item.calle}</td>
                             <td className='px-2 py-1 text-gray-950'>{item.num_apar}</td>
                             <td className='px-2 py-1 text-gray-950'>{item.num_casa}</td>
+                            <td className='px-2 py-1 text-gray-950'>{item.tipo_usuario}</td>
                             <td className='px-2 py-1 text-gray-950'>
                                 <select>
                                     <option value="aceptado">Aceptado</option>
