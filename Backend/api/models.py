@@ -47,7 +47,7 @@ class UsuarioManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    
+
 class Usuario(models.Model):
     
     is_active = models.BooleanField(default=True)  # Agrega este campo
@@ -63,7 +63,7 @@ class Usuario(models.Model):
             MinValueValidator(10000000)
         ]
     )
-
+    
     nombres = models.CharField(max_length=100, blank=True, null=True)
     apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
     contrasena = models.CharField(max_length=128, blank=True)  # Aumenta el tamaño para hashes
@@ -198,4 +198,3 @@ class Admin(models.Model):
     apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
     direccion = models.CharField(max_length=150)
-
