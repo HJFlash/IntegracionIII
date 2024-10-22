@@ -12,6 +12,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import logout 
 from rest_framework.views import APIView
+from django.utils.dateparse import parse_date
 import json
 
 from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores
@@ -105,16 +106,40 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
     serializer_class = ConsultaAgendadaSerializer
 
     def get_permissions(self):
-        # No requiere autenticación para ninguna acción
-        return []
+        return []  # No requiere autenticación para ninguna acción
 
     def list(self, request, *args, **kwargs):
+        # Obtener los parámetros de la solicitud
+        fecha_inicio = request.query_params.get('fecha_inicio')
+        fecha_fin = request.query_params.get('fecha_fin')
+
+        # Imprimir para depuración
+        print(f"fecha_inicio: {fecha_inicio}, fecha_fin: {fecha_fin}")
+
+        # Filtrar por fechas si están presentes
+        if fecha_inicio and fecha_fin:
+            try:
+                # Convertir las fechas de string a objetos date
+                fecha_inicio = parse_date(fecha_inicio)
+                fecha_fin = parse_date(fecha_fin)
+
+                # Imprimir fechas después de la conversión
+                print(f"fecha_inicio (convertida): {fecha_inicio}, fecha_fin (convertida): {fecha_fin}")
+
+                # Filtrar las citas en función de las fechas
+                citas = Consultas_Agendadas.objects.filter(fecha__range=(fecha_inicio, fecha_fin))
+                print(f"citas filtradas: {citas}")  # Verificar las citas filtradas
+
+            except ValueError:
+                return JsonResponse({'error': 'Formato de fecha inválido'}, status=400)
+        else:
+            # Si no se proporcionan fechas, devolver todas las citas
+            citas = Consultas_Agendadas.objects.all()
+
         # Intentar obtener los datos de la caché
         citas_cache = cache.get('todas_las_citas')
 
         if not citas_cache:
-            # Si no hay datos en la caché, obtener de la base de datos
-            citas = Consultas_Agendadas.objects.all()
             serializer = self.get_serializer(citas, many=True)
             # Guardar en caché los resultados
             cache.set('todas_las_citas', serializer.data, 60 * 15)  # 15 minutos
@@ -123,13 +148,13 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
         # Si ya están en caché, devolverlos directamente
         return JsonResponse(citas_cache, safe=False, status=200)
 
+
     def create(self, request, *args, **kwargs):
         datos = request.data
         try:
             usuario = Usuario.objects.get(rut=datos['rut_usuario'])
             prestador = Prestador.objects.get(rut=datos['rut_prestador'])
 
-            # Crear la cita, el servicio se tomará automáticamente
             nueva_cita = Consultas_Agendadas.objects.create(
                 rut_usuario=usuario,
                 rut_prestador=prestador,
@@ -139,9 +164,7 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
                 servicio=prestador.servicio  # Asignar el servicio del prestador
             )
 
-            # Invalida el caché porque hemos creado una nueva cita
-            cache.delete('todas_las_citas')
-
+            cache.delete('todas_las_citas')  # Invalida el caché
             return JsonResponse({'message': 'Cita creada exitosamente'}, status=201)
         except Usuario.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=400)
@@ -152,17 +175,13 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
-        # Invalida el caché porque hemos actualizado una cita
-        cache.delete('todas_las_citas')
+        cache.delete('todas_las_citas')  # Invalida el caché
         return response
 
     def destroy(self, request, *args, **kwargs):
         response = super().destroy(request, *args, **kwargs)
-        # Invalida el caché porque hemos eliminado una cita
-        cache.delete('todas_las_citas')
+        cache.delete('todas_las_citas')  # Invalida el caché
         return response
-
-
 
 # -------------------- LEER --------------------
 @csrf_exempt
