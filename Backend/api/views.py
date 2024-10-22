@@ -78,12 +78,11 @@ def registro(request):
 
             if not validarRut(serializer.validated_data['rut']) and serializer.validated_data['rut'] < 2000000:
                 return JsonResponse({'error': 'Este rut no es valido'}, status=400)
-            # Verificar si el RUT ya existe
+
             if Usuario.objects.filter(rut=serializer.validated_data['rut']).exists():
                 return JsonResponse({'error': 'El rut ya existe'}, status=400)
             
-            # Crear y guardar el nuevo usuario
-            serializer.save()  # Llama a la función create del serializer
+            serializer.save()
 
             return JsonResponse({'message': 'Usuario creado exitosamente'}, status=201)
         
@@ -99,7 +98,6 @@ def login_vista(request):
         try:
             usuario = Usuario.objects.get(rut=rut)
 
-            # Verificar la contraseña
             if check_password(contrasena, usuario.contrasena):
                 tokens = obtener_tokens_para_usuario(usuario)
                 return JsonResponse({

@@ -9,7 +9,7 @@ function Login() {
     rut: '',
     password: ''
   });
-  const [errors, setErrors] = useState({}); // Estado para manejar errores
+  const [errors, setErrors] = useState({});
 
   const handleCheckboxChange = () => {
     setShowPassword(!showPassword);

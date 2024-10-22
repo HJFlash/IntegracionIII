@@ -8,12 +8,11 @@ function Header() {
   const [nombreUsuario, setNombreUsuario] = useState('');
 
   useEffect(() => {
-    // Verificar si hay un token en localStorage
     const token = localStorage.getItem('access_token');
-    const nombre = localStorage.getItem('nombreUsuario');  // Recuperar el nombre del usuario
+    const nombre = localStorage.getItem('nombreUsuario');
     if (token) {
       setIsAuthenticated(true);
-      setNombreUsuario(nombre);  // Establecer el nombre del usuario en el estado
+      setNombreUsuario(nombre);
     } else {
       setIsAuthenticated(false);
     }
@@ -24,7 +23,6 @@ function Header() {
   };
 
   const handleLogout = () => {
-    // Eliminar tokens y nombre de localStorage al cerrar sesión
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('nombreUsuario');
@@ -45,7 +43,7 @@ function Header() {
       <div className="relative">
         {isAuthenticated ? (
           <div className="bg-naranja-claro w-10 h-10 rounded-full cursor-pointer" onClick={toggleMenu}>
-            <p>{nombreUsuario}</p>  {/* Mostrar el nombre del usuario */}
+            <p>{nombreUsuario}</p>  { }
             {isMenuOpen && (
               <div className="absolute top-10 right-0 bg-white border border-gray-300 rounded-md shadow-lg p-2">
                 <ul className="list-none m-0 p-0">
