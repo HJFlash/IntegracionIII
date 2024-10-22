@@ -78,7 +78,7 @@ def registro(request):
 
             if not validarRut(serializer.validated_data['rut']):
                 return JsonResponse({'error': 'Este rut no es valido'}, status=400)
-            # Verificar si el RUT ya existe
+
             if Usuario.objects.filter(rut=serializer.validated_data['rut']).exists():
                 return JsonResponse({'error': 'El rut ya existe'}, status=400)
             
@@ -94,19 +94,19 @@ def registro(request):
 def login_vista(request):
     if request.method == 'POST':
         datos = json.loads(request.body)
-        rut = datos.get('Rut')  # Autenticación basada en el rut
+        rut = datos.get('Rut')
         contrasena = datos.get('Contraseña')
         
         try:
             usuario = Usuario.objects.get(rut=rut)
 
-            # Verificar la contraseña
             if check_password(contrasena, usuario.contrasena):
                 tokens = obtener_tokens_para_usuario(usuario)
                 return JsonResponse({
                     'message': 'Inicio de sesión exitoso',
                     'refresh': tokens['refresh'],
-                    'access': tokens['access']
+                    'access': tokens['access'],
+                    'primer_nombre': usuario.primer_nombre
                 }, status=200)
             else:
                 return JsonResponse({'error': 'Credenciales inválidas'}, status=401)

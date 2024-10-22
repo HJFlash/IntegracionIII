@@ -9,7 +9,7 @@ function Login() {
     rut: '',
     password: ''
   });
-  const [errors, setErrors] = useState({}); // Estado para manejar errores
+  const [errors, setErrors] = useState({});
 
   const handleCheckboxChange = () => {
     setShowPassword(!showPassword);
@@ -53,6 +53,7 @@ function Login() {
       alert(data.message);
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
+      localStorage.setItem('nombreUsuario', data.primer_nombre);
       navigate('/');
     })
     .catch(error => {
