@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Usuario
+from .models import Usuario, Consultas_Agendadas
 
 class UsuarioSerializador(serializers.ModelSerializer):
     class Meta:
@@ -21,3 +21,13 @@ class UsuarioSerializador(serializers.ModelSerializer):
         usuario = Usuario(**validated_data)
         usuario.save()
         return usuario
+    
+class ConsultaAgendadaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Consultas_Agendadas
+        fields = ['id_consulta', 'rut_usuario', 'rut_prestador', 'fecha', 'hora_inicio', 'estado', 'servicio']
+
+"""class HorarioPrestadorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Horario_Prestadores
+        fields = '__all__'  # O puedes especificar los campos que deseas incluir"""

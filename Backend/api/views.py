@@ -17,13 +17,18 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 import json
 
-from .models import Usuario, Consultas_Agendadas
+from .models import Usuario, Consultas_Agendadas, Prestador
 from django.contrib.auth.hashers import check_password, make_password
-from .serializers import UsuarioSerializador
+from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer
 from .utils import obtener_tokens_para_usuario
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import logout  # Asegúrate de que esta línea esté presente
 from django.http import JsonResponse
+from django.utils.dateparse import parse_date,parse_time
+from django.core.cache import cache
+from datetime import datetime, timedelta, date
+from django.views.decorators.cache import cache_page
+
 
 @csrf_exempt
 def logout_vista(request):
@@ -268,3 +273,109 @@ def registroTrabajador(request):
 def obtener_datos_soli_registro(request):
     datos = Usuario.objects.values()
     return JsonResponse(list(datos), safe=False)
+
+
+from rest_framework import status, viewsets
+
+
+ 
+class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
+    queryset = Consultas_Agendadas.objects.all()
+    serializer_class = ConsultaAgendadaSerializer
+
+    def get_permissions(self):
+        return []  # No requiere autenticación para ninguna acción
+
+    def list(self, request, *args, **kwargs):
+        # Obtener los parámetros de la solicitud
+        fecha_inicio = request.query_params.get('fecha_inicio')
+        fecha_fin = request.query_params.get('fecha_fin')
+
+        # Imprimir para depuración
+        print(f"fecha_inicio: {fecha_inicio}, fecha_fin: {fecha_fin}")
+
+        # Filtrar por fechas si están presentes
+        if fecha_inicio and fecha_fin:
+            try:
+                # Convertir las fechas de string a objetos date
+                fecha_inicio = parse_date(fecha_inicio)
+                fecha_fin = parse_date(fecha_fin)
+
+                # Imprimir fechas después de la conversión
+                print(f"fecha_inicio (convertida): {fecha_inicio}, fecha_fin (convertida): {fecha_fin}")
+
+                # Filtrar las citas en función de las fechas
+                citas = Consultas_Agendadas.objects.filter(fecha__range=(fecha_inicio, fecha_fin))
+                print(f"citas filtradas: {citas}")  # Verificar las citas filtradas
+
+            except ValueError:
+                return JsonResponse({'error': 'Formato de fecha inválido'}, status=400)
+        else:
+            # Si no se proporcionan fechas, devolver todas las citas
+            citas = Consultas_Agendadas.objects.all()
+
+        # Intentar obtener los datos de la caché
+        citas_cache = cache.get('todas_las_citas')
+
+        if not citas_cache:
+            serializer = self.get_serializer(citas, many=True)
+            # Guardar en caché los resultados
+            cache.set('todas_las_citas', serializer.data, 60 * 15)  # 15 minutos
+            return JsonResponse(serializer.data, safe=False, status=200)
+
+        # Si ya están en caché, devolverlos directamente
+        return JsonResponse(citas_cache, safe=False, status=200)
+
+    def create(self, request, *args, **kwargs):
+        datos = request.data
+        try:
+            usuario = Usuario.objects.get(rut=datos['rut_usuario'])
+            prestador = Prestador.objects.get(rut=datos['rut_prestador'])
+
+            # Calcular la hora de término
+            # Asumiendo que el servicio tiene una duración fija, por ejemplo, 1 hora
+            duracion_servicio = timedelta(hours=1)  # Cambiar según sea necesario
+
+            hora_inicio = datos['hora_inicio']  # Suponiendo que esto se envía en el formato adecuado
+            # Convertir a objeto de tiempo
+            hora_inicio_obj = parse_time(hora_inicio)  # Asegúrate de tener importado parse_time
+            hora_termino = (datetime.combine(date.today(), hora_inicio_obj) + duracion_servicio).time()
+
+            nueva_cita = Consultas_Agendadas.objects.create(
+                rut_usuario=usuario,
+                rut_prestador=prestador,
+                fecha=datos['fecha'],
+                hora_inicio=hora_inicio_obj,
+                hora_termino=hora_termino,  # Asignar la hora de término calculada
+                estado=datos.get('estado', 'pendiente'),
+                servicio=prestador.servicio  # Asignar el servicio del prestador
+            )
+
+            cache.delete('todas_las_citas')  # Invalida el caché
+            return JsonResponse({'message': 'Cita creada exitosamente'}, status=201)
+        except Usuario.DoesNotExist:
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=400)
+        except Prestador.DoesNotExist:
+            return JsonResponse({'error': 'Prestador no encontrado'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        cache.delete('todas_las_citas')  # Invalida el caché
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        cache.delete('todas_las_citas')  # Invalida el caché
+        return response
+
+# -------------------- LEER --------------------
+@csrf_exempt
+@cache_page(60 * 15)  # Cachear por 15 minutos
+def obtener_citas(request):
+    if request.method == 'GET':
+        citas = Consultas_Agendadas.objects.all()
+        serializer = ConsultaAgendadaSerializer(citas, many=True)
+        return JsonResponse(serializer.data, safe=False, status=200)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

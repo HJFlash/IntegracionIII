@@ -1,6 +1,12 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import login_vista, registro, logout_vista, DatosGraficos, obtener_datos_grafico_torta, obtener_datos_grafico_barras,obtener_datos_grafico_linea, registroTrabajador  
-from .views import obtener_datos_soli_registro
+from .views import obtener_datos_soli_registro, ConsultasAgendadasViewSet
+
+router = DefaultRouter()
+router.register(r'consultas', ConsultasAgendadasViewSet, basename='consultas')
+"""router.register(r'horarios', HorarioPrestadoresViewSet, basename='horarios')"""
+
 
 urlpatterns = [
     path('login/', login_vista, name='login'),
@@ -12,4 +18,6 @@ urlpatterns = [
     path('obtener-datos-graficos-linea/', obtener_datos_grafico_linea, name='obtener_datos_grafico_linea'),
     path('registroTrabajador/', registroTrabajador, name='registroTrabajador'),
     path('obtener-datos-registro_soli/', obtener_datos_soli_registro, name='obtener_datos_soli_registro'),
+
+    path('',include(router.urls)),
 ]
