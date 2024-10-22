@@ -3,15 +3,17 @@ import React, { useState } from "react";
 const RegistrarTrabajador = () => {
   const [formData, setFormData] = useState({
     rut: "",
-    nombres: "",
-    apellidos: "",
+    primer_nombre: '',
+    segundo_nombre: '',
+    primer_apellido: '',
+    segundo_apellido: '',
     contrasena: "",
     contacto: "",
-    servicio: "",
     calle: "",
     num_casa: "",
     num_apar: "",
   });
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,11 +28,12 @@ const RegistrarTrabajador = () => {
 
     const dataToSend = {
       rut: formData.rut,
-      nombres: formData.nombres,
-      apellidos: formData.apellidos,
+      primer_nombre: formData.primer_nombre,
+      segundo_nombre: formData.segundo_nombre,
+      primer_apellido: formData.primer_apellido,
+      segundo_apellido: formData.segundo_apellido,
       contrasena: formData.contrasena,
       contacto: formData.contacto,
-      servicio: formData.servicio,
       calle: formData.calle,
       num_casa: formData.num_casa,
       num_apar: formData.num_apar,
@@ -87,16 +90,33 @@ const RegistrarTrabajador = () => {
 
             <div className="border-2 border-gray-200 mb-4 rounded-lg">
               <div className="flex flex-col">
-                <label htmlFor="nombres" className="text-gray-500  px-2">
-                  Ingrese sus nombres
+                <label htmlFor="primer_nombre" className="text-gray-500  px-2">
+                  Ingrese primer nombre
                 </label>
                 <input
                   type="text"
-                  id="nombres"
-                  name="nombres"
+                  id="primer_nombre"
+                  name="primer_nombre"
                   required
                   onChange={handleChange}
-                  value={formData.nombres}
+                  value={formData.primer_nombre}
+                  className="outline-none bg-transparent px-2 py-2"
+                />
+              </div>
+            </div>
+
+            <div className="border-2 border-gray-200 mb-4 rounded-lg">
+              <div className="flex flex-col">
+                <label htmlFor="segundo_nombre" className="text-gray-500  px-2">
+                  Ingrese segundo nombre
+                </label>
+                <input
+                  type="text"
+                  id="segundo_nombre"
+                  name="segundo_nombre"
+                  required
+                  onChange={handleChange}
+                  value={formData.segundo_nombre}
                   className="outline-none bg-transparent px-2 py-2"
                 />
               </div>
@@ -106,18 +126,38 @@ const RegistrarTrabajador = () => {
             <div className="border-2 border-gray-200 mb-4 rounded-lg">
               <div className="flex flex-col">
                 <label
-                  htmlFor="apellidos"
+                  htmlFor="primer_apellido"
                   className="text-gray-500  px-2"
                 >
-                  Ingrese sus apellidos
+                  Ingrese primer apellido
                 </label>
                 <input
                   type="text"
-                  id="apellidos"
-                  name="apellidos"
+                  id="primer_apellido"
+                  name="primer_apellido"
                   required
                   onChange={handleChange}
-                  value={formData.apellidos}
+                  value={formData.primer_apellido}
+                  className="outline-none bg-transparent px-2 py-2"
+                />
+              </div>
+            </div>
+
+            <div className="border-2 border-gray-200 mb-4 rounded-lg">
+              <div className="flex flex-col">
+                <label
+                  htmlFor="segundo_apellido"
+                  className="text-gray-500  px-2"
+                >
+                  Ingrese segundo apellido
+                </label>
+                <input
+                  type="text"
+                  id="segundo_apellido"
+                  name="segundo_apellido"
+                  required
+                  onChange={handleChange}
+                  value={formData.segundo_apellido}
                   className="outline-none bg-transparent px-2 py-2"
                 />
               </div>
@@ -159,27 +199,6 @@ const RegistrarTrabajador = () => {
                   required
                   onChange={handleChange}
                   value={formData.contacto}
-                  className="outline-none bg-transparent px-2 py-2"
-                />
-              </div>
-            </div>
-
-
-            <div className="border-2 border-gray-200 mb-4 rounded-lg">
-              <div className="flex flex-col">
-                <label
-                  htmlFor="servicio"
-                  className="text-gray-500  px-2"
-                >
-                  Ingrese su servicio
-                </label>
-                <input
-                  type="text"
-                  id="servicio"
-                  name="servicio"
-                  required
-                  onChange={handleChange}
-                  value={formData.servicio}
                   className="outline-none bg-transparent px-2 py-2"
                 />
               </div>

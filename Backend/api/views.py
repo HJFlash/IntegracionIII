@@ -82,6 +82,7 @@ def registro(request):
             if Usuario.objects.filter(rut=serializer.validated_data['rut']).exists():
                 return JsonResponse({'error': 'El rut ya existe'}, status=400)
             
+            serializer.validated_data['tipo_usuario'] = 'adultomayor'
             # Crear y guardar el nuevo usuario
             serializer.save()  # Llama a la función create del serializer
 
@@ -220,7 +221,6 @@ def obtener_datos_grafico_linea(request):
 
     return JsonResponse(respuesta_final, safe=False)
 
-from .models import Prestador, Usuario
 
 @csrf_exempt
 def registroTrabajador(request):
@@ -238,13 +238,12 @@ def registroTrabajador(request):
             segundo_apellido = datos.get('segundo_apellido')
             contrasena = datos.get('contrasena')
             contacto = datos.get('contacto')
-            servicio = datos.get('servicio')
             calle = datos.get('calle')
             num_casa = datos.get('num_casa')
             num_apar = datos.get('num_apar')
     
             # Crear y guardar la nueva instancia de 
-            nueva_datos = Prestador.objects.create(
+            nueva_datos = Usuario.objects.create(
                 rut=rut,
                 primer_nombre=primer_nombre,
                 segundo_nombre=segundo_nombre,
@@ -252,10 +251,10 @@ def registroTrabajador(request):
                 segundo_apellido=segundo_apellido,
                 contrasena=contrasena,
                 contacto=contacto,
-                servicio=servicio,
                 calle=calle,
                 num_casa=num_casa,
                 num_apar=num_apar,
+                tipo_usuario='prestador'
             )
             return JsonResponse({'mensaje': 'Dato creado con éxito', 'id': nueva_datos.rut}, status=201)
 
