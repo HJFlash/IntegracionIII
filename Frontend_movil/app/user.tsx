@@ -11,14 +11,13 @@ const SelectServiceScreen: React.FC = () => {
   const router = useRouter();
 
   const handleCalendarPress = () => {
-  if (selectedDate) {
-    router.push({
-      pathname: '/calendar',
-      params: { date: selectedDate.toISOString().split('T')[0] }  // Pasar solo la fecha en formato YYYY-MM-DD
-    });
-  }
-};
-
+    if (selectedDate) {
+      router.push({
+        pathname: '/calendar',
+        params: { date: selectedDate.toISOString().split('T')[0] }  // Pasar solo la fecha en formato YYYY-MM-DD
+      });
+    }
+  };
 
   // Manejar la selección de la fecha
   const onDateChange = (event: any, selectedDateValue?: Date) => {
@@ -64,13 +63,15 @@ const SelectServiceScreen: React.FC = () => {
       </View>
 
       {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={onDateChange}
-          minimumDate={new Date()}  // No permitir fechas anteriores al día actual
-        />
+        <View style={styles.datePickerContainer}>
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={onDateChange}
+            minimumDate={new Date()}  // No permitir fechas anteriores al día actual
+          />
+        </View>
       )}
 
       {/* Button to navigate to Calendar */}
@@ -148,6 +149,16 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: '100%',
+  },
+  datePickerContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#4682b4',
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
   },
   calendarButton: {
     backgroundColor: '#4682b4',

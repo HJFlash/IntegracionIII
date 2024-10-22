@@ -9,17 +9,19 @@ const IndexScreen: React.FC = () => {
   const handleBackButton = () => {
     BackHandler.exitApp();
     return true;
-  }
+  };
 
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
-      <Text style={styles.title}>Inicio</Text>
 
+      {/* Contenedor de la imagen */}
       <View style={styles.imageContainer}>
         <Image
-          source={require('../assets/images/logo_muni.jpg')} // Cambia a la ruta de tu imagen
+          // Verifica la ruta aquí:
+          source={require('../assets/images/logo_muni.jpg')} // Si no funciona, intenta con 'uri'
           style={styles.image}
+          resizeMode="contain" // Asegura que la imagen no se deforme
         />
       </View>
 
@@ -56,59 +58,46 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 20,
-    marginBottom: '5%',
-    marginTop: '-42%',
-    backgroundColor: '#5499C7',
-    width: '120%',
-    height: '10%',
-  },
   imageContainer: {
-    paddingTop: 20,
-    marginBottom: 10,
+    marginTop: -25,
+    marginBottom: 20,
     alignItems: 'center',
   },
   image: {
-    width: 200,
-    height: 100,
-    marginBottom: 30,
+    width: 350, // Ajusta según sea necesario
+    height: 150, // Ajusta según sea necesario
+    marginBottom: 20,
   },
   infoText: {
     fontSize: 18,
     textAlign: 'center',
+    marginVertical: 20,
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'flex-start', // Cambia a 'flex-start' para que los botones estén más cerca
+    justifyContent: 'space-between',
     width: '90%',
+    marginBottom: 20,
   },
   buttonContainer: {
     flex: 1,
     alignItems: 'center',
-    marginHorizontal: 5, // Ajusta el margen horizontal entre botones
-    paddingTop: '5%',
+    marginHorizontal: 10,
   },
   buttonText: {
-    paddingVertical: '10%',
+    paddingVertical: 22, // Aumentado un 25% sobre el tamaño anterior (de 15 a 22)
     fontSize: 18,
     textAlign: 'center',
     color: '#fff',
     backgroundColor: '#E74C3C',
-    borderRadius: 15,
-    width: '100%', // Asegúrate de que el botón ocupe todo el espacio disponible
+    borderRadius: 10,
+    width: '100%',
   },
   buttonContainerExit: {
     width: '88%',
-    height: '20%',
     alignItems: 'center',
     marginHorizontal: 5,
-    marginTop: '2%',
-    paddingTop: '5%',
-
+    marginTop: 20,
   },
 });
 
