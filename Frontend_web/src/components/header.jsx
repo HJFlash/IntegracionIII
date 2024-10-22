@@ -3,12 +3,20 @@ import { Link } from 'react-router-dom';
 import LogoMuni from '../assets/logo-temuco-1024x791.webp';
 
 function Header() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [UserLogin, setUserLogin] = useState(false);
+  const [nombreUsuario, setNombreUsuario] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setUserLogin(!!token);
+    // Verificar si hay un token en localStorage
+    const token = localStorage.getItem('access_token');
+    const nombre = localStorage.getItem('nombreUsuario');  // Recuperar el nombre del usuario
+    if (token) {
+      setIsAuthenticated(true);
+      setNombreUsuario(nombre);  // Establecer el nombre del usuario en el estado
+    } else {
+      setIsAuthenticated(false);
+    }
   }, []);
 
   const toggleMenu = () => {
@@ -16,27 +24,11 @@ function Header() {
   };
 
   const handleLogout = () => {
-    fetch('http://localhost:8000/logout/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${localStorage.getItem('token')}` // Cuando empezamos con los Tokens, hay que descomentar esto
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.message) {
-          alert(data.message);
-          localStorage.removeItem('token');
-          setUserLogin(false);
-        } else {
-          alert('Error al cerrar sesión.');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Error al cerrar sesión.');
-      });
+    // Eliminar tokens y nombre de localStorage al cerrar sesión
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('nombreUsuario');
+    setIsAuthenticated(false);
   };
 
   return (
@@ -51,9 +43,9 @@ function Header() {
       </div>
 
       <div className="relative">
-        {UserLogin ? (
+        {isAuthenticated ? (
           <div className="bg-naranja-claro w-10 h-10 rounded-full cursor-pointer" onClick={toggleMenu}>
-            <p>usuario logeado</p>
+            <p>{nombreUsuario}</p>  {/* Mostrar el nombre del usuario */}
             {isMenuOpen && (
               <div className="absolute top-10 right-0 bg-white border border-gray-300 rounded-md shadow-lg p-2">
                 <ul className="list-none m-0 p-0">

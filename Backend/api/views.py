@@ -93,7 +93,7 @@ def registro(request):
 def login_vista(request):
     if request.method == 'POST':
         datos = json.loads(request.body)
-        rut = datos.get('Rut')  # Autenticación basada en el rut
+        rut = datos.get('Rut')
         contrasena = datos.get('Contraseña')
         
         try:
@@ -105,7 +105,8 @@ def login_vista(request):
                 return JsonResponse({
                     'message': 'Inicio de sesión exitoso',
                     'refresh': tokens['refresh'],
-                    'access': tokens['access']
+                    'access': tokens['access'],
+                    'primer_nombre': usuario.primer_nombre
                 }, status=200)
             else:
                 return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
