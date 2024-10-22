@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const SelectServiceScreen: React.FC = () => {
@@ -58,7 +58,7 @@ const SelectServiceScreen: React.FC = () => {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Seleccionar día</Text>
         <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
-          <Text style={styles.inputText}>{selectedDate.toLocaleDateString()}</Text>
+          <Text style={styles.inputText}>{selectedDate.toLocaleDateString('es-ES')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -67,9 +67,10 @@ const SelectServiceScreen: React.FC = () => {
           <DateTimePicker
             value={selectedDate}
             mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            //display={Platform.OS === 'ios' ? 'spinner' : 'default'}
             onChange={onDateChange}
             minimumDate={new Date()}  // No permitir fechas anteriores al día actual
+            locale="es-ES"  // Establecer el locale en español
           />
         </View>
       )}
