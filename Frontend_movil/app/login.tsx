@@ -68,7 +68,7 @@ const LoginScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <Text style={styles.title}>Inicio de sesión</Text>
+      <Text style={styles.title}>Ingrese sus Datos: </Text>
 
       <View style={styles.inputContainer}>
         <Image source={require('../assets/images/user.png')} style={styles.icon} />
