@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.timezone import localtime
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta, date
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -12,7 +12,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import logout 
 from rest_framework.views import APIView
-from django.utils.dateparse import parse_date
+from django.utils.dateparse import parse_date, parse_time
 import json
 
 from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores
@@ -20,6 +20,13 @@ from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, Horari
 from .utils import obtener_tokens_para_usuario
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
+
+
+
+
+
+
+
 
 
 """
@@ -148,18 +155,27 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
         # Si ya están en caché, devolverlos directamente
         return JsonResponse(citas_cache, safe=False, status=200)
 
-
     def create(self, request, *args, **kwargs):
         datos = request.data
         try:
             usuario = Usuario.objects.get(rut=datos['rut_usuario'])
             prestador = Prestador.objects.get(rut=datos['rut_prestador'])
 
+            # Calcular la hora de término
+            # Asumiendo que el servicio tiene una duración fija, por ejemplo, 1 hora
+            duracion_servicio = timedelta(hours=1)  # Cambiar según sea necesario
+
+            hora_inicio = datos['hora_inicio']  # Suponiendo que esto se envía en el formato adecuado
+            # Convertir a objeto de tiempo
+            hora_inicio_obj = parse_time(hora_inicio)  # Asegúrate de tener importado parse_time
+            hora_termino = (datetime.combine(date.today(), hora_inicio_obj) + duracion_servicio).time()
+
             nueva_cita = Consultas_Agendadas.objects.create(
                 rut_usuario=usuario,
                 rut_prestador=prestador,
                 fecha=datos['fecha'],
-                hora_inicio=datos['hora_inicio'],
+                hora_inicio=hora_inicio_obj,
+                hora_termino=hora_termino,  # Asignar la hora de término calculada
                 estado=datos.get('estado', 'pendiente'),
                 servicio=prestador.servicio  # Asignar el servicio del prestador
             )

@@ -3,32 +3,46 @@ import React, { useEffect, useState } from 'react';
 const PgCrud = () => {
   const [data, setData] = useState([]);
   const [fechaInicio, setFechaInicio] = useState('');
-  const [fechaFin, setFechaFin] = useState('');
+  const [fechaTermino, setFechaTermino] = useState('');
+  const [error, setError] = useState('');
 
-  const fetchData = async (inicio, fin) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/consultas/');
+        const result = await response.json();
+        setData(result);
+      } catch (error) {
+        console.error('Error al obtener los datos:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleFetchData = async () => {
+    // Validar que la fecha de inicio sea anterior a la fecha de término
+    if (new Date(fechaInicio) > new Date(fechaTermino)) {
+      setError('La fecha de inicio debe ser anterior a la fecha de término.');
+      return;
+    }
+
+    setError(''); // Limpiar error si las fechas son válidas
+
     try {
-      const response = await fetch(`/consultas/?fecha_inicio=${inicio}&fecha_fin=${fin}`);
+      const response = await fetch(`/consultas/?fecha_inicio=${fechaInicio}&fecha_termino=${fechaTermino}`);
       const result = await response.json();
       setData(result);
     } catch (error) {
-      console.error('Error al obtener los datos:', error);
+      console.error('Error al obtener los datos filtrados:', error);
     }
-  };
-
-  useEffect(() => {
-    // Cargar todas las citas al inicio
-    fetchData('', '');
-  }, []);
-
-  const handleSearch = () => {
-    fetchData(fechaInicio, fechaFin);
   };
 
   return (
     <div>
       <div>
         <label>
-          Fecha Inicio:
+          Fecha de Inicio:
           <input
             type="date"
             value={fechaInicio}
@@ -36,25 +50,26 @@ const PgCrud = () => {
           />
         </label>
         <label>
-          Fecha Fin:
+          Fecha de Término:
           <input
             type="date"
-            value={fechaFin}
-            onChange={(e) => setFechaFin(e.target.value)}
+            value={fechaTermino}
+            onChange={(e) => setFechaTermino(e.target.value)}
           />
         </label>
-        <button onClick={handleSearch}>Buscar</button>
+        <button onClick={handleFetchData}>Filtrar Citas</button>
       </div>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <table>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>RUT Usuario</th>
-            <th>RUT Prestador</th>
-            <th>Estado</th>
-            <th>Servicio</th>
+            <th>id</th>
+            <th>fecha</th>
+            <th>hora</th>
+            <th>rut user</th>
+            <th>rut prest</th>
+            <th>estado</th>
+            <th>servicio</th>
           </tr>
         </thead>
         <tbody>
@@ -73,6 +88,6 @@ const PgCrud = () => {
       </table>
     </div>
   );
-}
+};
 
 export default PgCrud;
