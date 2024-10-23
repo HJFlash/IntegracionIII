@@ -2,7 +2,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required, user_passes_test
 from rest_framework_simplejwt.tokens import RefreshToken
+from .utils import obtener_tokens_para_usuario
 from django.utils.timezone import localtime
 from datetime import datetime, timedelta, date
 from rest_framework.response import Response
@@ -59,6 +61,15 @@ from django.utils.dateparse import parse_date,parse_time
 from django.core.cache import cache
 from datetime import datetime, timedelta, date
 from django.views.decorators.cache import cache_page
+
+
+"correo"
+from django.core.mail import send_mail
+from django.conf import settings
+# from django.http import JsonResponse tambien se importa arriba
+from django.views.decorators.csrf import csrf_exempt
+# import json ya se importó arriba
+
 
 
 @csrf_exempt
@@ -324,7 +335,30 @@ class HorarioPrestadoresViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
         
+# Función para enviar correos
+def enviar_notificacion_correo(destinatario, asunto, mensaje):
+    send_mail(
+        asunto,
+        mensaje,
+        settings.EMAIL_HOST_USER,
+        [destinatario],
+        fail_silently=False,
+    )
+        
 
+# Vista que recibe la solicitud y envía el correo
+@csrf_exempt
+def enviar_correo(request):
+    if request.method == 'POST':
+        datos = json.loads(request.body)
+        destinatario = datos['destinatario']
+        asunto = datos['asunto']
+        mensaje = datos['mensaje']
+        
+        enviar_notificacion_correo(destinatario, asunto, mensaje)
+        
+        return JsonResponse({'mensaje': 'Correo enviado correctamente'})
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
 # -------------- Validación de disponibilidad ------------------------
 
 class ValidarDisponibilidadView(APIView):

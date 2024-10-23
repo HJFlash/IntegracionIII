@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, Alert, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 
 const RegisterScreen: React.FC = () => {
@@ -18,152 +18,161 @@ const RegisterScreen: React.FC = () => {
 
   const handleRegister = async () => {
     try {
-        const response = await fetch('http://localhost:8000/registro/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                Rut: rut,
-                Contraseña: password,
-                Email: email,
-                Nombre: nombre,
-                Apellidos: apellidos,
-                Telefono: telefono,
-                Sector: sector,
-                Calle: calle,
-                Ncasa: ncasa,
-            }),
-        });
+      const response = await fetch('http://localhost:8000/registro/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Rut: rut,
+          Contraseña: password,
+          Email: email,
+          Nombre: nombre,
+          Apellidos: apellidos,
+          Telefono: telefono,
+          Sector: sector,
+          Calle: calle,
+          Ncasa: ncasa,
+        }),
+      });
 
-        const data = await response.json();
-        if (response.ok) {
-            console.log('Usuario registrado con éxito:', data);
-        } else {
-            console.log('Error en el registro:', data);  // Captura detalles de error
-        }
+      const data = await response.json();
+      if (response.ok) {
+        console.log('Usuario registrado con éxito:', data);
+      } else {
+        console.log('Error en el registro:', data);  // Captura detalles de error
+      }
     } catch (error) {
-        console.error('Error al enviar la solicitud:', error);
+      console.error('Error al enviar la solicitud:', error);
     }
-};
+  };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <Text style={styles.title}>Registro</Text>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Ingrese rut"
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={rut}
+            onChangeText={setRut}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Ingrese rut"
-          style={styles.input}
-          placeholderTextColor="#999"
-          value={rut}
-          onChangeText={setRut}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Ingrese correo electrónico"
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={email}
+            onChangeText={setEmail}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Ingrese correo electrónico"
-          style={styles.input}
-          placeholderTextColor="#999"
-          value={email}
-          onChangeText={setEmail}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Ingrese Primer Nombre"
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={nombre}
+            onChangeText={setNombre}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Contraseña"
-          secureTextEntry
-          style={styles.input}
-          placeholderTextColor="#999"
-          value={password}
-          onChangeText={setPassword}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Ingrese Segundo Nombre"
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={nombre}
+            onChangeText={setNombre}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Confirmar contraseña"
-          secureTextEntry
-          style={styles.input}
-          placeholderTextColor="#999"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Ingrese su Primer Apellido"
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={apellidos}
+            onChangeText={setApellidos}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Nombre"
-          style={styles.input}
-          placeholderTextColor="#999"
-          value={nombre}
-          onChangeText={setNombre}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Ingrese su Segundo Apellido"
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={apellidos}
+            onChangeText={setApellidos}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Apellidos"
-          style={styles.input}
-          placeholderTextColor="#999"
-          value={apellidos}
-          onChangeText={setApellidos}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Contraseña"
+            secureTextEntry
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={password}
+            onChangeText={setPassword}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Teléfono"
-          style={styles.input}
-          placeholderTextColor="#999"
-          value={telefono}
-          onChangeText={setTelefono}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Teléfono"
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={telefono}
+            onChangeText={setTelefono}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Sector"
-          style={styles.input}
-          placeholderTextColor="#999"
-          value={sector}
-          onChangeText={setSector}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Sector"
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={sector}
+            onChangeText={setSector}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Calle"
-          style={styles.input}
-          placeholderTextColor="#999"
-          value={calle}
-          onChangeText={setCalle}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Calle"
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={calle}
+            onChangeText={setCalle}
+          />
+        </View>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Número de casa"
-          style={styles.input}
-          placeholderTextColor="#999"
-          value={ncasa}
-          onChangeText={setNcasa}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Número de casa"
+            style={styles.input}
+            placeholderTextColor="#999"
+            value={ncasa}
+            onChangeText={setNcasa}
+          />
+        </View>
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
-        <Text style={styles.loginText}>Enviar Solicitud de Registro</Text>
-      </TouchableOpacity>
-
-      <View style={styles.footerContainer}>
-        <Text style={styles.noAccountText}>¿Ya tienes una cuenta?</Text>
-        <TouchableOpacity onPress={() => router.push('/login')}>
-          <Text style={styles.registerText}>Iniciar sesión</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
+          <Text style={styles.loginText}>Enviar Solicitud de Registro</Text>
         </TouchableOpacity>
-      </View>
+
+        <View style={styles.footerContainer}>
+          <Text style={styles.noAccountText}>¿Ya tienes una cuenta?</Text>
+          <TouchableOpacity onPress={() => router.push('/login')}>
+            <Text style={styles.registerText}>Iniciar sesión</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -172,9 +181,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f4f8',
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: 20,
+  },
+  scrollContainer: {
+    paddingBottom: 20, // Espacio adicional para evitar que el contenido se corte
   },
   title: {
     fontSize: 28,

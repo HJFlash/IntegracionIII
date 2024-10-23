@@ -1,14 +1,36 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const SelectServiceScreen: React.FC = () => {
+  const [selectedService, setSelectedService] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const router = useRouter();
+
+  const handleCalendarPress = () => {
+    if (selectedDate) {
+      router.push({
+        pathname: '/calendar',
+        params: { date: selectedDate.toISOString().split('T')[0] }  // Pasar solo la fecha en formato YYYY-MM-DD
+      });
+    }
+  };
+
+  // Manejar la selección de la fecha
+  const onDateChange = (event: any, selectedDateValue?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDateValue) {
+      setSelectedDate(selectedDateValue);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.circle} />
@@ -19,32 +41,44 @@ const SelectServiceScreen: React.FC = () => {
       {/* Select Service */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Seleccionar Servicio</Text>
-        <TextInput
-          placeholder="Lorem Servicio"
-          style={styles.input}
-          placeholderTextColor="#333"
-        />
+        <Picker
+          selectedValue={selectedService}
+          style={styles.picker}
+          onValueChange={(itemValue) => setSelectedService(itemValue)}
+        >
+          <Picker.Item label="Selecciona un servicio" value="" />
+          <Picker.Item label="Podología" value="Podología" />
+          <Picker.Item label="Peluquería" value="Peluquería" />
+          <Picker.Item label="Fonoaudiología" value="Fonoaudiología" />
+          <Picker.Item label="Asesoría Jurídica" value="Asesoría Jurídica" />
+        </Picker>
       </View>
 
       {/* Select Date */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Seleccionar día</Text>
-        <TextInput
-          placeholder="mes / día / año"
-          style={styles.input}
-          placeholderTextColor="#333"
-        />
+        <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
+          <Text style={styles.inputText}>{selectedDate.toLocaleDateString('es-ES')}</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Select Time */}
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Seleccionar hora</Text>
-        <TextInput
-          placeholder="00:00 Ir"
-          style={styles.input}
-          placeholderTextColor="#333"
-        />
-      </View>
+      {showDatePicker && (
+        <View style={styles.datePickerContainer}>
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            //display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={onDateChange}
+            minimumDate={new Date()}  // No permitir fechas anteriores al día actual
+            locale="es-ES"  // Establecer el locale en español
+          />
+        </View>
+      )}
+
+      {/* Button to navigate to Calendar */}
+      <TouchableOpacity style={styles.calendarButton} onPress={handleCalendarPress}>
+        <Text style={styles.calendarText}>Ver Calendario</Text>
+      </TouchableOpacity>
 
       {/* Submit Button */}
       <TouchableOpacity style={styles.submitButton}>
@@ -103,6 +137,41 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     textAlign: 'center',
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    backgroundColor: '#f8f9fa',
+  },
+  inputText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+  datePickerContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#4682b4',
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  calendarButton: {
+    backgroundColor: '#4682b4',
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  calendarText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   submitButton: {
     backgroundColor: '#ff4d4d',
