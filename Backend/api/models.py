@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
+from datetime import timedelta, datetime
 
 
 class Centro_Comunitario(models.Model):
@@ -46,37 +47,41 @@ class UsuarioManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
     
 class Usuario(models.Model):
     
     is_active = models.BooleanField(default=True)  # Agrega este campo
     
     def __str__(self):
-        return f'{self.nombres} {self.apellidos}'  # Cambia nombres por Fnombre
+        return f'{self.primer_nombre}{self.segundo_nombre}{self.primer_apellido}{self.segundo_apellido}'
 
     rut = models.IntegerField(
         unique=True,
-        primary_key=True,
-        validators=[
-            MaxValueValidator(999999999),
-            MinValueValidator(10000000)
-        ]
+        primary_key=True
     )
+    tipo_usuario = models.CharField(max_length=30,choices={
+                                            "admin": "Administrador",
+                                            "adultomayor": "Adulto mayor",
+                                            "prestador": "Profesional"
+                                                })
 
-    nombres = models.CharField(max_length=100, blank=True, null=True)
-    apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
+    primer_nombre = models.CharField(max_length=25, blank=True, null=True)
+    segundo_nombre = models.CharField(max_length=25, blank=True, null=True)
+    primer_apellido = models.CharField(max_length=25)
+    segundo_apellido = models.CharField(max_length=25)
     contrasena = models.CharField(max_length=128, blank=True)  # Aumenta el tamaño para hashes
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
     calle = models.CharField(max_length=25, default='CalleDesconocida')
     num_casa = models.CharField(max_length=50, blank=True, null=True)
     num_apar = models.CharField(max_length=50, blank=True, null=True)
-    #id_centro = models.ForeignKey(Centro_Comunitario, on_delete=models.CASCADE, null=True, blank=True)
+    admin = models.BooleanField(default=False)
     
 
     last_login = models.DateTimeField(null=True, blank=True)  # Agrega este campo
 
     USERNAME_FIELD = 'rut'
-    REQUIRED_FIELDS = ['nombres', 'apellidos']  # Campos requeridos
+    REQUIRED_FIELDS = ['primer_nombre', 'segundo_nombre', 'primer_apellido', 'segundo_apellido']  # Campos requeridos
     
     def __str__(self):
         return f'{self.nombres} {self.apellidos}'
@@ -106,7 +111,14 @@ class Usuario(models.Model):
             self.contrasena = make_password(self.contrasena)
         super().save(*args, **kwargs)
 
-    
+class AdultoMayor(models.Model):
+    rut = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
+    peluqueriaBloqueo = models.DateField()
+    podologiaBloqueo = models.DateField()
+    kinesiologiaBloqueo = models.DateField()   #Hasta que fecha deben esperar para poder pedir otra hora del servicio
+    psicologiaBloqueo = models.DateField()
+    asesoria_juridicaBloqueo = models.DateField()
+    fonoaudiologiaBloqueo = models.DateField()
 
 class Prestador(models.Model):
     rut = models.IntegerField(unique=True, primary_key=True)
@@ -124,21 +136,55 @@ class Prestador(models.Model):
             self.contrasena = make_password(self.contrasena)
         super().save(*args, **kwargs)
 
-
 class Horario_Prestadores(models.Model):
-    rut_prestador = models.ForeignKey('Prestador', on_delete=models.CASCADE)
-    dia = models.CharField(max_length=15)  # Día de la semana, sin valor por defecto
-    hora_inicio = models.TimeField()  # Hora de inicio de la jornada, sin valor por defecto
-    hora_fin = models.TimeField()  # Hora de fin de la jornada, sin valor por defecto
-    hora_termino = models.TimeField()  # Hora en que termina definitivamente la jornada, sin valor por defecto
-    descanso = models.TimeField()  # Hora del descanso, sin valor por defecto
+    DIAS = [
+        ('lunes', 'Lunes'),
+        ('martes', 'Martes'),
+        ('miércoles', 'Miércoles'),
+        ('jueves', 'Jueves'),
+        ('viernes', 'Viernes'),
+        ('sábado', 'Sábado'),
+        ('domingo', 'Domingo'),
+    ]
 
+    rut_prestador = models.ForeignKey('Prestador', on_delete=models.CASCADE)
+    dia = models.CharField(max_length=15, choices=DIAS)  # Día de la semana
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+    hora_termino = models.TimeField()
+    descanso = models.TimeField()
 
     def clean(self):
-        # Validar si el prestador existe en la tabla 'api_prestadores'
+        # Validar si el prestador existe
         if not Prestador.objects.filter(rut=self.rut_prestador).exists():
             raise ValidationError(f"El prestador con RUT {self.rut_prestador} no está registrado.")
 
+        # Validar que la hora de inicio sea anterior a la hora de fin
+        if self.hora_inicio >= self.hora_fin:
+            raise ValidationError("La hora de inicio debe ser anterior a la hora de fin.")
+
+        # Validar que la hora de descanso esté dentro del horario
+        if not (self.hora_inicio < self.descanso < self.hora_fin):
+            raise ValidationError("La hora de descanso debe estar dentro del horario laboral.")
+
+    @staticmethod
+    def traducir_dia(fecha):
+        # Obtener el día de la semana de la fecha en español
+        dia_semana = datetime.strptime(fecha, '%Y-%m-%d').strftime('%A')
+
+        # Mapa para traducir el día de la semana a español
+        dias_traducidos = {
+            'Monday': 'lunes',
+            'Tuesday': 'martes',
+            'Wednesday': 'miércoles',
+            'Thursday': 'jueves',
+            'Friday': 'viernes',
+            'Saturday': 'sábado',
+            'Sunday': 'domingo'
+        }
+
+        return dias_traducidos.get(dia_semana)
+    
     def __str__(self):
         return f"{self.rut_prestador} - {self.dia} ({self.hora_inicio} - {self.hora_termino})"
 
@@ -149,20 +195,26 @@ class Consultas_Agendadas(models.Model):
     rut_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha = models.DateField()
     hora_inicio = models.TimeField()
+    hora_termino = models.TimeField(blank=True, null=True)  # Calculado al guardar
     estado = models.CharField(max_length=20, default='pendiente')
-    servicio = models.CharField(max_length=30, blank=True)  # Puedes dejarlo como opcional por ahora
-    # hora_termino = models.TimeField() //hora termino siempre sera la misma dependiendo del servicio y hora de inicio
+    servicio = models.CharField(max_length=30, blank=True)  # Dejar opcional
 
-    def save(self, *args, **kwargs):
-        # Asignar el servicio del prestador antes de guardar
-        self.servicio = self.rut_prestador.servicio
-        super().save(*args, **kwargs)
+    def __str__(self):
+        return f"{self.rut_usuario} - {self.fecha} a las {self.hora_inicio}"
 
 
-class Admin(models.Model):
+"""class Admin(models.Model):
     rut = models.IntegerField(unique=True, primary_key=True)
     nombres = models.CharField(max_length=100, blank=True, null=True)
     apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
-    direccion = models.CharField(max_length=150)
+    direccion = models.CharField(max_length=150)"""
 
+class Datos_Para_Graficos(models.Model):
+    id_consultas = models.AutoField(primary_key=True)
+    fechas = models.DateField()
+    horas = models.TimeField()
+    t_consulta = models.CharField(max_length=100, blank=True, null=True)
+    genero_persona = models.CharField(max_length=100, blank=True, null=True)
+
+    

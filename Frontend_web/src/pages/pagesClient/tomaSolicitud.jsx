@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Header from "../../components/header";
-import "../../styles/tomaSoli.css";
+import { Link } from 'react-router-dom';
 
 function TomaSoli() {
   const [solicitud, setSolicitud] = useState("");
@@ -70,18 +70,22 @@ function TomaSoli() {
   return (
     <div className="soliMain">
       <Header />
-      <div className="formulario">
+      <div className="h-screen flex justify-center items-center bg-[#D4E6F1]">
         {paso < 4 && (
-          <div>
+          <div className="flex flex-col items-center justify-center bg-gray-50 p-8 rounded-lg shadow-lg w-[90%] md:w-[50%]">
             {paso === 1 && (
-              <div className="contenedorOpciones">
-                <p>Elija el tipo de solicitud</p>
-                <div className="solicitud-options">
+              <div className="w-full bg-white p-8 rounded-lg shadow-md">
+                <p className="font-bold text-xl text-gray-700 mt-4 mb-6 text-center">
+                  Elija el tipo de solicitud
+                </p>
+                <div className="solicitud-options grid grid-cols-2 md:grid-cols-3 gap-4">
                   {OpcionesDeSolicitud.map((opcion) => (
                     <button
                       key={opcion}
-                      className={`opcion-button ${
-                        solicitud === opcion ? "OpcionSelecionada" : ""
+                      className={`text-black text-lg p-4 rounded-lg bg-[#F8F8F8] border border-gray-300 cursor-pointer ${
+                        solicitud === opcion
+                          ? "bg-naranja-claro text-white border-naranja-claro"
+                          : ""
                       }`}
                       onClick={() => SeleccionarTipoSolicitud(opcion)}
                     >
@@ -93,14 +97,18 @@ function TomaSoli() {
             )}
 
             {paso === 2 && (
-              <div className="contenedorOpciones">
-                <p>Elija el día</p>
-                <div className="dia-options">
+              <div className="w-full bg-white p-8 rounded-lg shadow-md">
+                <p className="font-bold text-xl text-gray-700 mt-4 mb-6 text-center">
+                  Elija el día
+                </p>
+                <div className="grid grid-cols-3 gap-4">
                   {OpcionesDeDia.map((opcion) => (
                     <button
                       key={opcion}
-                      className={`opcion-button ${
-                        dia === opcion ? "OpcionSelecionada" : ""
+                      className={`text-lg p-4 rounded-lg bg-[#F8F8F8] border border-gray-300 cursor-pointer ${
+                        dia === opcion
+                          ? "bg-naranja-claro text-white border-naranja-claro"
+                          : ""
                       }`}
                       onClick={() => SeleccionarDia(opcion)}
                     >
@@ -112,16 +120,26 @@ function TomaSoli() {
             )}
 
             {paso === 3 && (
-              <div className="contenedorOpciones">
-                <p>Elija la hora</p>
-                <div className="hora-options">
+              <div className="w-full bg-white p-8 rounded-lg shadow-md">
+                <p className="font-bold text-xl text-gray-700 mt-4 mb-6 text-center">
+                  Elija la hora
+                </p>
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
                   {OpcionesDeHora.map((opcion) => (
                     <button
                       key={opcion}
-                      className={`opcion-button ${hora === opcion ? "OpcionSelecionada" : ""} 
-                                                ${["12:00","17:00",].includes(opcion)? "horaNoDisponible": ""}`}
+                      className={`text-lg p-4 rounded-lg border border-gray-300 cursor-pointer ${
+                        hora === opcion
+                          ? "bg-naranja-claro text-white border-naranja-claro"
+                          : ""
+                      } ${
+                        ["12:00", "17:00"].includes(opcion)
+                          ? "bg-[#F97A7A] text-[#F8F2E8] cursor-auto"
+                          : ""
+                      }`}
                       onClick={() =>
-                        ![].includes(opcion) && SeleccionarHora(opcion)
+                        !["12:00", "17:00"].includes(opcion) &&
+                        SeleccionarHora(opcion)
                       }
                       disabled={["12:00", "17:00"].includes(opcion)}
                     >
@@ -132,24 +150,56 @@ function TomaSoli() {
               </div>
             )}
 
-            <div className="buttonsSolicitud">
-              {paso > 1 && <button onClick={RetrocederPaso}>Atrás</button>}
-              {paso < 3 && <button onClick={SiguentePaso}>Siguiente</button>}
-              {paso === 3 && <button onClick={Finalizar}>Finalizar</button>}
-              <button>Cancelar</button>
+            <div className="flex justify-center items-center mt-6 space-x-4">
+              {paso > 1 && (
+                <button
+                  className="bg-naranja-claro text-white rounded px-6 py-3"
+                  onClick={RetrocederPaso}
+                >
+                  Atrás
+                </button>
+              )}
+              {paso < 3 && (
+                <button
+                  className="bg-naranja-claro text-white rounded px-6 py-3"
+                  onClick={SiguentePaso}
+                >
+                  Siguiente
+                </button>
+              )}
+              {paso === 3 && (
+                <button
+                  className="bg-naranja-claro text-white rounded px-6 py-3"
+                  onClick={Finalizar}
+                >
+                  Finalizar
+                </button>
+              )}
+              <Link to="/" className="bg-[#E74C3C] text-white rounded px-6 py-3">
+                Cancelar
+              </Link>
             </div>
           </div>
         )}
 
         {paso === 4 && (
-          <div className="resumen-solicitud">
-            <h2>Resumen de tu solicitud</h2>
-            <p>Tipo de Solicitud: {solicitud}</p>
-            <p>Día seleccionado: {dia}</p>
-            <p>Hora seleccionada: {hora}</p>
-            <div className="botonesResumen">
-              {paso > 1 && <button onClick={RetrocederPaso}>Atrás</button>}
-              <button>Confirmar</button>
+          <div className="resumen-solicitud bg-[#EBF5FB] p-8 flex flex-col justify-center items-center rounded-lg shadow-md">
+            <h2 className="font-bold text-2xl mb-4">Resumen de tu solicitud</h2>
+            <p className="text-lg">Tipo de Solicitud: {solicitud}</p>
+            <p className="text-lg">Día seleccionado: {dia}</p>
+            <p className="text-lg">Hora seleccionada: {hora}</p>
+            <div className="flex justify-center items-center mt-6 space-x-4">
+              {paso > 1 && (
+                <button
+                  className="bg-[#E74C3C] text-white rounded px-6 py-3"
+                  onClick={RetrocederPaso}
+                >
+                  Atrás
+                </button>
+              )}
+              <button className="bg-[#E74C3C] text-white rounded px-6 py-3">
+                Confirmar
+              </button>
             </div>
           </div>
         )}
