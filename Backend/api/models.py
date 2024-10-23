@@ -48,36 +48,40 @@ class UsuarioManager(BaseUserManager):
         return user
 
 
+    
 class Usuario(models.Model):
     
     is_active = models.BooleanField(default=True)  # Agrega este campo
     
     def __str__(self):
-        return f'{self.nombres} {self.apellidos}'  # Cambia nombres por Fnombre
+        return f'{self.primer_nombre}{self.segundo_nombre}{self.primer_apellido}{self.segundo_apellido}'
 
     rut = models.IntegerField(
         unique=True,
-        primary_key=True,
-        validators=[
-            MaxValueValidator(999999999),
-            MinValueValidator(10000000)
-        ]
+        primary_key=True
     )
-    
-    nombres = models.CharField(max_length=100, blank=True, null=True)
-    apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
+    tipo_usuario = models.CharField(max_length=30,choices={
+                                            "admin": "Administrador",
+                                            "adultomayor": "Adulto mayor",
+                                            "prestador": "Profesional"
+                                                })
+
+    primer_nombre = models.CharField(max_length=25, blank=True, null=True)
+    segundo_nombre = models.CharField(max_length=25, blank=True, null=True)
+    primer_apellido = models.CharField(max_length=25)
+    segundo_apellido = models.CharField(max_length=25)
     contrasena = models.CharField(max_length=128, blank=True)  # Aumenta el tamaño para hashes
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
     calle = models.CharField(max_length=25, default='CalleDesconocida')
     num_casa = models.CharField(max_length=50, blank=True, null=True)
     num_apar = models.CharField(max_length=50, blank=True, null=True)
-    #id_centro = models.ForeignKey(Centro_Comunitario, on_delete=models.CASCADE, null=True, blank=True)
+    admin = models.BooleanField(default=False)
     
 
     last_login = models.DateTimeField(null=True, blank=True)  # Agrega este campo
 
     USERNAME_FIELD = 'rut'
-    REQUIRED_FIELDS = ['nombres', 'apellidos']  # Campos requeridos
+    REQUIRED_FIELDS = ['primer_nombre', 'segundo_nombre', 'primer_apellido', 'segundo_apellido']  # Campos requeridos
     
     def __str__(self):
         return f'{self.nombres} {self.apellidos}'
@@ -107,7 +111,14 @@ class Usuario(models.Model):
             self.contrasena = make_password(self.contrasena)
         super().save(*args, **kwargs)
 
-    
+class AdultoMayor(models.Model):
+    rut = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
+    peluqueriaBloqueo = models.DateField()
+    podologiaBloqueo = models.DateField()
+    kinesiologiaBloqueo = models.DateField()   #Hasta que fecha deben esperar para poder pedir otra hora del servicio
+    psicologiaBloqueo = models.DateField()
+    asesoria_juridicaBloqueo = models.DateField()
+    fonoaudiologiaBloqueo = models.DateField()
 
 class Prestador(models.Model):
     rut = models.IntegerField(unique=True, primary_key=True)
@@ -192,9 +203,18 @@ class Consultas_Agendadas(models.Model):
         return f"{self.rut_usuario} - {self.fecha} a las {self.hora_inicio}"
 
 
-class Admin(models.Model):
+"""class Admin(models.Model):
     rut = models.IntegerField(unique=True, primary_key=True)
     nombres = models.CharField(max_length=100, blank=True, null=True)
     apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
-    direccion = models.CharField(max_length=150)
+    direccion = models.CharField(max_length=150)"""
+
+class Datos_Para_Graficos(models.Model):
+    id_consultas = models.AutoField(primary_key=True)
+    fechas = models.DateField()
+    horas = models.TimeField()
+    t_consulta = models.CharField(max_length=100, blank=True, null=True)
+    genero_persona = models.CharField(max_length=100, blank=True, null=True)
+
+    

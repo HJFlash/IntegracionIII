@@ -1,9 +1,21 @@
-import React from 'react'
+import React from 'react';
+import { GraficoTorta } from '../../components/GraficoTorta';
+import GraficoBarras from '../../components/GraficoBarras';
+//import GraficoArea from '../../components/GraficoArea';
+import GraficoLinea from '../../components/GraficoLinea';
 
-const pgGraficos = () => {
+
+const PgGraficos = () => {
+
+
   return (
-    <div>pgGraficos</div>
+    <div className='flex justify-center items-center flex-col'>      
+      <GraficoLinea/>
+      <GraficoTorta/>
+      <GraficoBarras/>
+
+    </div>
   )
 }
 
-export default pgGraficos
+export default PgGraficos
