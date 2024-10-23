@@ -1,9 +1,20 @@
-from django.urls import path
-from .views import registro, login_vista, logout_vista, obtener_usuario
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import login_vista, registro, logout_vista, ConsultasAgendadasViewSet, HorarioPrestadoresViewSet, ValidarDisponibilidadView  # Importamos la vista de validación
+
+# Crear un router para las rutas automáticas de consultas y horarios
+router = DefaultRouter()
+router.register(r'consultas', ConsultasAgendadasViewSet, basename='consultas')
+router.register(r'horarios', HorarioPrestadoresViewSet, basename='horarios')  # Agregamos las rutas para los horarios
 
 urlpatterns = [
     path('registro/', registro, name='registro'),
     path('login/', login_vista, name='login'),
     path('logout/', logout_vista, name='logout'),
-    path('usuario/', obtener_usuario, name='obtener_usuario'),
+
+    # Incluir las rutas generadas por el router para las operaciones CRUD
+    path('', include(router.urls)),
+
+    path('validar-disponibilidad/', ValidarDisponibilidadView.as_view(), name='validar-disponibilidad'),
+
 ]

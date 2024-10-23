@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import '../../styles/login.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Cambia useHistory por useNavigate
 
 function Login() {
+  const navigate = useNavigate(); // Inicializa useNavigate
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     rut: '',
@@ -23,12 +24,12 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     const dataToSend = {
       Rut: formData.rut,
       Contraseña: formData.password
     };
-  
+
     fetch('http://localhost:8000/login/', {
       method: 'POST',
       headers: {
@@ -39,22 +40,28 @@ function Login() {
     .then(response => {
       return response.json().then(data => {
         if (!response.ok) {
-          // Aquí puedes manejar diferentes tipos de errores según el mensaje devuelto
+          // Manejo de errores
           throw new Error(data.error || 'Error en el inicio de sesión');
         }
         return data;
       });
     })
     .then(data => {
+      console.log(data); // Esto imprime el objeto que recibes del servidor
       alert(data.message); // Mensaje de éxito
-      // Aquí puedes redirigir al usuario a otra página o almacenar información de sesión
+    
+      // Guardar tokens en localStorage
+      localStorage.setItem('access_token', data.access);
+      localStorage.setItem('refresh_token', data.refresh);
+    
+      // Redirigir a la página deseada
+      navigate('/TomaSoli');
     })
     .catch(error => {
       alert(`Error: ${error.message}`);
       console.error('Error:', error);
     });
   };
-  
 
   return (
     <div className='container'>
