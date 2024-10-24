@@ -28,7 +28,7 @@ class Usuario(models.Model):
         ('Aceptado', 'Aceptado'),
         ('Rechazado', 'Rechazado'),
     ]
-    estado_solicitud = models.CharField(max_length=25,choices=estado_solicitud_opciones,default='P')
+    estado_solicitud = models.CharField(max_length=25,choices=estado_solicitud_opciones,default='Pendiente')
 
     primer_nombre = models.CharField(max_length=25, blank=True, null=True)
     segundo_nombre = models.CharField(max_length=25, blank=True, null=True)
