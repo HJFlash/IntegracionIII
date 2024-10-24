@@ -271,7 +271,7 @@ def registroTrabajador(request):
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 def obtener_datos_soli_registro(request):
-    datos = Usuario.objects.values()
+    datos = Usuario.objects.filter(tipo_usuario="adultomayor").values()
     return JsonResponse(list(datos), safe=False)
 
 
@@ -379,3 +379,16 @@ def obtener_citas(request):
         serializer = ConsultaAgendadaSerializer(citas, many=True)
         return JsonResponse(serializer.data, safe=False, status=200)
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+@csrf_exempt
+def actualizar_estado_usuario(request, rut):
+    if request.method == 'POST':
+            
+            data = json.loads(request.body)
+            nuevo_estado = data.get('estado_solicitud')
+            
+            usuario = Usuario.objects.get(rut=rut)
+            usuario.estado_solicitud = nuevo_estado
+            usuario.save()
+            
+    return JsonResponse({'message': 'Estado actualizado exitosamente'}, status=200)
