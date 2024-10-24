@@ -67,8 +67,10 @@ function Login() {
       <div className="flex flex-col bg-[#EBF5FB] w-1/2 h-screen justify-center items-center">
         <div className="flex flex-col justify-center items-center">
           <div className="self-start mb-12">
-            <Link to="/" className="text-[#E74C3C] hover:underline">
+            <Link to="/" className=' text-base font-semibold group relative w-max'>
               Regresar al Inicio
+              <span class="absolute -bottom-1 left-1/2 w-0 transition-all h-0.5 bg-naranja-claro group-hover:w-3/6"></span>
+              <span class="absolute -bottom-1 right-1/2 w-0 transition-all h-0.5 bg-naranja-claro group-hover:w-3/6"></span>
             </Link>
           </div>
           <p className="mb-2 text-2xl">Ingrese sus datos para</p>

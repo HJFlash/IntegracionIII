@@ -15,7 +15,7 @@ function Home() {
         <img src={inicioImagen} alt="Imagen Inicio" className="image" />
         <div className='flex items-center flex-col  flex-grow'>
           <div className='flex justify-center items-center flex-col mb-16'>
-            <h2 className='mb-4 text-3xl'>Aqui encontraras informacion de uso</h2>
+            <h2 className='mb-4 text-3xl'>Informacion de Uso</h2>
             <button className='bg-naranja-claro text-white font-semibold py-2 px-4 rounded shadow border-2 border-naranja-claro hover:bg-colors-claro hover:text-black transition duration-200' id='infoBtn' onClick={scrollToVideo}>ir a informaciones</button>
           </div>
           <div className='flex justify-center items-center flex-col'>

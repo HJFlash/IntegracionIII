@@ -32,14 +32,15 @@ class Usuario(models.Model):
 
     primer_nombre = models.CharField(max_length=25, blank=True, null=True)
     segundo_nombre = models.CharField(max_length=25, blank=True, null=True)
-    primer_apellido = models.CharField(max_length=25)
-    segundo_apellido = models.CharField(max_length=25)
+    primer_apellido = models.CharField(max_length=25, blank=True, null=True)
+    segundo_apellido = models.CharField(max_length=25, blank=True, null=True)
     contrasena = models.CharField(max_length=128, blank=True)  # Aumenta el tamaño para hashes
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
     calle = models.CharField(max_length=25, default='CalleDesconocida')
     num_casa = models.CharField(max_length=50, blank=True, null=True)
     num_apar = models.CharField(max_length=50, blank=True, null=True)
     admin = models.BooleanField(default=False)
+    correo_electronico = models.CharField(max_length=100)
     
     last_login = models.DateTimeField(null=True, blank=True)  # Agrega este campo
 
