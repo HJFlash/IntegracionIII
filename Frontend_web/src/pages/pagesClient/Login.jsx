@@ -54,6 +54,7 @@ function Login() {
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('nombreUsuario', data.primer_nombre);
+      localStorage.setItem('correoUsuario', data.correo_electronico);
       navigate('/');
     })
     .catch(error => {

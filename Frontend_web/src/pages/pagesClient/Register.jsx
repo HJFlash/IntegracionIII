@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { validarRut, validarNombre, validarApellidos, validarEmail } from '../../auth/valicion';
+import { validarRut, validarNombre, validarApellidos, validarEmail, validarTel} from '../../auth/valicion';
 
 function Register() {
   const navigate = useNavigate();
@@ -9,9 +9,10 @@ function Register() {
   const [formData, setFormData] = useState({
     rut: '',
     contrasena: '',
-    email: '',
+    correo_electronico: '',
     primer_nombre: '',
     primer_apellido: '',
+    tel: '',
   });
 
   const handleChange = (e) => {
@@ -27,7 +28,7 @@ function Register() {
 
     // Validación de errores
     const errors = {};
-    for (const field of ['rut', 'primer_nombre', 'primer_apellido', 'email']) {
+    for (const field of ['rut', 'primer_nombre', 'primer_apellido', 'correo_electronico']) {
       switch (field) {
         case 'rut':
           const rutError = validarRut(formData.rut);
@@ -41,9 +42,13 @@ function Register() {
           const primerapellidoError = validarApellidos(formData.primer_apellido);
           if (primerapellidoError) errors.primer_apellido = primerapellidoError;
           break;
-        case 'email':
-          const emailError = validarEmail(formData.email);
-          if (emailError) errors.email = emailError;
+        case 'correo_electronico':
+          const emailError = validarEmail(formData.correo_electronico);
+          if (emailError) errors.correo_electronico = emailError;
+          break;
+        case 'tel':
+          const telError = validarTel(formData.tel);
+          if (telError) errors.tel = telError;
           break;
         default:
           return alert('No se qué pasa');
@@ -61,6 +66,8 @@ function Register() {
       contrasena: formData.contrasena,
       primer_nombre: formData.primer_nombre,
       primer_apellido: formData.primer_apellido,
+      contacto: formData.tel,
+      correo_electronico: formData.correo_electronico,
     };
 
     // Petición POST al backend
@@ -86,6 +93,7 @@ function Register() {
       alert(`Error: ${error.message}`);
     });
   };
+
 
   return (
     <div className='flex'>
@@ -176,23 +184,43 @@ function Register() {
             </div>
 
             <div>
-              {errors.email && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.email}</p>}
+              {errors.correo_electronico && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.correo_electronico}</p>}
               <div className="flex border-2 border-[#E74C3C] mb-4">
                 <div className="w-1 p-0 bg-[#E74C3C]"></div>
                 <div className="flex flex-col min-w-[350px]">
-                  <label htmlFor="email" className="text-gray-500 text-sm px-2">Ingrese su Correo Electronico</label>
+                  <label htmlFor="correo_electronico" className="text-gray-500 text-sm px-2">Ingrese su Correo Electronico</label>
                   <input 
                     type="email" 
-                    id="email" 
-                    name="email" 
+                    id="correo_electronico" 
+                    name="correo_electronico" 
                     required 
                     onChange={handleChange} 
-                    value={formData.email} 
+                    value={formData.correo_electronico} 
                     className="outline-none bg-transparent px-2" 
                   />
                 </div>
               </div>
             </div>
+
+            <div>
+              {errors.tel && <p className="text-red-500 text-sm px-2 max-w-[350px]">{errors.tel}</p>}
+              <div className="flex border-2 border-[#E74C3C] mb-4">
+                <div className="w-1 p-0 bg-[#E74C3C]"></div>
+                <div className="flex flex-col min-w-[350px]">
+                  <label htmlFor="tel" className="text-gray-500 text-sm px-2">Ingrese su teléfono</label>
+                  <input 
+                    type="tel" 
+                    id="tel" 
+                    name="tel" 
+                    required 
+                    onChange={handleChange} 
+                    value={formData.tel} 
+                    className="outline-none bg-transparent px-2" 
+                  />
+                </div>
+              </div>
+            </div>
+
 
             <div>
 

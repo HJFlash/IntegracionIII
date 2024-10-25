@@ -111,7 +111,9 @@ def login_vista(request):
                     'message': 'Inicio de sesión exitoso',
                     'refresh': tokens['refresh'],
                     'access': tokens['access'],
-                    'primer_nombre': usuario.primer_nombre
+                    'primer_nombre': usuario.primer_nombre,
+                    'correo_electronico': usuario.correo_electronico
+
                 }, status=200)
             else:
                 return JsonResponse({'error': 'Credenciales inválidas'}, status=401)

@@ -45,7 +45,7 @@ class Usuario(models.Model):
     last_login = models.DateTimeField(null=True, blank=True)  # Agrega este campo
 
     USERNAME_FIELD = 'rut'
-    REQUIRED_FIELDS = ['primer_nombre', 'segundo_nombre', 'primer_apellido', 'segundo_apellido']  # Campos requeridos
+    REQUIRED_FIELDS = ['primer_nombre', 'primer_apellido']  # Campos requeridos
     
     class Meta:
         permissions = [

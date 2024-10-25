@@ -15,6 +15,8 @@ class UsuarioSerializador(serializers.ModelSerializer):
             'calle',
             'num_casa',
             'num_apar',
+            'correo_electronico',
+            
         ]
 
     def create(self, validated_data):
