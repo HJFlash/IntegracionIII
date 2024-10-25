@@ -112,7 +112,12 @@ def login_vista(request):
                     'refresh': tokens['refresh'],
                     'access': tokens['access'],
                     'primer_nombre': usuario.primer_nombre,
-                    'correo_electronico': usuario.correo_electronico
+                    'correo_electronico': usuario.correo_electronico,
+                    'segundo_nombre': usuario.segundo_nombre,
+                    'primer_apellido': usuario.primer_apellido,
+                    'segundo_apellido': usuario.segundo_apellido,
+                    'contacto': usuario.contacto,
+                    'rut': usuario.rut,
 
                 }, status=200)
             else:

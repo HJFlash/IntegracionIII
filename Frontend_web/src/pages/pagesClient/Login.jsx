@@ -55,6 +55,13 @@ function Login() {
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('nombreUsuario', data.primer_nombre);
       localStorage.setItem('correoUsuario', data.correo_electronico);
+
+      localStorage.setItem('nombreUsuariosegundo', data.segundo_nombre);
+      localStorage.setItem('apellidoUsuario', data.primer_apellido);
+      localStorage.setItem('apellidoUsuariosegundo', data.segundo_apellido);
+      localStorage.setItem('telefonoUsuario', data.contacto);
+
+      localStorage.setItem('rutUsuario', data.rut);
       navigate('/');
     })
     .catch(error => {
