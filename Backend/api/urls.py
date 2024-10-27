@@ -16,5 +16,6 @@ urlpatterns = [
     path('', include(router.urls)),
 
     path('validar-disponibilidad/', ValidarDisponibilidadView.as_view(), name='validar-disponibilidad'),
+    
 
 ]
