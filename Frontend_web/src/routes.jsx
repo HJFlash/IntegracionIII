@@ -13,10 +13,17 @@ import CrudAdmin from './pages/pagesDashBoard/pgCrud';
 import GraficosAdmin from './pages/pagesDashBoard/pgGraficos';
 import RegistrarTrabajador from "./pages/pagesDashBoard/RegistrarTrabajador";
 import SoliRegistroUsuario from "./pages/pagesDashBoard/SoliRegistroUsuario";
+import FuncionamientoUser from "./pages/pagesClient/FuncionamientoUser";
 
 import PerfilUser from './pages/pagesClient/perfilUser';
 import InfoProfileUser from './pages/pagesClient/InfoProfileUser';
 import InfoSoliUser from './pages/pagesClient/infoSoliUser';
+
+import TrabajadorMod from "./pages/pagesTrabajador/trabajador";
+import CrudCitas from "./pages/pagesTrabajador/CrudCitas";
+import PerfilTrabajador from "./pages/pagesTrabajador/PerfilTrabajador";
+
+
 
 
 function AppRoutes() {
@@ -26,6 +33,7 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Register" element={<Register />} />
+        <Route path="/FuncionamientoUser" element={<FuncionamientoUser />} />
         <Route path="/TomaSoli" element={<Tomasoli />} />
         <Route path="/TrabajadorMod" element={<ModTrabajador />} />
 
@@ -46,6 +54,13 @@ function AppRoutes() {
           <Route index element={<Navigate to="InfoProfileUser" />} />
           <Route path="InfoProfileUser" element={<InfoProfileUser />} />
           <Route path="InfoSoliUser" element={<InfoSoliUser />} />
+        </Route>
+
+        {/* Trabajador Dashboard */}
+        <Route path="/TrabajadorMod" element={<TrabajadorMod />}>
+          <Route index element={<Navigate to="PerfilTrabajador" />} />
+          <Route path="PerfilTrabajador" element={<PerfilTrabajador />} />
+          <Route path="CrudCitas" element={<CrudCitas />} />
         </Route>
       </Routes>
     </BrowserRouter>

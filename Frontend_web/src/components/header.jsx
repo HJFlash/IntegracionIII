@@ -45,7 +45,7 @@ function Header() {
         </Link>
       </div>
       <nav className="flex gap-5 items-center justify-between text-center ">
-          <Link to="/" className='text-base font-semibold m-6 group relative w-max'>
+          <Link to="/FuncionamientoUser" className='text-base font-semibold m-6 group relative w-max'>
             Informaciones
             <span className="absolute -bottom-1 left-1/2 w-0 transition-all h-0.5 bg-naranja-claro group-hover:w-3/6"></span>
             <span className="absolute -bottom-1 right-1/2 w-0 transition-all h-0.5 bg-naranja-claro group-hover:w-3/6"></span>
