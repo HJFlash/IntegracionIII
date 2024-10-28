@@ -8,8 +8,8 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
+      "image": "./assets/images/splash_muni.png",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "ios": {
@@ -35,8 +35,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "your-eas-project-id"
-    }
+        "projectId": "03620e66-c77c-4b09-8bca-abb70a18fce4"
+      }
+    },
+    "owner": "hjflash"
   }
-}
 }
