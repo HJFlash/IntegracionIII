@@ -1,53 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, Button, StatusBar, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 
 interface Appointment {
-  id: string;
+  id: number;
   date: string;
+  time: string;
   service: string;
 }
 
 const AppointmentHistoryScreen: React.FC = () => {
   const router = useRouter();
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchAppointmentHistory();
-  }, []);
-
-  // Función para obtener el historial de citas del usuario
-  const fetchAppointmentHistory = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/citas/', { // Cambia esta URL según tu API
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setAppointments(data); // Asumiendo que la API devuelve un array de citas
-      } else {
-        setError(data.error || 'Error al obtener el historial de citas');
-      }
-    } catch (error) {
-      console.error('Error al enviar la solicitud:', error);
-      setError('Error en la conexión con el servidor');
-    } finally {
-      setLoading(false);
-    }
-  };
+  
+  // Ejemplo de datos de citas. Esto se puede reemplazar por datos obtenidos del backend en el futuro.
+  const [appointments] = useState<Appointment[]>([
+    { id: 1, date: '2024-10-01', time: '10:00 AM', service: 'Podología' },
+    { id: 2, date: '2024-10-05', time: '11:30 AM', service: 'Peluquería' },
+    { id: 3, date: '2024-10-10', time: '2:00 PM', service: 'Fonoaudiología' },
+  ]);
 
   const renderItem = ({ item }: { item: Appointment }) => (
     <View style={styles.appointmentItem}>
-      <Text style={styles.appointmentText}>ID: {item.id}</Text>
-      <Text style={styles.appointmentText}>Fecha: {item.date}</Text>
-      <Text style={styles.appointmentText}>Servicio: {item.service}</Text>
+      <Text style={styles.appointmentText}>{`${item.date} - ${item.time}`}</Text>
+      <Text style={styles.serviceText}>{item.service}</Text>
     </View>
   );
 
@@ -55,32 +30,30 @@ const AppointmentHistoryScreen: React.FC = () => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <Text style={styles.title}>Historial de Citas</Text>
-
-      {loading ? (
-        <ActivityIndicator size="large" color="#ff4d4d" />
-      ) : error ? (
-        <Text style={styles.errorText}>{error}</Text>
+      
+      {appointments.length === 0 ? (
+        <Text style={styles.noAppointments}>No tienes citas programadas.</Text>
       ) : (
         <FlatList
           data={appointments}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
+          keyExtractor={item => item.id.toString()}
+          style={styles.list}
         />
       )}
 
-      <Button title="Volver a la Pantalla de Login" onPress={() => router.push('/login')} />
+      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/')}>
+        <Text style={styles.backText}>Volver a la página principal</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
-// Definición de estilos después del componente
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f4f8',
     alignItems: 'center',
-    justifyContent: 'center',
     padding: 20,
   },
   title: {
@@ -88,22 +61,41 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
+  list: {
+    width: '100%',
+  },
   appointmentItem: {
     backgroundColor: '#fff',
-    borderRadius: 10,
     padding: 15,
+    borderRadius: 10,
     marginBottom: 10,
-    width: '100%',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   appointmentText: {
     fontSize: 16,
-    color: '#333',
+    fontWeight: 'bold',
   },
-  list: {
-    paddingBottom: 20,
+  serviceText: {
+    fontSize: 14,
+    color: '#555',
   },
-  errorText: {
-    color: 'red',
+  noAppointments: {
+    fontSize: 16,
+    color: '#ff4d4d',
+    marginTop: 20,
+  },
+  backButton: {
+    backgroundColor: '#ff4d4d',
+    paddingVertical: 15,
+    paddingHorizontal: 60,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  backText: {
+    color: '#fff',
     fontSize: 16,
   },
 });

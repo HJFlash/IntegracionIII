@@ -81,15 +81,6 @@ const RegisterScreen: React.FC = () => {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Ingrese Segundo Nombre"
-            style={styles.input}
-            placeholderTextColor="#999"
-            value={nombre}
-            onChangeText={setNombre}
-          />
-        </View>
 
         <View style={styles.inputContainer}>
           <TextInput
@@ -101,15 +92,6 @@ const RegisterScreen: React.FC = () => {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Ingrese su Segundo Apellido"
-            style={styles.input}
-            placeholderTextColor="#999"
-            value={apellidos}
-            onChangeText={setApellidos}
-          />
-        </View>
 
         <View style={styles.inputContainer}>
           <TextInput
@@ -132,35 +114,6 @@ const RegisterScreen: React.FC = () => {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Sector"
-            style={styles.input}
-            placeholderTextColor="#999"
-            value={sector}
-            onChangeText={setSector}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Calle"
-            style={styles.input}
-            placeholderTextColor="#999"
-            value={calle}
-            onChangeText={setCalle}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Número de casa"
-            style={styles.input}
-            placeholderTextColor="#999"
-            value={ncasa}
-            onChangeText={setNcasa}
-          />
-        </View>
 
         <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
           <Text style={styles.loginText}>Enviar Solicitud de Registro</Text>
