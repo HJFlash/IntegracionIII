@@ -1,70 +1,56 @@
 import React, { useState } from "react";
 import Header from "../../components/header";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function TomaSoli() {
   const [solicitud, setSolicitud] = useState("");
   const [hora, setHora] = useState("");
   const [dia, setDia] = useState("");
-
-  //Controla el paso en el que se encuentra
   const [paso, setPaso] = useState(1);
+  const navigate = useNavigate();
 
-  // Opciones Solicitud
-  const OpcionesDeSolicitud = [
-    "doctor",
-    "peluqueria",
-    "kinesiologia",
-    "fonoaudiologia",
-    "Atencion social",
-  ];
-  const OpcionesDeHora = [
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-  ];
-  const OpcionesDeDia = [
-    "lunes",
-    "martes",
-    "miercoles",
-    "Jueves",
-    "Viernes",
-    "Sabado",
-  ];
+  const OpcionesDeSolicitud = ["doctor", "peluqueria", "kinesiologia", "fonoaudiologia", "Atencion social"];
+  const OpcionesDeHora = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
+  const OpcionesDeDia = ["lunes", "martes", "miercoles", "Jueves", "Viernes", "Sabado"];
 
-  const SeleccionarTipoSolicitud = (tipo) => {
-    setSolicitud(tipo);
-  };
+  const SeleccionarTipoSolicitud = (tipo) => setSolicitud(tipo);
+  const SeleccionarHora = (horaSeleccionada) => setHora(horaSeleccionada);
+  const SeleccionarDia = (diaSeleccionado) => setDia(diaSeleccionado);
 
-  const SeleccionarHora = (horaSeleccionada) => {
-    setHora(horaSeleccionada);
-  };
+  const RetrocederPaso = () => setPaso(paso > 1 ? paso - 1 : 1);
+  const SiguentePaso = () => paso < 3 && setPaso(paso + 1);
+  const Finalizar = () => setPaso(4);
 
-  const SeleccionarDia = (diaSeleccionado) => {
-    setDia(diaSeleccionado);
-  };
+  const handleConfirmar = () => {
+    const rutUsuario = localStorage.getItem('rutUsuario');
+    const dataToSend = {
+      rut_usuario: rutUsuario,
+      rut_prestador: solicitud,
+      fecha: dia,
+      hora: hora
+    };
 
-  const RetrocederPaso = () => {
-    setPaso(paso > 1 ? paso - 1 : 1);
-  };
-
-  const SiguentePaso = () => {
-    if (paso < 3) {
-      setPaso(paso + 1);
-    }
-  };
-
-  const Finalizar = () => {
-    setPaso(4);
+    fetch('http://localhost:8000/CrearConsulta/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+      },
+      body: JSON.stringify(dataToSend)
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Cita agendada correctamente.');
+          navigate('/InfoSoliUser');
+        } else {
+          alert(`Error: ${data.error || 'No se pudo agendar la cita.'}`);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error al agendar la cita.');
+      });
   };
 
   return (
@@ -82,11 +68,7 @@ function TomaSoli() {
                   {OpcionesDeSolicitud.map((opcion) => (
                     <button
                       key={opcion}
-                      className={`text-black text-lg p-4 rounded-lg bg-[#F8F8F8] border border-gray-300 cursor-pointer ${
-                        solicitud === opcion
-                          ? "bg-naranja-claro text-white border-naranja-claro"
-                          : ""
-                      }`}
+                      className={`text-black text-lg p-4 rounded-lg bg-[#F8F8F8] border border-gray-300 cursor-pointer ${solicitud === opcion ? "bg-naranja-claro text-white border-naranja-claro" : ""}`}
                       onClick={() => SeleccionarTipoSolicitud(opcion)}
                     >
                       {opcion}
@@ -105,11 +87,7 @@ function TomaSoli() {
                   {OpcionesDeDia.map((opcion) => (
                     <button
                       key={opcion}
-                      className={`text-lg p-4 rounded-lg bg-[#F8F8F8] border border-gray-300 cursor-pointer ${
-                        dia === opcion
-                          ? "bg-naranja-claro text-white border-naranja-claro"
-                          : ""
-                      }`}
+                      className={`text-lg p-4 rounded-lg bg-[#F8F8F8] border border-gray-300 cursor-pointer ${dia === opcion ? "bg-naranja-claro text-white border-naranja-claro" : ""}`}
                       onClick={() => SeleccionarDia(opcion)}
                     >
                       {opcion}
@@ -128,19 +106,8 @@ function TomaSoli() {
                   {OpcionesDeHora.map((opcion) => (
                     <button
                       key={opcion}
-                      className={`text-lg p-4 rounded-lg border border-gray-300 cursor-pointer ${
-                        hora === opcion
-                          ? "bg-naranja-claro text-white border-naranja-claro"
-                          : ""
-                      } ${
-                        ["12:00", "17:00"].includes(opcion)
-                          ? "bg-[#F97A7A] text-[#F8F2E8] cursor-auto"
-                          : ""
-                      }`}
-                      onClick={() =>
-                        !["12:00", "17:00"].includes(opcion) &&
-                        SeleccionarHora(opcion)
-                      }
+                      className={`text-lg p-4 rounded-lg border border-gray-300 cursor-pointer ${hora === opcion ? "bg-naranja-claro text-white border-naranja-claro" : ""} ${["12:00", "17:00"].includes(opcion) ? "bg-[#F97A7A] text-[#F8F2E8] cursor-auto" : ""}`}
+                      onClick={() => !["12:00", "17:00"].includes(opcion) && SeleccionarHora(opcion)}
                       disabled={["12:00", "17:00"].includes(opcion)}
                     >
                       {opcion}
@@ -152,26 +119,17 @@ function TomaSoli() {
 
             <div className="flex justify-center items-center mt-6 space-x-4">
               {paso > 1 && (
-                <button
-                  className="bg-naranja-claro text-white rounded px-6 py-3"
-                  onClick={RetrocederPaso}
-                >
+                <button className="bg-naranja-claro text-white rounded px-6 py-3" onClick={RetrocederPaso}>
                   Atrás
                 </button>
               )}
               {paso < 3 && (
-                <button
-                  className="bg-naranja-claro text-white rounded px-6 py-3"
-                  onClick={SiguentePaso}
-                >
+                <button className="bg-naranja-claro text-white rounded px-6 py-3" onClick={SiguentePaso}>
                   Siguiente
                 </button>
               )}
               {paso === 3 && (
-                <button
-                  className="bg-naranja-claro text-white rounded px-6 py-3"
-                  onClick={Finalizar}
-                >
+                <button className="bg-naranja-claro text-white rounded px-6 py-3" onClick={Finalizar}>
                   Finalizar
                 </button>
               )}
@@ -189,15 +147,10 @@ function TomaSoli() {
             <p className="text-lg">Día seleccionado: {dia}</p>
             <p className="text-lg">Hora seleccionada: {hora}</p>
             <div className="flex justify-center items-center mt-6 space-x-4">
-              {paso > 1 && (
-                <button
-                  className="bg-[#E74C3C] text-white rounded px-6 py-3"
-                  onClick={RetrocederPaso}
-                >
-                  Atrás
-                </button>
-              )}
-              <button className="bg-[#E74C3C] text-white rounded px-6 py-3">
+              <button className="bg-[#E74C3C] text-white rounded px-6 py-3" onClick={RetrocederPaso}>
+                Atrás
+              </button>
+              <button className="bg-[#E74C3C] text-white rounded px-6 py-3" onClick={handleConfirmar}>
                 Confirmar
               </button>
             </div>

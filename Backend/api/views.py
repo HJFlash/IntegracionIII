@@ -18,7 +18,7 @@ from django.utils.dateparse import parse_date, parse_time
 import json
 
 from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores
-from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, HorarioPrestadorSerializer
+from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer
 from .utils import obtener_tokens_para_usuario
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
@@ -315,7 +315,7 @@ def eliminar_cita(request, id):
 # --------------------- Horario Prestador ---------------------------------------
 class HorarioPrestadoresViewSet(viewsets.ModelViewSet):
     queryset = Horario_Prestadores.objects.all()
-    serializer_class = HorarioPrestadorSerializer
+    #serializer_class = HorarioPrestadorSerializer
 
     def create(self, request, *args, **kwargs):
         datos = request.data
