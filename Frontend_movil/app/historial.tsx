@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -9,22 +9,31 @@ interface Appointment {
   service: string;
 }
 
+const AppointmentItem: React.FC<{ item: Appointment }> = ({ item }) => (
+  <View style={styles.appointmentItem}>
+    <Text style={styles.appointmentText}>{`${item.date} - ${item.time}`}</Text>
+    <Text style={styles.serviceText}>{item.service}</Text>
+  </View>
+);
+
 const AppointmentHistoryScreen: React.FC = () => {
   const router = useRouter();
-  
-  // Ejemplo de datos de citas. Esto se puede reemplazar por datos obtenidos del backend en el futuro.
-  const [appointments] = useState<Appointment[]>([
-    { id: 1, date: '2024-10-01', time: '10:00 AM', service: 'Podología' },
-    { id: 2, date: '2024-10-05', time: '11:30 AM', service: 'Peluquería' },
-    { id: 3, date: '2024-10-10', time: '2:00 PM', service: 'Fonoaudiología' },
-  ]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  const renderItem = ({ item }: { item: Appointment }) => (
-    <View style={styles.appointmentItem}>
-      <Text style={styles.appointmentText}>{`${item.date} - ${item.time}`}</Text>
-      <Text style={styles.serviceText}>{item.service}</Text>
-    </View>
-  );
+  useEffect(() => {
+    // Simulación de obtención de datos del backend
+    const fetchAppointments = async () => {
+      // Aquí iría la lógica para obtener datos del backend
+      const fetchedAppointments: Appointment[] = [
+        { id: 1, date: '2024-10-01', time: '10:00 AM', service: 'Podología' },
+        { id: 2, date: '2024-10-05', time: '11:30 AM', service: 'Peluquería' },
+        { id: 3, date: '2024-10-10', time: '2:00 PM', service: 'Fonoaudiología' },
+      ];
+      setAppointments(fetchedAppointments);
+    };
+
+    fetchAppointments();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -36,7 +45,7 @@ const AppointmentHistoryScreen: React.FC = () => {
       ) : (
         <FlatList
           data={appointments}
-          renderItem={renderItem}
+          renderItem={({ item }) => <AppointmentItem item={item} />}
           keyExtractor={item => item.id.toString()}
           style={styles.list}
         />
