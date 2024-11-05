@@ -21,10 +21,7 @@ from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, Horari
 from .utils import obtener_tokens_para_usuario
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
-
-
-
-
+from django.utils import timezone
 
 
 
@@ -112,36 +109,31 @@ def logout_vista(request):
 
 # -------------------- CRUD para Consultas Agendadas --------------------
 
-def validar_disponibilidad(rut_prestador, fecha, hora_solicitada):
-    # Obtener el día de la semana de la fecha en español
-    dia_semana = Horario_Prestadores.traducir_dia(fecha)
-
-    # Verificar si el prestador trabaja ese día
+def validar_disponibilidad(rut_prestador, fecha, hora):
     try:
+        dia_semana = Horario_Prestadores.traducir_dia(fecha)
         horario = Horario_Prestadores.objects.get(rut_prestador=rut_prestador, dia=dia_semana)
+        hora_solicitada_obj = datetime.strptime(hora, '%H:%M:%S').time()
+        
+        if not (horario.hora_inicio <= hora_solicitada_obj <= horario.hora_fin):
+            return {'disponible': False, 'error': 'El prestador no está disponible a esa hora.'}
+
+        conflicto = Consultas_Agendadas.objects.filter(
+            rut_prestador=rut_prestador,
+            fecha=fecha,
+            hora_inicio=hora_solicitada_obj
+        ).exists()
+
+        if conflicto:
+            return {'disponible': False, 'error': 'El prestador ya tiene una cita en ese horario.'}
+
+        return {'disponible': True}
+
     except Horario_Prestadores.DoesNotExist:
-        return {'error': 'El prestador no trabaja en ese día.'}
+        return {'disponible': False, 'error': 'El prestador no trabaja en ese día.'}
 
-    # Convertir la hora solicitada en un objeto de tiempo
-    hora_solicitada_obj = datetime.strptime(hora_solicitada, '%H:%M').time()
 
-    # Verificar si la hora está dentro del horario de trabajo del prestador
-    if not (horario.hora_inicio <= hora_solicitada_obj <= horario.hora_fin):
-        return {'error': 'El prestador no está disponible a esa hora.'}
-
-    # Verificar si ya hay una consulta en ese horario
-    consulta_conflicto = Consultas_Agendadas.objects.filter(
-        rut_prestador=rut_prestador,
-        fecha=fecha,
-        hora_inicio=hora_solicitada_obj
-    ).exists()
-
-    if consulta_conflicto:
-        return {'error': 'El prestador ya tiene una cita en ese horario.'}
-
-    # Si todo está bien, el prestador está disponible
-    return {'success': 'El prestador está disponible.'}
-
+    
 class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
     queryset = Consultas_Agendadas.objects.all()
     serializer_class = ConsultaAgendadaSerializer
@@ -195,26 +187,46 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
         try:
             usuario = Usuario.objects.get(rut=datos['rut_usuario'])
             prestador = Prestador.objects.get(rut=datos['rut_prestador'])
+        
+        # Validación de fecha y hora en el pasado
+            fecha_cita = datos['fecha']
+            hora_inicio = datos['hora_inicio']
+        
+        # Crea un objeto datetime a partir de la fecha y la hora
+            fecha_hora_cita = timezone.datetime.strptime(f"{fecha_cita} {hora_inicio}", '%Y-%m-%d %H:%M:%S')
+        
+        # Asegúrate de que la fecha_hora_cita sea timezone-aware
+            if timezone.is_naive(fecha_hora_cita):
+                fecha_hora_cita = timezone.make_aware(fecha_hora_cita, timezone.get_current_timezone())
+        
+            if fecha_hora_cita < timezone.now():
+                return JsonResponse({'error': 'No puedes agendar una cita en una fecha pasada.'}, status=400)
+
+        # Validar que el usuario no tenga otra cita en el mismo día/hora
+            conflicto_usuario = Consultas_Agendadas.objects.filter(
+                rut_usuario=usuario.rut,
+                fecha=datos['fecha'],
+                hora_inicio=hora_inicio
+            ).exists()
+        
+            if conflicto_usuario:
+                return JsonResponse({'error': 'Ya tienes una cita programada en esa fecha/hora.'}, status=400)
+
+        # Validar disponibilidad del prestador
+            disponibilidad = validar_disponibilidad(prestador.rut, datos['fecha'], hora_inicio)
+            if not disponibilidad['disponible']:
+                return JsonResponse({'error': 'El prestador no está disponible en esa fecha/hora.'}, status=400)
 
         # Calcular la hora de término
             duracion_servicio = timedelta(hours=1)
-            hora_inicio = datos['hora_inicio']
-            hora_termino = (datetime.combine(date.today(), parse_time(hora_inicio)) + duracion_servicio).time()
-
-        # Validar disponibilidad
-            disponibilidad = validar_disponibilidad(prestador.rut, datos['fecha'], hora_inicio)
-            if 'error' in disponibilidad:
-                return JsonResponse(disponibilidad, status=400)
-
-        # Validar que el usuario no tenga múltiples citas en el mismo día/hora
-            if Consultas_Agendadas.objects.filter(rut_usuario=usuario, fecha=datos['fecha'], hora_inicio=parse_time(hora_inicio)).exists():
-                return JsonResponse({'error': 'El usuario ya tiene una cita agendada en esta fecha y hora.'}, status=400)
+            hora_inicio_obj = parse_time(hora_inicio)
+            hora_termino = (fecha_hora_cita + duracion_servicio).time()
 
             nueva_cita = Consultas_Agendadas.objects.create(
                 rut_usuario=usuario,
                 rut_prestador=prestador,
-                fecha=datos['fecha'],
-                hora_inicio=parse_time(hora_inicio),
+                fecha=fecha_cita,
+                hora_inicio=hora_inicio_obj,
                 hora_termino=hora_termino,
                 estado=datos.get('estado', 'pendiente'),
                 servicio=prestador.servicio
@@ -222,13 +234,15 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
 
             cache.delete('todas_las_citas')
             return JsonResponse({'message': 'Cita creada exitosamente'}, status=201)
+
         except Usuario.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=400)
         except Prestador.DoesNotExist:
             return JsonResponse({'error': 'Prestador no encontrado'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
-
+    
+    
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
         cache.delete('todas_las_citas')  # Invalida el caché
