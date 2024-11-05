@@ -1,6 +1,7 @@
 from .views import login_vista, registro, logout_vista, DatosGraficos, obtener_datos_grafico_torta, obtener_datos_grafico_barras,obtener_datos_grafico_linea, registroTrabajador  
 from .views import login_vista, registro, logout_vista, ConsultasAgendadasViewSet, HorarioPrestadoresViewSet, ValidarDisponibilidadView  # Importamos la vista de validación
 from .views import obtener_datos_soli_registro, ConsultasAgendadasViewSet
+from .views import send_email
 from django.urls import path, include
 
 # Crear un router para las rutas automáticas de consultas y horarios
@@ -18,6 +19,7 @@ urlpatterns = [
     path('obtener-datos-graficos-linea/', obtener_datos_grafico_linea, name='obtener_datos_grafico_linea'),
     path('registroTrabajador/', registroTrabajador, name='registroTrabajador'),
     path('obtener-datos-registro_soli/', obtener_datos_soli_registro, name='obtener_datos_soli_registro'),
+    path('send-email/', send_email, name='send_email'),
 
     path('',include(router.urls)),
 ]
