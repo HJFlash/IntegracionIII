@@ -22,7 +22,7 @@ from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, Horari
 from .utils import obtener_tokens_para_usuario
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
-
+from .models import Appointment
 
 
 
@@ -360,7 +360,6 @@ def enviar_notificacion_correo(destinatario, asunto, mensaje):
         [destinatario],
         fail_silently=False,
     )
-        
 
 # Vista que recibe la solicitud y envía el correo
 @csrf_exempt
@@ -375,6 +374,17 @@ def enviar_correo(request):
         
         return JsonResponse({'mensaje': 'Correo enviado correctamente'})
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+@login_required
+def appointment_history(request):
+    user = request.user
+    appointments = Appointment.objects.filter(user=user).values('id', 'date', 'description')
+    return JsonResponse(list(appointments), safe=False)
+
+
+
+
+
 # -------------- Validación de disponibilidad ------------------------
 
 class ValidarDisponibilidadView(APIView):

@@ -21,15 +21,26 @@ const AppointmentHistoryScreen: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
 
   useEffect(() => {
-    // Simulación de obtención de datos del backend
     const fetchAppointments = async () => {
-      // Aquí iría la lógica para obtener datos del backend
-      const fetchedAppointments: Appointment[] = [
-        { id: 1, date: '2024-10-01', time: '10:00 AM', service: 'Podología' },
-        { id: 2, date: '2024-10-05', time: '11:30 AM', service: 'Peluquería' },
-        { id: 3, date: '2024-10-10', time: '2:00 PM', service: 'Fonoaudiología' },
-      ];
-      setAppointments(fetchedAppointments);
+      try {
+        const response = await fetch('http://tu-dominio.com/appointment-history/', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Asegúrate de manejar la autenticación
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Error en la solicitud');
+        }
+
+        const data = await response.json();
+        setAppointments(data);
+      } catch (error) {
+        console.error('Error al obtener el historial de citas:', error);
+        Alert.alert('Error', error.message || 'No se pudo obtener el historial de citas');
+      }
     };
 
     fetchAppointments();
@@ -39,7 +50,6 @@ const AppointmentHistoryScreen: React.FC = () => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <Text style={styles.title}>Historial de Citas</Text>
-      
       {appointments.length === 0 ? (
         <Text style={styles.noAppointments}>No tienes citas programadas.</Text>
       ) : (
@@ -50,9 +60,8 @@ const AppointmentHistoryScreen: React.FC = () => {
           style={styles.list}
         />
       )}
-
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backText}>Volver a la página anterior</Text>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/')}>
+        <Text style={styles.backText}>Volver a la página principal</Text>
       </TouchableOpacity>
     </View>
   );
@@ -74,38 +83,30 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   appointmentItem: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   appointmentText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 18,
   },
   serviceText: {
-    fontSize: 14,
-    color: '#555',
-  },
-  noAppointments: {
     fontSize: 16,
-    color: '#ff4d4d',
-    marginTop: 20,
+    color: '#888',
   },
   backButton: {
-    backgroundColor: '#ff4d4d',
-    paddingVertical: 15,
-    paddingHorizontal: 60,
-    borderRadius: 10,
     marginTop: 20,
+    padding: 10,
+    backgroundColor: '#007bff',
+    borderRadius: 5,
   },
   backText: {
     color: '#fff',
     fontSize: 16,
+  },
+  noAppointments: {
+    fontSize: 18,
+    color: '#888',
   },
 });
 
