@@ -49,7 +49,7 @@ const IndexScreen: React.FC = () => {
       </View>
 
       <Pressable style={styles.buttonContainerExit} onPress={handleBackButton}>
-        <Text style={styles.buttonText}>Salir</Text>
+        <Text style={styles.buttonTextExit}>Salir</Text>
       </Pressable>
     </SafeAreaView>
   );
@@ -58,7 +58,7 @@ const IndexScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f4f8',
+    backgroundColor: '#ffffff', // Fondo blanco
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginVertical: 20,
+    color: '#333', // Color de texto más oscuro para mejor contraste
   },
   buttonRow: {
     flexDirection: 'row',
@@ -103,6 +104,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 5,
     marginTop: 20,
+  },
+  buttonTextExit: {
+    paddingVertical: 22,
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#fff',
+    backgroundColor: '#C0392B', // Color diferente para el botón de salir
+    borderRadius: 10,
+    width: '100%',
   },
 });
 
