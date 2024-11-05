@@ -51,8 +51,8 @@ const AppointmentHistoryScreen: React.FC = () => {
         />
       )}
 
-      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/')}>
-        <Text style={styles.backText}>Volver a la página principal</Text>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Text style={styles.backText}>Volver a la página anterior</Text>
       </TouchableOpacity>
     </View>
   );
