@@ -39,7 +39,6 @@ class Usuario(models.Model):
     calle = models.CharField(max_length=25, default='CalleDesconocida')
     num_casa = models.CharField(max_length=50, blank=True, null=True)
     num_apar = models.CharField(max_length=50, blank=True, null=True)
-    admin = models.BooleanField(default=False)
     correo_electronico = models.CharField(max_length=100)
     
     last_login = models.DateTimeField(null=True, blank=True)  # Agrega este campo
@@ -59,28 +58,27 @@ class Usuario(models.Model):
 
 class AdultoMayor(models.Model):
     rut = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
-    peluqueriaBloqueo = models.DateField()
-    podologiaBloqueo = models.DateField()
-    kinesiologiaBloqueo = models.DateField()   #Hasta que fecha deben esperar para poder pedir otra hora del servicio
-    psicologiaBloqueo = models.DateField()
-    asesoria_juridicaBloqueo = models.DateField()
-    fonoaudiologiaBloqueo = models.DateField()
+    peluqueriaBloqueo = models.DateField(blank=True, null=True, default=None)
+    podologiaBloqueo = models.DateField(blank=True, null=True, default=None)
+    kinesiologiaBloqueo = models.DateField(blank=True, null=True, default=None)   #Hasta que fecha deben esperar para poder pedir otra hora del servicio
+    psicologiaBloqueo = models.DateField(blank=True, null=True, default=None)
+    asesoria_juridicaBloqueo = models.DateField(blank=True, null=True, default=None)
+    fonoaudiologiaBloqueo = models.DateField(blank=True, null=True, default=None)
 
+class Servicios(models.Model):
+    nombre_servicio = models.CharField(unique=True, primary_key=True, choices={
+                                                                    "peluqueria": "Peluqueria",
+                                                                    "podologia": "Podologia",
+                                                                    "kinesiologia": "Kinesiologia",
+                                                                    "psicologia": "Psicologia",
+                                                                    "asesoria_juridica": "Asesoria_Juridica",
+                                                                    "fonoaudiologia": "Fonoaudiologia"
+                                                                            })
+    tiempo_atencion = models.TimeField()
+    
 class Prestador(models.Model):
     rut = models.IntegerField(unique=True, primary_key=True)
-    nombres = models.CharField(max_length=100, blank=True, null=True)
-    apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
-    contrasena = models.CharField(max_length=128, blank=True)  # Aumenta el tamaño para hashes
-    contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
-    servicio = models.CharField(max_length=30)
-    calle = models.CharField(max_length=25, default='CalleDesconocida')
-    num_casa = models.CharField(max_length=50)
-    num_apar = models.CharField(max_length=50, blank=True)
-    
-    def save(self, *args, **kwargs):
-        if self.contrasena and not self.contrasena.startswith('pbkdf2_'):  # Evitar hashear si ya está encriptada
-            self.contrasena = make_password(self.contrasena)
-        super().save(*args, **kwargs)
+    servicio = models.OneToOneField(Servicios, on_delete=models.CASCADE)
 
 
 class Consultas_Agendadas(models.Model):

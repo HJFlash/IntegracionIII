@@ -17,7 +17,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 import json
 
-from .models import Usuario, Consultas_Agendadas, Prestador
+from .models import Usuario, Consultas_Agendadas, Prestador, AdultoMayor
 from django.contrib.auth.hashers import check_password, make_password
 from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer
 from .utils import obtener_tokens_para_usuario
@@ -27,6 +27,7 @@ from django.http import JsonResponse
 from django.utils.dateparse import parse_date,parse_time
 from django.core.cache import cache
 from datetime import datetime, timedelta, date
+from dateutil.relativedelta import relativedelta
 from django.views.decorators.cache import cache_page
 
 
@@ -90,6 +91,9 @@ def registro(request):
             serializer.validated_data['tipo_usuario'] = 'adultomayor'
             # Crear y guardar el nuevo usuario
             serializer.save()  # Llama a la función create del serializer
+            
+            adultomayor = AdultoMayor(rut=Usuario.objects.get(rut=serializer.validated_data['rut']))
+            adultomayor.save()
 
             return JsonResponse({'message': 'Usuario creado exitosamente'}, status=201)
         
@@ -338,6 +342,25 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
         try:
             usuario = Usuario.objects.get(rut=datos['rut_usuario'])
             prestador = Prestador.objects.get(rut=datos['rut_prestador'])
+            adultomayor = AdultoMayor.objects.get(rut=datos['rut_usuario'])
+            hoy = date.today()
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='peluqueria')) > 1): #Cambiar cuantas citas tiene disponibles al mes
+                adultomayor.peluqueriaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1) #Cambiar la cantidad de meses o dias de bloqueo
+
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='podologia')) > 1):
+                adultomayor.podologiaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1)
+
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='kinesiologia')) > 1):
+                adultomayor.kinesiologiaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1)
+
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='psicologia')) > 1):
+                adultomayor.psicologiaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1)
+
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='asesoria_juridica')) > 1):
+                adultomayor.asesoria_juridicaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1)
+                
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='fonoaudiologia')) > 1):
+                adultomayor.fonoaudiologiaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1)
 
             # Calcular la hora de término
             # Asumiendo que el servicio tiene una duración fija, por ejemplo, 1 hora
