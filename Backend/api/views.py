@@ -50,7 +50,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 import json
 
-from .models import Usuario, Consultas_Agendadas, Prestador
+from .models import Usuario, Consultas_Agendadas, Prestador, AdultoMayor
 from django.contrib.auth.hashers import check_password, make_password
 from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer
 from .utils import obtener_tokens_para_usuario
@@ -60,6 +60,7 @@ from django.http import JsonResponse
 from django.utils.dateparse import parse_date,parse_time
 from django.core.cache import cache
 from datetime import datetime, timedelta, date
+from dateutil.relativedelta import relativedelta
 from django.views.decorators.cache import cache_page
 
 
@@ -132,6 +133,9 @@ def registro(request):
             serializer.validated_data['tipo_usuario'] = 'adultomayor'
             # Crear y guardar el nuevo usuario
             serializer.save()  # Llama a la función create del serializer
+            
+            adultomayor = AdultoMayor(rut=Usuario.objects.get(rut=serializer.validated_data['rut']))
+            adultomayor.save()
 
             return JsonResponse({'message': 'Usuario creado exitosamente'}, status=201)
         
@@ -153,7 +157,14 @@ def login_vista(request):
                     'message': 'Inicio de sesión exitoso',
                     'refresh': tokens['refresh'],
                     'access': tokens['access'],
-                    'primer_nombre': usuario.primer_nombre
+                    'primer_nombre': usuario.primer_nombre,
+                    'correo_electronico': usuario.correo_electronico,
+                    'segundo_nombre': usuario.segundo_nombre,
+                    'primer_apellido': usuario.primer_apellido,
+                    'segundo_apellido': usuario.segundo_apellido,
+                    'contacto': usuario.contacto,
+                    'rut': usuario.rut,
+
                 }, status=200)
             else:
                 return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
@@ -577,7 +588,7 @@ def registroTrabajador(request):
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 def obtener_datos_soli_registro(request):
-    datos = Usuario.objects.values()
+    datos = Usuario.objects.filter(tipo_usuario="adultomayor").values()
     return JsonResponse(list(datos), safe=False)
 
 
@@ -637,6 +648,25 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
         try:
             usuario = Usuario.objects.get(rut=datos['rut_usuario'])
             prestador = Prestador.objects.get(rut=datos['rut_prestador'])
+            adultomayor = AdultoMayor.objects.get(rut=datos['rut_usuario'])
+            hoy = date.today()
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='peluqueria')) > 1): #Cambiar cuantas citas tiene disponibles al mes
+                adultomayor.peluqueriaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1) #Cambiar la cantidad de meses o dias de bloqueo
+
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='podologia')) > 1):
+                adultomayor.podologiaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1)
+
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='kinesiologia')) > 1):
+                adultomayor.kinesiologiaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1)
+
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='psicologia')) > 1):
+                adultomayor.psicologiaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1)
+
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='asesoria_juridica')) > 1):
+                adultomayor.asesoria_juridicaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1)
+                
+            if (len(eventos = Consultas_Agendadas.objects.filter(fecha__range=(date(hoy.year, hoy.month, 1), hoy),servicio='fonoaudiologia')) > 1):
+                adultomayor.fonoaudiologiaBloqueo = date(hoy.year, hoy.month + relativedelta(months=1), 1)
 
             # Calcular la hora de término
             # Asumiendo que el servicio tiene una duración fija, por ejemplo, 1 hora
@@ -675,3 +705,26 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
         response = super().destroy(request, *args, **kwargs)
         cache.delete('todas_las_citas')  # Invalida el caché
         return response
+
+# -------------------- LEER --------------------
+@csrf_exempt
+@cache_page(60 * 15)  # Cachear por 15 minutos
+def obtener_citas(request):
+    if request.method == 'GET':
+        citas = Consultas_Agendadas.objects.all()
+        serializer = ConsultaAgendadaSerializer(citas, many=True)
+        return JsonResponse(serializer.data, safe=False, status=200)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+@csrf_exempt
+def actualizar_estado_usuario(request, rut):
+    if request.method == 'POST':
+            
+            data = json.loads(request.body)
+            nuevo_estado = data.get('estado_solicitud')
+            
+            usuario = Usuario.objects.get(rut=rut)
+            usuario.estado_solicitud = nuevo_estado
+            usuario.save()
+            
+    return JsonResponse({'message': 'Estado actualizado exitosamente'}, status=200)

@@ -9,6 +9,22 @@ class Centro_Comunitario(models.Model):
     nombre = models.CharField(max_length=50)
     direccion = models.CharField(max_length=200)
 
+    rut = models.IntegerField(
+        unique=True,
+        primary_key=True
+    )
+    tipo_usuario = models.CharField(max_length=30,choices={
+                                            "admin": "Administrador",
+                                            "adultomayor": "Adulto mayor",
+                                            "prestador": "Profesional"
+                                                })
+    
+    estado_solicitud_opciones = [
+        ('Pendiente', 'Pendiente'),
+        ('Aceptado', 'Aceptado'),
+        ('Rechazado', 'Rechazado'),
+    ]
+    estado_solicitud = models.CharField(max_length=25,choices=estado_solicitud_opciones,default='Pendiente')
 class UsuarioManager(BaseUserManager):
     def create_user(self, rut, nombres, apellidos, contacto, contrasena=None):
         if not rut:
@@ -24,6 +40,11 @@ class UsuarioManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    primer_nombre = models.CharField(max_length=25, blank=True, null=True)
+    segundo_nombre = models.CharField(max_length=25, blank=True, null=True)
+    primer_apellido = models.CharField(max_length=25, blank=True, null=True)
+    segundo_apellido = models.CharField(max_length=25, blank=True, null=True)
+    contrasena = models.CharField(max_length=128, blank=True)  # Aumenta el tamaño para hashes
     def create_superuser(self, rut, nombres, apellidos, contacto, contrasena):
         user = self.create_user(
             rut=rut,
@@ -36,40 +57,20 @@ class UsuarioManager(BaseUserManager):
         user.is_superuser = True
         user.save(using=self._db)
         return user
-
-class Usuario(AbstractBaseUser, PermissionsMixin):
-    TIPO_USUARIO_CHOICES = [
-        ('admin', 'Administrador'),
-        ('adultomayor', 'Adulto Mayor'),
-        ('prestador', 'Profesional')
-    ]
-
-    rut = models.IntegerField(unique=True, primary_key=True)
-    tipo_usuario = models.CharField(max_length=30, choices=TIPO_USUARIO_CHOICES)
-    nombres = models.CharField(max_length=50)
-    apellidos = models.CharField(max_length=50)
-    contrasena = models.CharField(max_length=128, blank=True)
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
     calle = models.CharField(max_length=25, default='CalleDesconocida')
     num_casa = models.CharField(max_length=50, blank=True, null=True)
     num_apar = models.CharField(max_length=50, blank=True, null=True)
+    correo_electronico = models.CharField(max_length=100)
+    
+    last_login = models.DateTimeField(null=True, blank=True)  # Agrega este campo
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     last_login = models.DateTimeField(null=True, blank=True)
 
     USERNAME_FIELD = 'rut'
-    REQUIRED_FIELDS = ['nombres', 'apellidos', 'contacto']
-
-    objects = UsuarioManager()
-
-    def __str__(self):
-        return f'{self.nombres} {self.apellidos}'
-
-    def save(self, *args, **kwargs):
-        if self.contrasena and not self.contrasena.startswith('pbkdf2_'):
-            self.contrasena = make_password(self.contrasena)
-        super().save(*args, **kwargs)
-
+    REQUIRED_FIELDS = ['primer_nombre', 'primer_apellido']  # Campos requeridos
+    
     class Meta:
         permissions = [
             ("can_view_sensitive_data", "Puede ver datos sensibles"),
@@ -77,19 +78,27 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
 class AdultoMayor(models.Model):
     rut = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
-    peluqueriaBloqueo = models.DateField()
-    podologiaBloqueo = models.DateField()
-    kinesiologiaBloqueo = models.DateField()
-    psicologiaBloqueo = models.DateField()
-    asesoria_juridicaBloqueo = models.DateField()
-    fonoaudiologiaBloqueo = models.DateField()
+    peluqueriaBloqueo = models.DateField(blank=True, null=True, default=None)
+    podologiaBloqueo = models.DateField(blank=True, null=True, default=None)
+    kinesiologiaBloqueo = models.DateField(blank=True, null=True, default=None)   #Hasta que fecha deben esperar para poder pedir otra hora del servicio
+    psicologiaBloqueo = models.DateField(blank=True, null=True, default=None)
+    asesoria_juridicaBloqueo = models.DateField(blank=True, null=True, default=None)
+    fonoaudiologiaBloqueo = models.DateField(blank=True, null=True, default=None)
 
+class Servicios(models.Model):
+    nombre_servicio = models.CharField(unique=True, primary_key=True, choices={
+                                                                    "peluqueria": "Peluqueria",
+                                                                    "podologia": "Podologia",
+                                                                    "kinesiologia": "Kinesiologia",
+                                                                    "psicologia": "Psicologia",
+                                                                    "asesoria_juridica": "Asesoria_Juridica",
+                                                                    "fonoaudiologia": "Fonoaudiologia"
+                                                                            })
+    tiempo_atencion = models.TimeField()
+    
 class Prestador(models.Model):
-    rut = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
-    servicio = models.CharField(max_length=30)
-    calle = models.CharField(max_length=25, default='CalleDesconocida')
-    num_casa = models.CharField(max_length=50)
-    num_apar = models.CharField(max_length=50, blank=True)
+    rut = models.IntegerField(unique=True, primary_key=True)
+    servicio = models.OneToOneField(Servicios, on_delete=models.CASCADE)
 
 class Horario_Prestadores(models.Model):
     DIAS = [
