@@ -135,7 +135,15 @@ class Consultas_Agendadas(models.Model):
     hora_inicio = models.TimeField()
     hora_termino = models.TimeField(blank=True, null=True)
     estado = models.CharField(max_length=20, default='pendiente')
-    servicio = models.CharField(max_length=30, blank=True)
+    servicio = models.CharField(max_length=30, blank=True)  # Dejar opcional
+    
+    ESTADOS = [
+        ('pendiente', 'Pendiente'),
+        ('finalizado', 'Finalizado'),
+        ('cancelado', 'Cancelado'),  # Nuevo estado para citas canceladas
+    ]
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
+
 
     def __str__(self):
         return f"{self.rut_usuario} - {self.fecha} a las {self.hora_inicio}"

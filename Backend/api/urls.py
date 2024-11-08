@@ -24,5 +24,10 @@ urlpatterns = [
     path('actualizar-estado-usuario/<int:rut>/', actualizar_estado_usuario, name='actualizar_estado_usuario'),
     path('CrearConsulta/', CrearConsulta.as_view(), name='CrearConsulta'),
 
-    path('',include(router.urls)),
+    # Incluir las rutas generadas por el router para las operaciones CRUD
+    path('', include(router.urls)),
+
+    path('validar-disponibilidad/', ValidarDisponibilidadView.as_view(), name='validar-disponibilidad'),
+    
+
 ]
