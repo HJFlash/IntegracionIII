@@ -1,10 +1,12 @@
 from .views import login_vista, registro, logout_vista, DatosGraficos, obtener_datos_grafico_torta, obtener_datos_grafico_barras,obtener_datos_grafico_linea, registroTrabajador  
 from .views import CrearConsulta, ConsultasAgendadasViewSet, HorarioPrestadoresViewSet, ValidarDisponibilidadView  # Importamos la vista de validación
 from .views import obtener_datos_soli_registro
+from .views import send_email
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import login_vista, registro, logout_vista, DatosGraficos, obtener_datos_grafico_torta, obtener_datos_grafico_barras,obtener_datos_grafico_linea, registroTrabajador  
 from .views import obtener_datos_soli_registro, ConsultasAgendadasViewSet, actualizar_estado_usuario
+from .views import appointment_history
 
 # Crear un router para las rutas automáticas de consultas y horarios
 router = DefaultRouter()
@@ -23,6 +25,8 @@ urlpatterns = [
     path('obtener-datos-registro_soli/', obtener_datos_soli_registro, name='obtener_datos_soli_registro'),
     path('actualizar-estado-usuario/<int:rut>/', actualizar_estado_usuario, name='actualizar_estado_usuario'),
     path('CrearConsulta/', CrearConsulta.as_view(), name='CrearConsulta'),
+    path('send-email/', send_email, name='send_email'),
+    path('appointment-history/', appointment_history, name='appointment_history'),
 
     # Incluir las rutas generadas por el router para las operaciones CRUD
     path('', include(router.urls)),

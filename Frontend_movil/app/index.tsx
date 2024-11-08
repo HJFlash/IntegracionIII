@@ -1,59 +1,64 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, BackHandler } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, Image, BackHandler, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 const IndexScreen: React.FC = () => {
   const router = useRouter();
 
-  const handleBackButton = () => {
+  const handleBackButton = useCallback(() => {
     BackHandler.exitApp();
     return true;
-  };
+  }, []);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+    };
+  }, [handleBackButton]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
 
-      {/* Contenedor de la imagen */}
       <View style={styles.imageContainer}>
         <Image
-          // Verifica la ruta aquí:
-          source={require('../assets/images/logo_muni.jpg')} // Si no funciona, intenta con 'uri'
+          source={require('../assets/images/logo_muni.jpg')}
           style={styles.image}
-          resizeMode="contain" // Asegura que la imagen no se deforme
+          resizeMode="contain"
         />
       </View>
 
       <Text style={styles.infoText}>Aquí encontrarás información de uso</Text>
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/login')}>
+        <Pressable style={styles.buttonContainer} onPress={() => router.push('/login')}>
           <Text style={styles.buttonText}>Iniciar sesión</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/register')}>
+        <Pressable style={styles.buttonContainer} onPress={() => router.push('/register')}>
           <Text style={styles.buttonText}>Registrarse</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.buttonContainer} onPress={() => router.push('/agend')}>
+        <Pressable style={styles.buttonContainer} onPress={() => router.push('/agendar')}>
           <Text style={styles.buttonText}>Tests</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
-      <TouchableOpacity style={styles.buttonContainerExit} onPress={handleBackButton}>
-        <Text style={styles.buttonText}>Salir</Text>
-      </TouchableOpacity>
-    </View>
+      <Pressable style={styles.buttonContainerExit} onPress={handleBackButton}>
+        <Text style={styles.buttonTextExit}>Salir</Text>
+      </Pressable>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f4f8',
+    backgroundColor: '#ffffff', // Fondo blanco
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
@@ -64,14 +69,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: 350, // Ajusta según sea necesario
-    height: 150, // Ajusta según sea necesario
+    width: 350,
+    height: 150,
     marginBottom: 20,
   },
   infoText: {
     fontSize: 18,
     textAlign: 'center',
     marginVertical: 20,
+    color: '#333', // Color de texto más oscuro para mejor contraste
   },
   buttonRow: {
     flexDirection: 'row',
@@ -85,7 +91,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   buttonText: {
-    paddingVertical: 22, // Aumentado un 25% sobre el tamaño anterior (de 15 a 22)
+    paddingVertical: 22,
     fontSize: 18,
     textAlign: 'center',
     color: '#fff',
@@ -98,6 +104,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 5,
     marginTop: 20,
+  },
+  buttonTextExit: {
+    paddingVertical: 22,
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#fff',
+    backgroundColor: '#C0392B', // Color diferente para el botón de salir
+    borderRadius: 10,
+    width: '100%',
   },
 });
 

@@ -1,18 +1,17 @@
 import React from 'react';
 import { View, Button, Alert } from 'react-native';
 
-// Función para enviar el correo
 const enviarCorreo = async () => {
   try {
-    const response = await fetch('https://tu-backend-url.com/enviar-correo', {
+    const response = await fetch('http://tu-dominio.com/send-email/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        destinatario: 'correo@ejemplo.com', // Cambia por el destinatario deseado
-        asunto: 'Notificación desde React Native',
-        mensaje: 'Este es el cuerpo del correo enviado desde la app.',
+        subject: 'Asunto del correo',
+        message: 'Contenido del correo',
+        recipient_list: ['destinatario@example.com'],
       }),
     });
 
@@ -25,7 +24,7 @@ const enviarCorreo = async () => {
     console.log(data);
   } catch (error) {
     console.error('Error al enviar el correo:', error);
-    Alert.alert('Error', 'No se pudo enviar el correo');
+    Alert.alert('Error', error.message || 'No se pudo enviar el correo');
   }
 };
 

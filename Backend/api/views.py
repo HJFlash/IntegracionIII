@@ -24,6 +24,7 @@ from .utils import obtener_tokens_para_usuario
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from django.utils import timezone
+from .models import Appointment
 
 
 
@@ -72,7 +73,23 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 # import json ya se importó arriba
 
+@csrf_exempt
+def send_email(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        subject = data.get('subject', 'No Subject')
+        message = data.get('message', '')
+        recipient_list = data.get('recipient_list', [])
 
+        send_mail(
+            subject,
+            message,
+            'your-email@example.com',
+            recipient_list,
+            fail_silently=False,
+        )
+        return JsonResponse({'message': 'Correo enviado correctamente'})
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
 
 @csrf_exempt
 def logout_vista(request):
@@ -442,7 +459,6 @@ def enviar_notificacion_correo(destinatario, asunto, mensaje):
         [destinatario],
         fail_silently=False,
     )
-        
 
 # Vista que recibe la solicitud y envía el correo
 @csrf_exempt
@@ -457,6 +473,17 @@ def enviar_correo(request):
         
         return JsonResponse({'mensaje': 'Correo enviado correctamente'})
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+@login_required
+def appointment_history(request):
+    user = request.user
+    appointments = Appointment.objects.filter(user=user).values('id', 'date', 'description')
+    return JsonResponse(list(appointments), safe=False)
+
+
+
+
+
 # -------------- Validación de disponibilidad ------------------------
 
 

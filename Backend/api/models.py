@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Permission, User
 from django.core.exceptions import ValidationError
 from datetime import datetime
 
@@ -154,3 +155,12 @@ class Datos_Para_Graficos(models.Model):
     horas = models.TimeField()
     t_consulta = models.CharField(max_length=100, blank=True, null=True)
     genero_persona = models.CharField(max_length=100, blank=True, null=True)
+
+
+class Appointment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateTimeField()
+    description = models.TextField()
+
+    def __str__(self):
+        return f"{self.user.username} - {self.date}"

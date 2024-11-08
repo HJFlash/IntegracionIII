@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Platform } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -14,12 +14,11 @@ const SelectServiceScreen: React.FC = () => {
     if (selectedDate) {
       router.push({
         pathname: '/calendar',
-        params: { date: selectedDate.toISOString().split('T')[0] }  // Pasar solo la fecha en formato YYYY-MM-DD
+        params: { date: selectedDate.toISOString().split('T')[0] }
       });
     }
   };
 
-  // Manejar la selección de la fecha
   const onDateChange = (event: any, selectedDateValue?: Date) => {
     setShowDatePicker(false);
     if (selectedDateValue) {
@@ -30,13 +29,6 @@ const SelectServiceScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.circle} />
-        <Text style={styles.username}>NombreUser</Text>
-        <TouchableOpacity style={styles.searchIcon} />
-      </View>
 
       {/* Select Service */}
       <View style={styles.inputContainer}>
@@ -63,16 +55,13 @@ const SelectServiceScreen: React.FC = () => {
       </View>
 
       {showDatePicker && (
-        <View style={styles.datePickerContainer}>
-          <DateTimePicker
-            value={selectedDate}
-            mode="date"
-            //display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={onDateChange}
-            minimumDate={new Date()}  // No permitir fechas anteriores al día actual
-            locale="es-ES"  // Establecer el locale en español
-          />
-        </View>
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          onChange={onDateChange}
+          minimumDate={new Date()}
+          locale="es-ES"
+        />
       )}
 
       {/* Button to navigate to Calendar */}
@@ -84,7 +73,6 @@ const SelectServiceScreen: React.FC = () => {
       <TouchableOpacity style={styles.submitButton}>
         <Text style={styles.submitText}>Enviar</Text>
       </TouchableOpacity>
-
     </View>
   );
 };
@@ -94,30 +82,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#e8f0f8',
     padding: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  circle: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#ff4d4d',
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  username: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  searchIcon: {
-    width: 25,
-    height: 25,
-    backgroundColor: '#fff',
-    borderRadius: 12.5,
   },
   inputContainer: {
     marginBottom: 20,
@@ -150,16 +114,6 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: '100%',
-  },
-  datePickerContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#4682b4',
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
   },
   calendarButton: {
     backgroundColor: '#4682b4',
