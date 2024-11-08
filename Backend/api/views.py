@@ -26,13 +26,6 @@ from django.core.cache import cache
 from django.utils import timezone
 from .models import Appointment
 
-
-
-
-
-
-
-
 """
     ---------------registro----------            
         Fnombre = datos.get('Fnombre')
@@ -165,7 +158,7 @@ def login_vista(request):
         datos = json.loads(request.body)
         rut = datos.get('Rut')
         contrasena = datos.get('Contraseña')
-        
+        print(rut, contrasena)        
         try:
             usuario = Usuario.objects.get(rut=rut)
 
@@ -491,7 +484,7 @@ class ValidarDisponibilidadView(APIView):
     def post(self, request):
         rut_prestador = request.data.get('rut_prestador')
         fecha = request.data.get('fecha')
-        hora = request.data.get('hora')
+        hora = request.data.get('hora_inicio')
 
         # Validar disponibilidad
         disponibilidad = validar_disponibilidad(rut_prestador, fecha, hora)

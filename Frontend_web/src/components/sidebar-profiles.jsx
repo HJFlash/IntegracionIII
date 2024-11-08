@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 
 import LogoMuni from '../assets/logo-temuco-1024x791.webp';
 
+
 const SidebarProfiles = ({ content }) => {
-  return (
+    return (
     <div className='flex flex-col items-center w-[250px] bg-[#ebf5fb] p-5 h-screen overflow-y-auto '>
         <div className='text-center mb-5 flex flex-col justify-center items-center'>
             <p className='m-0 text-black'>Bienvenido! <span className='font-bold m-0 text-[#f97a7a]' >Nombre User</span></p>

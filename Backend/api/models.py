@@ -26,14 +26,15 @@ class Centro_Comunitario(models.Model):
         ('Rechazado', 'Rechazado'),
     ]
     estado_solicitud = models.CharField(max_length=25,choices=estado_solicitud_opciones,default='Pendiente')
+
 class UsuarioManager(BaseUserManager):
-    def create_user(self, rut, nombres, apellidos, contacto, contrasena=None):
+    def create_user(self, rut, primer_nombre, primer_apellido, contacto, contrasena=None):
         if not rut:
             raise ValueError("El rut debe ser proporcionado")
         user = self.model(
             rut=rut,
-            nombres=nombres,
-            apellidos=apellidos,
+            primer_nombre=primer_nombre,
+            primer_apellido=primer_apellido,
             contacto=contacto,
         )
         if contrasena:
@@ -41,16 +42,11 @@ class UsuarioManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    primer_nombre = models.CharField(max_length=25, blank=True, null=True)
-    segundo_nombre = models.CharField(max_length=25, blank=True, null=True)
-    primer_apellido = models.CharField(max_length=25, blank=True, null=True)
-    segundo_apellido = models.CharField(max_length=25, blank=True, null=True)
-    contrasena = models.CharField(max_length=128, blank=True)  # Aumenta el tamaño para hashes
-    def create_superuser(self, rut, nombres, apellidos, contacto, contrasena):
+    def create_superuser(self, rut, primer_nombre, primer_apellido, contacto, contrasena):
         user = self.create_user(
             rut=rut,
-            nombres=nombres,
-            apellidos=apellidos,
+            primer_nombre=primer_nombre,
+            primer_apellido=primer_apellido,
             contacto=contacto,
             contrasena=contrasena,
         )
@@ -58,24 +54,50 @@ class UsuarioManager(BaseUserManager):
         user.is_superuser = True
         user.save(using=self._db)
         return user
+
+class Usuario(AbstractBaseUser, PermissionsMixin):
+    rut = models.IntegerField(unique=True, primary_key=True)
+    tipo_usuario = models.CharField(
+        max_length=30,
+        choices=[("admin", "Administrador"), ("adultomayor", "Adulto mayor"), ("prestador", "Profesional")]
+    )
+    estado_solicitud = models.CharField(
+        max_length=25,
+        choices=[('Pendiente', 'Pendiente'), ('Aceptado', 'Aceptado'), ('Rechazado', 'Rechazado')],
+        default='Pendiente'
+    )
+    primer_nombre = models.CharField(max_length=25, blank=True, null=True)
+    segundo_nombre = models.CharField(max_length=25, blank=True, null=True)
+    primer_apellido = models.CharField(max_length=25, blank=True, null=True)
+    segundo_apellido = models.CharField(max_length=25, blank=True, null=True)
+    contrasena = models.CharField(max_length=128, blank=True)
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
     calle = models.CharField(max_length=25, default='CalleDesconocida')
     num_casa = models.CharField(max_length=50, blank=True, null=True)
     num_apar = models.CharField(max_length=50, blank=True, null=True)
     correo_electronico = models.CharField(max_length=100)
-    
-    last_login = models.DateTimeField(null=True, blank=True)  # Agrega este campo
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
     last_login = models.DateTimeField(null=True, blank=True)
 
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = UsuarioManager()
+
     USERNAME_FIELD = 'rut'
-    REQUIRED_FIELDS = ['primer_nombre', 'primer_apellido']  # Campos requeridos
-    
+    REQUIRED_FIELDS = ['primer_nombre', 'primer_apellido']
+
+    def save(self, *args, **kwargs):
+        if self.contrasena and not self.contrasena.startswith('pbkdf2_'):
+            self.contrasena = make_password(self.contrasena)
+        super().save(*args, **kwargs)
+
     class Meta:
         permissions = [
             ("can_view_sensitive_data", "Puede ver datos sensibles"),
         ]
+
+    def __str__(self):
+        return f'{self.primer_nombre} {self.primer_apellido}'
 
 class AdultoMayor(models.Model):
     rut = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
@@ -87,14 +109,19 @@ class AdultoMayor(models.Model):
     fonoaudiologiaBloqueo = models.DateField(blank=True, null=True, default=None)
 
 class Servicios(models.Model):
-    nombre_servicio = models.CharField(unique=True, primary_key=True, choices={
-                                                                    "peluqueria": "Peluqueria",
-                                                                    "podologia": "Podologia",
-                                                                    "kinesiologia": "Kinesiologia",
-                                                                    "psicologia": "Psicologia",
-                                                                    "asesoria_juridica": "Asesoria_Juridica",
-                                                                    "fonoaudiologia": "Fonoaudiologia"
-                                                                            })
+    nombre_servicio = models.CharField(
+        max_length=50,  # Agrega max_length
+        unique=True,
+        primary_key=True,
+        choices=[
+            ("peluqueria", "Peluqueria"),
+            ("podologia", "Podologia"),
+            ("kinesiologia", "Kinesiologia"),
+            ("psicologia", "Psicologia"),
+            ("asesoria_juridica", "Asesoria Juridica"),
+            ("fonoaudiologia", "Fonoaudiologia")
+        ]
+    )
     tiempo_atencion = models.TimeField()
     
 class Prestador(models.Model):
@@ -120,22 +147,46 @@ class Horario_Prestadores(models.Model):
     descanso = models.TimeField()
 
     def clean(self):
-        if not (self.hora_inicio < self.descanso < self.hora_fin):
-            raise ValidationError("La hora de descanso debe estar dentro del horario laboral.")
+        # Validar si el prestador existe
+        if not Prestador.objects.filter(rut=self.rut_prestador).exists():
+            raise ValidationError(f"El prestador con RUT {self.rut_prestador} no está registrado.")
+
+        # Validar que la hora de inicio sea anterior a la hora de fin
         if self.hora_inicio >= self.hora_fin:
             raise ValidationError("La hora de inicio debe ser anterior a la hora de fin.")
+
+        # Validar que la hora de descanso esté dentro del horario
+        if not (self.hora_inicio < self.descanso < self.hora_fin):
+            raise ValidationError("La hora de descanso debe estar dentro del horario laboral.")
+
+    @staticmethod
+    def traducir_dia(fecha):
+        # Obtener el día de la semana de la fecha en español
+        dia_semana = datetime.strptime(fecha, '%Y-%m-%d').strftime('%A')
+
+        # Mapa para traducir el día de la semana a español
+        dias_traducidos = {
+            'Monday': 'lunes',
+            'Tuesday': 'martes',
+            'Wednesday': 'miércoles',
+            'Thursday': 'jueves',
+            'Friday': 'viernes',
+            'Saturday': 'sábado',
+            'Sunday': 'domingo'
+        }
+
+        return dias_traducidos.get(dia_semana)
 
     def __str__(self):
         return f"{self.rut_prestador} - {self.dia} ({self.hora_inicio} - {self.hora_termino})"
 
 class Consultas_Agendadas(models.Model):
     id_consulta = models.AutoField(primary_key=True)
-    rut_prestador = models.ForeignKey(Prestador, on_delete=models.CASCADE)
-    rut_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    rut_prestador = models.OneToOneField(Prestador, on_delete=models.CASCADE)
+    rut_usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     fecha = models.DateField()
     hora_inicio = models.TimeField()
     hora_termino = models.TimeField(blank=True, null=True)
-    estado = models.CharField(max_length=20, default='pendiente')
     servicio = models.CharField(max_length=30, blank=True)  # Dejar opcional
     
     ESTADOS = [
@@ -158,7 +209,7 @@ class Datos_Para_Graficos(models.Model):
 
 
 class Appointment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     date = models.DateTimeField()
     description = models.TextField()
 
