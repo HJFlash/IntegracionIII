@@ -17,17 +17,22 @@ class Usuario(models.Model):
         unique=True,
         primary_key=True
     )
-    tipo_usuario = models.CharField(max_length=30,choices={
-                                            "admin": "Administrador",
-                                            "adultomayor": "Adulto mayor",
-                                            "prestador": "Profesional"
-                                                })
+    tipo_usuario = models.CharField(
+        max_length=30,
+        choices=[
+            ("admin", "Administrador"),
+            ("adultomayor", "Adulto mayor"),
+            ("prestador", "Profesional")
+        ],
+        default="adultomayor"
+    )
     
     estado_solicitud_opciones = [
         ('Pendiente', 'Pendiente'),
         ('Aceptado', 'Aceptado'),
         ('Rechazado', 'Rechazado'),
     ]
+    
     estado_solicitud = models.CharField(max_length=25,choices=estado_solicitud_opciones,default='Pendiente')
 
     primer_nombre = models.CharField(max_length=25, blank=True, null=True)
@@ -66,7 +71,7 @@ class AdultoMayor(models.Model):
     fonoaudiologiaBloqueo = models.DateField(blank=True, null=True, default=None)
 
 class Servicios(models.Model):
-    nombre_servicio = models.CharField(unique=True, primary_key=True, choices={
+    nombre_servicio = models.CharField(unique=True, primary_key=True, max_length=100, choices={ 
                                                                     "peluqueria": "Peluqueria",
                                                                     "podologia": "Podologia",
                                                                     "kinesiologia": "Kinesiologia",

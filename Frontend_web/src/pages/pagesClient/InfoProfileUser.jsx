@@ -2,6 +2,7 @@ import { useState, useEffect} from 'react';
 
 function InfoProfileUser() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [nombreUsuariosegundo, setnombreUsuariosegundo] = useState('');
   const [apellidoUsuario, setapellidoUsuario] = useState('');
@@ -52,7 +53,7 @@ function InfoProfileUser() {
             <div className='flex items-center'>
               <div>
                 <p className='text-gray-600 text-sm mb-2'>Fecha de Nacimiento</p>
-                <p className='text-gray-900 font-semibold'>10/10/1999</p>
+                <p className='text-gray-900 font-semibold'>10/10/1950</p>
               </div>
             </div>
             <div className='flex items-center'>
@@ -64,7 +65,7 @@ function InfoProfileUser() {
             <div className='flex items-center'>
               <div>
                 <p className='text-gray-600 text-sm mb-2'>Direccion</p>
-                <p className='text-gray-900 font-semibold'>En algun lugar muy lejano</p>
+                <p className='text-gray-900 font-semibold'>Bach 0110</p>
               </div>
             </div>
           </div>
@@ -75,28 +76,6 @@ function InfoProfileUser() {
           </div>
         </div>
         
-
-        <div className='max-w-4xl mx-auto my-5 rounded-lg overflow-hidden flex space-x-4'>
-        <div className='w-1/2'>
-          <div className='bg-blue-300 p-4'>
-            <p className='text-gray-800 font-semibold flex justify-center'>Sede perteneciente / Cesfam</p>
-          </div>
-          <div className='bg-gray-100 p-4 flex justify-evenly'>
-            <p className='text-gray-900'>CESFAM FUNDO EL CARMEN</p>
-          </div>
-        </div>
-        
-        <div className='w-1/2'>
-          <div className='bg-blue-300 p-4'>
-            <p className='text-gray-800 font-semibold flex justify-center'>Algun dato extra</p>
-          </div>
-          <div className='bg-gray-100 p-4 flex justify-evenly'>
-            <p className='text-gray-900'>dato extra</p>
-          </div>
-        </div>
-        </div>
-
-
         <div>
           <div className='max-w-4xl mx-auto my-5 rounded-lg overflow-hidden'>
             <div className='bg-blue-300 p-4 grid grid-cols-3 items-center'>
