@@ -107,8 +107,9 @@ def logout_vista(request):
         logout(request)  # Cerrar sesión
         return JsonResponse({'message': 'Cierre de sesión exitoso'}, status=200)
 
-# -------------------- CRUD para Consultas Agendadas --------------------
 
+
+# -------------------- Validaciones para el CRUD de Consultas Agendadas --------------------
 def validar_disponibilidad(rut_prestador, fecha, hora):
     try:
         dia_semana = Horario_Prestadores.traducir_dia(fecha)
@@ -132,8 +133,23 @@ def validar_disponibilidad(rut_prestador, fecha, hora):
     except Horario_Prestadores.DoesNotExist:
         return {'disponible': False, 'error': 'El prestador no trabaja en ese día.'}
 
+def validar_limite_diario(usuario, fecha, servicio=None):
+    # Verificar si el usuario ya tiene una cita ese mismo día
+    conflicto_diario = Consultas_Agendadas.objects.filter(
+        rut_usuario=usuario,
+        fecha=fecha
+    ).exists()
 
-    
+    # Si ya existe una cita para ese día, devolver error
+    if conflicto_diario:
+        return {'disponible': False, 'error': 'Solo se permite una cita por día para el usuario.'}
+
+    # Si no hay conflicto, está disponible
+    return {'disponible': True}
+# -----------------------------------------------------------------------
+
+
+# -------------------- CRUD para Consultas Agendadas --------------------    
 class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
     queryset = Consultas_Agendadas.objects.all()
     serializer_class = ConsultaAgendadaSerializer
@@ -181,46 +197,30 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
 
     # Devolver la respuesta
         return JsonResponse(serialized_data, safe=False, status=200)
+    
 
     def create(self, request, *args, **kwargs):
         datos = request.data
         try:
             usuario = Usuario.objects.get(rut=datos['rut_usuario'])
             prestador = Prestador.objects.get(rut=datos['rut_prestador'])
-        
-        # Validación de fecha y hora en el pasado
             fecha_cita = datos['fecha']
             hora_inicio = datos['hora_inicio']
-        
-        # Crea un objeto datetime a partir de la fecha y la hora
-            fecha_hora_cita = timezone.datetime.strptime(f"{fecha_cita} {hora_inicio}", '%Y-%m-%d %H:%M:%S')
-        
-        # Asegúrate de que la fecha_hora_cita sea timezone-aware
-            if timezone.is_naive(fecha_hora_cita):
-                fecha_hora_cita = timezone.make_aware(fecha_hora_cita, timezone.get_current_timezone())
-        
-            if fecha_hora_cita < timezone.now():
-                return JsonResponse({'error': 'No puedes agendar una cita en una fecha pasada.'}, status=400)
 
-        # Validar que el usuario no tenga otra cita en el mismo día/hora
-            conflicto_usuario = Consultas_Agendadas.objects.filter(
-                rut_usuario=usuario.rut,
-                fecha=datos['fecha'],
-                hora_inicio=hora_inicio
-            ).exists()
-        
-            if conflicto_usuario:
-                return JsonResponse({'error': 'Ya tienes una cita programada en esa fecha/hora.'}, status=400)
+        # Validar límite diario de citas por usuario
+            limite_diario = validar_limite_diario(usuario, fecha_cita)
+            if not limite_diario['disponible']:
+                return JsonResponse({'error': limite_diario['error']}, status=400)
 
         # Validar disponibilidad del prestador
-            disponibilidad = validar_disponibilidad(prestador.rut, datos['fecha'], hora_inicio)
+            disponibilidad = validar_disponibilidad(prestador.rut, fecha_cita, hora_inicio)
             if not disponibilidad['disponible']:
-                return JsonResponse({'error': 'El prestador no está disponible en esa fecha/hora.'}, status=400)
+                return JsonResponse({'error': disponibilidad['error']}, status=400)
 
-        # Calcular la hora de término
+            # Calcular la hora de término (Ejemplo: 1 hora de duración)
             duracion_servicio = timedelta(hours=1)
             hora_inicio_obj = parse_time(hora_inicio)
-            hora_termino = (fecha_hora_cita + duracion_servicio).time()
+            hora_termino = (datetime.combine(date.today(), hora_inicio_obj) + duracion_servicio).time()
 
             nueva_cita = Consultas_Agendadas.objects.create(
                 rut_usuario=usuario,
@@ -232,6 +232,7 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
                 servicio=prestador.servicio
             )
 
+        # Invalida el caché si se actualizan las citas
             cache.delete('todas_las_citas')
             return JsonResponse({'message': 'Cita creada exitosamente'}, status=201)
 
@@ -241,6 +242,8 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
             return JsonResponse({'error': 'Prestador no encontrado'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+
+    
     
     
     def update(self, request, *args, **kwargs):
