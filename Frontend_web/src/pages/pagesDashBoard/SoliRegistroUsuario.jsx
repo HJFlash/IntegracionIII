@@ -49,7 +49,7 @@ const SoliRegistroUsuario = () => {
 
   return (
     <div>
-        <div className='max-w-max mx-auto p-6 bg-white shadow-lg rounded-lg'>
+        <div className='max-w-max mx-auto p-6 bg-white shadow-lg rounded-lg mt-7'>
             <div className="mb-4">
                 <label htmlFor="filterEstado" className="mr-2 text-gray-700 font-semibold">Filtrar por estado:</label>
                 <select

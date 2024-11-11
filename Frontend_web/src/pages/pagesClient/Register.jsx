@@ -51,7 +51,7 @@ function Register() {
           if (telError) errors.tel = telError;
           break;
         default:
-          return alert('No se qué pasa');
+          return alert('error inesperado ');
       }
     }
 

@@ -46,6 +46,12 @@ function SideBar() {
                 Solicitudes de Usuario
               </NavLink>
             </li>
+            <li className="mb-[15px]">
+              <NavLink to="RegistrarTrabajador"
+                className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
+                Registrar Trabajador
+              </NavLink>
+            </li>
           </ul>
         )}
       </li>

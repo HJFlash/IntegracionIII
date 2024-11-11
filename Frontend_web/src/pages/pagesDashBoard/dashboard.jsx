@@ -8,7 +8,7 @@ function AdminMod() {
     <div className="flex h-screen ml-[250px] bg-gray-200">
       <SideBar />
       
-      <div className="flex-1 bg-white overflow-y-auto">
+      <div className="flex-1 bg-gray-200 overflow-y-auto">
         <Outlet />
       </div>
     </div>
