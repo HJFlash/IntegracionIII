@@ -13,7 +13,7 @@ const PgGraficosAnuales = () => {
         <div className="flex justify-center">
           <GraficoTorta />
         </div>
-        <div className="flex justify-center">
+        <div className="col-span-2 flex justify-center">
           <GraficoBarras />
         </div>
       </div>

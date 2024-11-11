@@ -62,7 +62,17 @@ function Login() {
       localStorage.setItem('telefonoUsuario', data.contacto);
 
       localStorage.setItem('rutUsuario', data.rut);
-      navigate('/');
+      localStorage.setItem('tipousuario', data.tipo_usuario);
+      
+      if (data.tipo_usuario === 'admin') {
+        navigate('/Admin');
+      }else if(data.tipo_usuario === 'prestador'){
+        navigate('/TrabajadorMod');
+      }else{
+        navigate('/')
+      }
+
+
     })
     .catch(error => {
       alert(`Error: ${error.message}`);

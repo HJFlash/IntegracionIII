@@ -18,7 +18,7 @@ const GraficoBarras = () => {
     }, []);
 
     return (
-        <div className="w-[400px] p-6 bg-white rounded-lg shadow-lg my-5">
+        <div className="p-6 w-full bg-white rounded-lg shadow-lg my-5">
             <ResponsiveContainer width="100%" height={300}>
                 <BarChart 
                     data={data}

@@ -122,6 +122,7 @@ def login_vista(request):
                     'segundo_apellido': usuario.segundo_apellido,
                     'contacto': usuario.contacto,
                     'rut': usuario.rut,
+                    'tipo_usuario': usuario.tipo_usuario,
 
                 }, status=200)
             else:
@@ -185,15 +186,15 @@ def obtener_datos_grafico_torta(request):
 
 def obtener_datos_grafico_barras(request):
     datos = Datos_Para_Graficos.objects.values('t_consulta').annotate(
-        hombres=Count(Case(When(genero_persona='M', then=1))),
-        mujeres=Count(Case(When(genero_persona='F', then=1)))
+        hombres=Count(Case(When(genero_persona='m', then=1))),
+        mujeres=Count(Case(When(genero_persona='f', then=1)))
     )
     return JsonResponse(list(datos), safe=False)
     
 
 def obtener_datos_grafico_linea(request):
     datos_hombres = (
-        Datos_Para_Graficos.objects.filter(genero_persona='M')
+        Datos_Para_Graficos.objects.filter(genero_persona='m')
         .annotate(mes=TruncMonth('fechas'))
         .values('mes')
         .annotate(cantidad_solicitudes=Count('id_consultas'))
@@ -201,7 +202,7 @@ def obtener_datos_grafico_linea(request):
     )
 
     datos_mujeres = (
-        Datos_Para_Graficos.objects.filter(genero_persona='F')
+        Datos_Para_Graficos.objects.filter(genero_persona='f')
         .annotate(mes=TruncMonth('fechas'))
         .values('mes')
         .annotate(cantidad_solicitudes=Count('id_consultas'))
