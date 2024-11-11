@@ -499,28 +499,41 @@ class CrearConsulta(APIView):
     def post(self, request):
         # Obtener los datos del request
         rut_prestador = request.data.get('rut_prestador')
+        rut_usuario = request.data.get('rut_usuario')
         fecha = request.data.get('fecha')
-        hora = request.data.get('hora')
+        hora_inicio = request.data.get('hora_inicio')  # Asegúrate de usar "hora_inicio" aquí
 
         # Validar disponibilidad
         validar_disponibilidad = ValidarDisponibilidadView()
         response = validar_disponibilidad.post(request)
-
         if response.status_code != status.HTTP_200_OK:
-            return response  # Si no está disponible, retorna el mensaje de error
+            return response  # Retorna el mensaje de error si no está disponible
 
-        # Si está disponible, proceder a crear la consulta
-        consulta = Consultas_Agendadas.objects.create(
-            rut_usuario=request.data.get('rut_usuario'),
-            rut_prestador=rut_prestador,
-            fecha=fecha,
-            hora_inicio=hora,
-            estado='pendiente'
-        )
+        try:
+            # Obtener instancias de Prestador y Usuario con los RUT proporcionados
+            prestador = Prestador.objects.get(rut=rut_prestador)
+            usuario = Usuario.objects.get(rut=rut_usuario)
 
-        return Response({"success": "Consulta agendada correctamente."}, status=status.HTTP_201_CREATED)
+            # Crear la consulta agendada con instancias de Prestador y Usuario
+            consulta = Consultas_Agendadas.objects.create(
+                rut_usuario=usuario,
+                rut_prestador=prestador,
+                fecha=fecha,
+                hora_inicio=hora_inicio,  # Asigna correctamente "hora_inicio"
+                estado='pendiente'
+            )
 
-    
+            return Response({"success": "Consulta agendada correctamente."}, status=status.HTTP_201_CREATED)
+        
+        except Prestador.DoesNotExist:
+            return Response({"error": "El prestador no existe."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Usuario.DoesNotExist:
+            return Response({"error": "El usuario no existe."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 from .models import Datos_Para_Graficos
 from django.db.models import Count, Case, When, IntegerField, Value
 from django.db.models.functions import ExtractMonth, TruncMonth
