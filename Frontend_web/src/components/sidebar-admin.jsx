@@ -31,25 +31,19 @@ function SideBar() {
             <li className="mb-[15px]">
               <NavLink to="HomeAdmin"
                 className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                Reportes Anuales
+                Inicio
               </NavLink>
             </li>
             <li className="mb-[15px]">
               <NavLink to="CrudAdmin"
                 className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                Reportes Graficos
-              </NavLink>
-            </li>
-            <li className="mb-[15px]">
-              <NavLink to="CrudAdmin"
-                className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                Reportes mensuales
+                Crud Admin
               </NavLink>
             </li>
             <li className="mb-[15px]">
               <NavLink to="SoliRegistroUsuario"
                 className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                Reportes mensuales
+                Solicitudes de Usuario
               </NavLink>
             </li>
           </ul>
@@ -68,21 +62,21 @@ function SideBar() {
             <li className="mb-[15px]">
               <NavLink to="GraficosAdmin"
                 className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                Reportes Graficos
+                Reportes Graficos Anuales
               </NavLink>
             </li>
             <li className="mb-[15px]">
               <NavLink
                 to="/marketing-statistics"
                 className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                Reportes Anuales
+                Reportes Graficos Mensuales
               </NavLink>
             </li>
             <li className="mb-[15px]">
               <NavLink
                 to="/marketing-statistics"
                 className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                Reportes mensuales
+                Reportes
               </NavLink>
             </li>
           </ul>

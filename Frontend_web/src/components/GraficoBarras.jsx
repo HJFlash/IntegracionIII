@@ -18,20 +18,22 @@ const GraficoBarras = () => {
     }, []);
 
     return (
-        <ResponsiveContainer width="100%" height={400}>
-            <BarChart 
-                data={data}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            > 
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="t_consulta" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="hombres" fill="#52be80" />
-                <Bar dataKey="mujeres" fill="#f7dc6f" />
-            </BarChart>
-        </ResponsiveContainer>
+        <div className="w-[400px] p-6 bg-white rounded-lg shadow-lg my-5">
+            <ResponsiveContainer width="100%" height={300}>
+                <BarChart 
+                    data={data}
+                    margin={{ top: 5, right: 30, bottom: 5 }}
+                > 
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="t_consulta" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="hombres" fill="#52be80" />
+                    <Bar dataKey="mujeres" fill="#f7dc6f" />
+                </BarChart>
+            </ResponsiveContainer>
+        </div>
     );
 }
 

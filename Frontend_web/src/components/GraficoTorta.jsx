@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 export const GraficoTorta = () => {
     const [data, setData] = useState([]);
@@ -40,23 +40,42 @@ export const GraficoTorta = () => {
         return null;
     };
 
+    const legendData = data.map((entry, index) => ({
+        value: entry.t_consulta || 'sin datos',
+        color: colors[index % colors.length]
+    }))
+
     return (
-        <ResponsiveContainer width="40%" aspect={2}>
-            <PieChart>
-                <Pie
-                    dataKey="cantidad"
-                    data={data}
-                    innerRadius={60}
-                    outerRadius={80}
-                    fill='#34495e'
-                >
-                    {data.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                    ))}
-                </Pie>
-                <Tooltip content={renderTooltip} />
-            </PieChart>
-        </ResponsiveContainer>
+        <div className="w-[400px] p-6 bg-white rounded-lg shadow-lg my-5">
+            <p className="text-xl font-semibold text-gray-800 mb-4">Gráfico de solicitudes mensuales</p>
+            <div>
+                <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                        <Pie
+                            dataKey="cantidad"
+                            data={data}
+                            innerRadius={60}
+                            outerRadius={80}
+                            fill="#34495e"
+                        >
+                            {data.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                            ))}
+                        </Pie>
+                        <Legend
+                            layout="horizontal"
+                            align="right"
+                            verticalAlign="top"
+                            wrapperStyle={{ padding: 10, marginTop: '20px' }}
+                            iconType="circle"
+                            iconSize={10}
+                            payload={legendData}
+                        />
+                        <Tooltip content={renderTooltip} />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
+        </div>
     );
 }
 

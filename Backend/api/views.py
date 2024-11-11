@@ -185,15 +185,15 @@ def obtener_datos_grafico_torta(request):
 
 def obtener_datos_grafico_barras(request):
     datos = Datos_Para_Graficos.objects.values('t_consulta').annotate(
-        hombres=Count(Case(When(genero_persona='m', then=1))),
-        mujeres=Count(Case(When(genero_persona='f', then=1)))
+        hombres=Count(Case(When(genero_persona='M', then=1))),
+        mujeres=Count(Case(When(genero_persona='F', then=1)))
     )
     return JsonResponse(list(datos), safe=False)
     
 
 def obtener_datos_grafico_linea(request):
     datos_hombres = (
-        Datos_Para_Graficos.objects.filter(genero_persona='m')
+        Datos_Para_Graficos.objects.filter(genero_persona='M')
         .annotate(mes=TruncMonth('fechas'))
         .values('mes')
         .annotate(cantidad_solicitudes=Count('id_consultas'))
@@ -201,28 +201,28 @@ def obtener_datos_grafico_linea(request):
     )
 
     datos_mujeres = (
-        Datos_Para_Graficos.objects.filter(genero_persona='f')
+        Datos_Para_Graficos.objects.filter(genero_persona='F')
         .annotate(mes=TruncMonth('fechas'))
         .values('mes')
         .annotate(cantidad_solicitudes=Count('id_consultas'))
         .order_by('mes')
     )
 
-
+    # Nombres de los meses
     meses_nombres = [
-        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        'En', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+        'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
     ]
 
-
+    # Inicia un diccionario con valores predeterminados para hombres y mujeres
     datos_finales = {mes: {'hombres': 0, 'mujeres': 0} for mes in meses_nombres}
 
-
+    # Asigna los datos de los hombres
     for dato in datos_hombres:
-        mes_num = dato['mes'].month 
+        mes_num = dato['mes'].month
         datos_finales[meses_nombres[mes_num - 1]]['hombres'] = dato['cantidad_solicitudes']
 
-
+    # Asigna los datos de las mujeres
     for dato in datos_mujeres:
         mes_num = dato['mes'].month
         datos_finales[meses_nombres[mes_num - 1]]['mujeres'] = dato['cantidad_solicitudes']
@@ -236,7 +236,6 @@ def obtener_datos_grafico_linea(request):
         })
 
     return JsonResponse(respuesta_final, safe=False)
-
 
 @csrf_exempt
 def registroTrabajador(request):
