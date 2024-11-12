@@ -32,7 +32,7 @@ const HourBlock = memo(({ hour }: { hour: string }) => (
   </View>
 ));
 
-const MyCalendar = () => {
+const Horario = () => {
   const { date }: { date: string } = useLocalSearchParams();  // Obtener la fecha seleccionada
   const { availableHours, loading, error } = useAvailableHours(date);
 
@@ -99,4 +99,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MyCalendar;
+export default Horario;

@@ -13,7 +13,7 @@ const SelectServiceScreen: React.FC = () => {
   const handleCalendarPress = () => {
     if (selectedDate) {
       router.push({
-        pathname: '/calendar',
+        pathname: '/horario',
         params: { date: selectedDate.toISOString().split('T')[0] }
       });
     }
