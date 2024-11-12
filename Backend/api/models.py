@@ -182,20 +182,19 @@ class Horario_Prestadores(models.Model):
 
 class Consultas_Agendadas(models.Model):
     id_consulta = models.AutoField(primary_key=True)
-    rut_prestador = models.OneToOneField(Prestador, on_delete=models.CASCADE)
-    rut_usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
+    rut_prestador = models.ForeignKey(Prestador, on_delete=models.CASCADE)  # Cambiado a ForeignKey
+    rut_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)  # Cambiado a ForeignKey
     fecha = models.DateField()
     hora_inicio = models.TimeField()
     hora_termino = models.TimeField(blank=True, null=True)
     servicio = models.CharField(max_length=30, blank=True)  # Dejar opcional
-    
+
     ESTADOS = [
         ('pendiente', 'Pendiente'),
         ('finalizado', 'Finalizado'),
-        ('cancelado', 'Cancelado'),  # Nuevo estado para citas canceladas
+        ('cancelado', 'Cancelado'),
     ]
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
-
 
     def __str__(self):
         return f"{self.rut_usuario} - {self.fecha} a las {self.hora_inicio}"

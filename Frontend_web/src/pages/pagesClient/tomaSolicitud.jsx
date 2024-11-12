@@ -5,30 +5,26 @@ import { Link, useNavigate } from 'react-router-dom';
 function TomaSoli() {
   const [solicitud, setSolicitud] = useState("");
   const [hora, setHora] = useState("");
-  const [dia, setDia] = useState("");
+  const [fecha, setFecha] = useState("");  // Cambiar de `dia` a `fecha`
   const [paso, setPaso] = useState(1);
   const navigate = useNavigate();
 
   const OpcionesDeSolicitud = ["doctor", "peluqueria", "kinesiologia", "fonoaudiologia", "Atencion social"];
   const OpcionesDeHora = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
-  const OpcionesDeDia = ["lunes", "martes", "miercoles", "Jueves", "Viernes", "Sabado"];
 
   const SeleccionarTipoSolicitud = (tipo) => setSolicitud(tipo);
   const SeleccionarHora = (horaSeleccionada) => setHora(horaSeleccionada);
-  const SeleccionarDia = (diaSeleccionado) => setDia(diaSeleccionado);
-
-  const RetrocederPaso = () => setPaso(paso > 1 ? paso - 1 : 1);
-  const SiguentePaso = () => paso < 3 && setPaso(paso + 1);
-  const Finalizar = () => setPaso(4);
 
   const handleConfirmar = () => {
     const rutUsuario = localStorage.getItem('rutUsuario');
     const dataToSend = {
       rut_usuario: rutUsuario,
-      rut_prestador: solicitud,
-      fecha: dia,
-      hora: hora
+      servicio: solicitud,  // Enviar el tipo de servicio en lugar del rut del prestador
+      fecha: fecha,  // Formato YYYY-MM-DD
+      hora_inicio: `${hora}:00`  // Asegurar el formato de hora con segundos "HH:MM:SS"
     };
+
+    console.log("Datos enviados:", JSON.stringify(dataToSend, null, 2));
 
     fetch('http://localhost:8000/CrearConsulta/', {
       method: 'POST',
@@ -81,19 +77,14 @@ function TomaSoli() {
             {paso === 2 && (
               <div className="w-full bg-white p-8 rounded-lg shadow-md">
                 <p className="font-bold text-xl text-gray-700 mt-4 mb-6 text-center">
-                  Elija el día
+                  Elija la fecha
                 </p>
-                <div className="grid grid-cols-3 gap-4">
-                  {OpcionesDeDia.map((opcion) => (
-                    <button
-                      key={opcion}
-                      className={`text-lg p-4 rounded-lg bg-[#F8F8F8] border border-gray-300 cursor-pointer ${dia === opcion ? "bg-naranja-claro text-white border-naranja-claro" : ""}`}
-                      onClick={() => SeleccionarDia(opcion)}
-                    >
-                      {opcion}
-                    </button>
-                  ))}
-                </div>
+                <input
+                  type="date"
+                  className="text-lg p-4 rounded-lg bg-[#F8F8F8] border border-gray-300 cursor-pointer w-full"
+                  value={fecha}
+                  onChange={(e) => setFecha(e.target.value)}
+                />
               </div>
             )}
 
@@ -119,17 +110,17 @@ function TomaSoli() {
 
             <div className="flex justify-center items-center mt-6 space-x-4">
               {paso > 1 && (
-                <button className="bg-naranja-claro text-white rounded px-6 py-3" onClick={RetrocederPaso}>
+                <button className="bg-naranja-claro text-white rounded px-6 py-3" onClick={() => setPaso(paso - 1)}>
                   Atrás
                 </button>
               )}
               {paso < 3 && (
-                <button className="bg-naranja-claro text-white rounded px-6 py-3" onClick={SiguentePaso}>
+                <button className="bg-naranja-claro text-white rounded px-6 py-3" onClick={() => setPaso(paso + 1)}>
                   Siguiente
                 </button>
               )}
               {paso === 3 && (
-                <button className="bg-naranja-claro text-white rounded px-6 py-3" onClick={Finalizar}>
+                <button className="bg-naranja-claro text-white rounded px-6 py-3" onClick={() => setPaso(4)}>
                   Finalizar
                 </button>
               )}
@@ -144,10 +135,10 @@ function TomaSoli() {
           <div className="resumen-solicitud bg-[#EBF5FB] p-8 flex flex-col justify-center items-center rounded-lg shadow-md">
             <h2 className="font-bold text-2xl mb-4">Resumen de tu solicitud</h2>
             <p className="text-lg">Tipo de Solicitud: {solicitud}</p>
-            <p className="text-lg">Día seleccionado: {dia}</p>
+            <p className="text-lg">Fecha seleccionada: {fecha}</p>
             <p className="text-lg">Hora seleccionada: {hora}</p>
             <div className="flex justify-center items-center mt-6 space-x-4">
-              <button className="bg-[#E74C3C] text-white rounded px-6 py-3" onClick={RetrocederPaso}>
+              <button className="bg-[#E74C3C] text-white rounded px-6 py-3" onClick={() => setPaso(3)}>
                 Atrás
               </button>
               <button className="bg-[#E74C3C] text-white rounded px-6 py-3" onClick={handleConfirmar}>
