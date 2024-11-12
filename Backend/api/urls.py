@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import login_vista, registro, logout_vista, ConsultasAgendadasViewSet, HorarioPrestadoresViewSet, ValidarDisponibilidadView  # Importamos la vista de validación
+from .views import PasswordResetRequestView, PasswordResetConfirmView
 
 # Crear un router para las rutas automáticas de consultas y horarios
 router = DefaultRouter()
@@ -17,5 +18,7 @@ urlpatterns = [
 
     path('validar-disponibilidad/', ValidarDisponibilidadView.as_view(), name='validar-disponibilidad'),
     
+     path('password-reset/', PasswordResetRequestView.as_view(), name='password-reset-request'),
+    path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
 
 ]

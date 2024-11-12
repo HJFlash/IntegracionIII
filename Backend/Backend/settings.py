@@ -175,3 +175,13 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'api.Usuario'
+
+# ---------- Email ---------------
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.office365.com'  # Ajusta al proveedor de email
+EMAIL_PORT = 587  # Usualmente 587 para conexiones TLS
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = ''
+

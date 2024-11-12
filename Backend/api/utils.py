@@ -1,4 +1,5 @@
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 def obtener_tokens_para_usuario(usuario):
     refresh = RefreshToken.for_user(usuario)
@@ -10,3 +11,8 @@ def obtener_tokens_para_usuario(usuario):
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
+
+class AccountRecoveryTokenGenerator(PasswordResetTokenGenerator):
+    pass
+
+account_recovery_token = AccountRecoveryTokenGenerator()

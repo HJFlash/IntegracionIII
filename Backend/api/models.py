@@ -46,6 +46,9 @@ class UsuarioManager(BaseUserManager):
         user.is_superuser = True
         user.save(using=self._db)
         return user
+    
+    def get_email_field_name(self):
+        return 'email'
 
 
 class Usuario(models.Model):
@@ -63,10 +66,10 @@ class Usuario(models.Model):
             MinValueValidator(10000000)
         ]
     )
-    
+    email = models.EmailField(unique=True, blank=True, null=True)
     nombres = models.CharField(max_length=100, blank=True, null=True)
     apellidos = models.CharField(max_length=100, default='ApellidoDesconocido')
-    contrasena = models.CharField(max_length=128, blank=True)  # Aumenta el tamaño para hashes
+    password = models.CharField(max_length=128, blank=True)  # Renombrado a 'password'
     contacto = models.CharField(max_length=20, unique=True, default="Sin contacto")
     calle = models.CharField(max_length=25, default='CalleDesconocida')
     num_casa = models.CharField(max_length=50, blank=True, null=True)
@@ -88,7 +91,10 @@ class Usuario(models.Model):
 
     def get_short_name(self):
         return self.nombres
-
+    
+    def get_email_field_name(self):
+        return 'email'
+    
     @property
     def is_authenticated(self):
         return True
@@ -103,8 +109,8 @@ class Usuario(models.Model):
         ]
     
     def save(self, *args, **kwargs):
-        if self.contrasena and not self.contrasena.startswith('pbkdf2_'):  # Evitar hashear si ya está encriptada
-            self.contrasena = make_password(self.contrasena)
+        if self.password and not self.password.startswith('pbkdf2_'):  # Evitar hashear si ya está encriptada
+            self.password = make_password(self.password)
         super().save(*args, **kwargs)
 
     

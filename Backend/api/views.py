@@ -24,8 +24,15 @@ from django.core.cache import cache
 from django.utils import timezone
 
 
-
-
+from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.urls import reverse
+from django.shortcuts import get_object_or_404
+from .utils import account_recovery_token
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth import get_user_model
+from rest_framework.permissions import AllowAny
 
 
 
@@ -109,6 +116,54 @@ def logout_vista(request):
 
 
 
+# recuperar contraseña
+
+class PasswordResetRequestView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({'error': 'Se requiere el correo electrónico.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = Usuario.objects.get(email=email)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = account_recovery_token.make_token(user)
+            reset_url = request.build_absolute_uri(
+                reverse('password-reset-confirm', kwargs={'uidb64': uid, 'token': token})
+            )
+            send_mail(
+                subject="Recuperación de Contraseña",
+                message=f"Usa este enlace para restablecer tu contraseña: {reset_url}",
+                from_email='tu-correo@dominio.com',
+                recipient_list=[email],
+            )
+            return Response({'message': 'Correo de recuperación enviado.'}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'error': 'No se encontró un usuario con ese correo electrónico.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = get_object_or_404(User, pk=uid)
+
+            if not account_recovery_token.check_token(user, token):
+                return Response({'error': 'Token no válido o expirado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            new_password = request.data.get('new_password')
+            if not new_password:
+                return Response({'error': 'Se requiere una nueva contraseña.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user.set_password(new_password)
+            user.save()
+            return Response({'message': 'Contraseña restablecida con éxito.'}, status=status.HTTP_200_OK)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response({'error': 'Token no válido.'}, status=status.HTTP_400_BAD_REQUEST)
+
 # -------------------- Validaciones para el CRUD de Consultas Agendadas --------------------
 def validar_disponibilidad(rut_prestador, fecha, hora):
     try:
@@ -158,24 +213,23 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
         return []  # No requiere autenticación para ninguna acción
 
     def list(self, request, *args, **kwargs):
-    # Obtener los parámetros de la solicitud
         fecha_inicio = request.query_params.get('fecha_inicio')
         fecha_fin = request.query_params.get('fecha_fin')
         estado = request.query_params.get('estado')
 
-    # Crear una clave única para el caché basada en los parámetros
+    # Clave para caché con parámetros de filtro
         cache_key = f"citas_{fecha_inicio}_{fecha_fin}_{estado}"
-        cache_key = hashlib.md5(cache_key.encode()).hexdigest()  # Hashear para evitar problemas con el tamaño de la clave
+        cache_key = hashlib.md5(cache_key.encode()).hexdigest()
 
-    # Intentar obtener las citas del caché
+    # Intentar obtener datos del caché
         citas_cache = cache.get(cache_key)
         if citas_cache:
             return JsonResponse(citas_cache, safe=False, status=200)
 
-    # Si no están en caché, consultar la base de datos
-        citas = Consultas_Agendadas.objects.all()
+    # Consulta optimizada con select_related para reducir el número de consultas
+        citas = Consultas_Agendadas.objects.select_related('rut_usuario', 'rut_prestador')
 
-    # Filtrar por fechas si están presentes
+    # Filtros de fecha si están presentes
         if fecha_inicio and fecha_fin:
             try:
                 fecha_inicio = parse_date(fecha_inicio)
@@ -188,14 +242,13 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
         if estado:
             citas = citas.filter(estado__iexact=estado)
 
-    # Serializar los datos
+    # Serializar datos
         serializer = self.get_serializer(citas, many=True)
         serialized_data = serializer.data
 
     # Guardar en caché los resultados
-        cache.set(cache_key, serialized_data, 60 * 15)  # Guardar en caché por 15 minutos
+        cache.set(cache_key, serialized_data, 60 * 15)
 
-    # Devolver la respuesta
         return JsonResponse(serialized_data, safe=False, status=200)
     
 
