@@ -23,3 +23,7 @@ Si no funciona el eas, ejecute **npm install eas-cli**
 el ultimo comando comenzara a construir(build) el proyecto, cabe destacar que puede haber problemas con un limite alcanzado debido a la cuenta. 
 
 por ahora queda pendiente las pruebas debido a lo ultimo
+
+## Pendiente
+
+Queda por revisar el error que se encuentra en el siguiente link **https://expo.dev/accounts/hjflash/projects/Frontend_movil/builds/531c74bd-79c1-4379-971a-a717f2cd6486#run-gradlew**
