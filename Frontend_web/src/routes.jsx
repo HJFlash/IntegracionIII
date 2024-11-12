@@ -3,9 +3,13 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 
 import Home from './Home';
 import Tomasoli from './pages/pagesClient/tomaSolicitud';
+import FuncionamientoUser from "./pages/pagesClient/FuncionamientoUser";
 import Login from './pages/pagesClient/Login';
 import Register from './pages/pagesClient/Register';
-import ModTrabajador from './pages/pagesTrabajador/trabajador';
+
+import PerfilUser from './pages/pagesClient/perfilUser';
+import InfoProfileUser from './pages/pagesClient/InfoProfileUser';
+import InfoSoliUser from './pages/pagesClient/infoSoliUser';
 
 import DashboardAdmin from './pages/pagesDashBoard/dashboard';
 import HomeAdmin from './pages/pagesDashBoard/pgPrincipal';
@@ -13,16 +17,12 @@ import CrudAdmin from './pages/pagesDashBoard/pgCrud';
 import GraficosAdmin from './pages/pagesDashBoard/pgGraficos';
 import RegistrarTrabajador from "./pages/pagesDashBoard/RegistrarTrabajador";
 import SoliRegistroUsuario from "./pages/pagesDashBoard/SoliRegistroUsuario";
-import FuncionamientoUser from "./pages/pagesClient/FuncionamientoUser";
-
-import PerfilUser from './pages/pagesClient/perfilUser';
-import InfoProfileUser from './pages/pagesClient/InfoProfileUser';
-import InfoSoliUser from './pages/pagesClient/infoSoliUser';
+import CrudCitas from "./pages/pagesTrabajador/CrudCitas";
+import PgReportes from "./pages/pagesDashBoard/pgReportes";
 
 import TrabajadorMod from "./pages/pagesTrabajador/trabajador";
-import CrudCitas from "./pages/pagesTrabajador/CrudCitas";
 import PerfilTrabajador from "./pages/pagesTrabajador/PerfilTrabajador";
-
+import ModTrabajador from './pages/pagesTrabajador/trabajador';
 
 
 
@@ -39,7 +39,7 @@ function AppRoutes() {
 
 
 
-        {/* Dashboard Admin */}
+        {/* Dashboard Admin   */}
         <Route path="/admin" element={<DashboardAdmin />}>
           <Route index element={<Navigate to="HomeAdmin" />} />
           <Route path="HomeAdmin" element={<HomeAdmin />} />
@@ -47,6 +47,7 @@ function AppRoutes() {
           <Route path="GraficosAdmin" element={<GraficosAdmin />} />
           <Route path="RegistrarTrabajador" element={<RegistrarTrabajador />} />
           <Route path="SoliRegistroUsuario" element={<SoliRegistroUsuario />} />
+          <Route path="PgReportes" element={<PgReportes />} />
         </Route>
 
         {/* UserProfile */}

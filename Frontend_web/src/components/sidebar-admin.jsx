@@ -68,13 +68,13 @@ function SideBar() {
               <li className="mb-[15px]">
                 <NavLink to="CrudAdmin"
                   className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                  Crud Admin
+                  Crud Solicitudes de Servicios
                 </NavLink>
               </li>
               <li className="mb-[15px]">
                 <NavLink to="SoliRegistroUsuario"
                   className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                  Solicitudes de Usuario
+                  Solicitudes de Registro de Usuario
                 </NavLink>
               </li>
               <li className="mb-[15px]">
@@ -99,19 +99,19 @@ function SideBar() {
               <li className="mb-[15px]">
                 <NavLink to="GraficosAdmin"
                   className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
+                  Reportes Graficos Generales
+                </NavLink>
+              </li>
+              <li className="mb-[15px]">
+                <NavLink
+                  to="GraficosAdmin"
+                  className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
                   Reportes Graficos Anuales
                 </NavLink>
               </li>
               <li className="mb-[15px]">
                 <NavLink
-                  to="/marketing-statistics"
-                  className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                  Reportes Graficos Mensuales
-                </NavLink>
-              </li>
-              <li className="mb-[15px]">
-                <NavLink
-                  to="/marketing-statistics"
+                  to="PgReportes"
                   className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
                   Reportes
                 </NavLink>

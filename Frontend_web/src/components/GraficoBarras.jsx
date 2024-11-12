@@ -3,11 +3,12 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 
 const GraficoBarras = () => {
     const [data, setData] = useState([]);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:8000/obtener-datos-graficos-barra/');
+                const response = await fetch(`http://localhost:8000/obtener-datos-graficos-barra/?year=${selectedYear}`);
                 const result = await response.json();
                 setData(result);
             } catch (error) {
@@ -15,10 +16,26 @@ const GraficoBarras = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [selectedYear]);
+    
 
     return (
         <div className="p-6 w-full bg-white rounded-lg shadow-lg my-5">
+
+            <div className="mb-4">
+                <label htmlFor="year" className="mr-2">Selecciona el año:</label>
+                <select
+                    id="year"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    className="p-2 border rounded"
+                >
+                    <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                </select>
+            </div>
+
             <ResponsiveContainer width="100%" height={300}>
                 <BarChart 
                     data={data}

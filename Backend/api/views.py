@@ -177,24 +177,57 @@ def DatosGraficos(request):
     # Si no es un método POST, devolver error
     return JsonResponse({'error': 'Método no permitido'}, status=405)
 
-
-
 def obtener_datos_grafico_torta(request):
-    datos = Datos_Para_Graficos.objects.values('t_consulta').annotate(cantidad=Count('t_consulta'))
+    year = request.GET.get('year', datetime.now().year)
+    datos = Datos_Para_Graficos.objects.filter(fechas__year=year) \
+        .values('t_consulta') \
+        .annotate(cantidad=Count('t_consulta'))
     return JsonResponse(list(datos), safe=False)
 
-
 def obtener_datos_grafico_barras(request):
-    datos = Datos_Para_Graficos.objects.values('t_consulta').annotate(
+    acno = request.GET.get('year', str(datetime.now().year))
+    
+    try:
+        acno = int(acno)
+    except ValueError:
+        return JsonResponse({'error': 'Año inválido'}, status=400)
+
+    todos_los_servicios = Datos_Para_Graficos.objects.values('t_consulta').distinct()
+
+    datos = Datos_Para_Graficos.objects.filter(fechas__year=acno).values('t_consulta').annotate(
         hombres=Count(Case(When(genero_persona='m', then=1))),
         mujeres=Count(Case(When(genero_persona='f', then=1)))
     )
-    return JsonResponse(list(datos), safe=False)
+
+    datos_dict = {item['t_consulta']: item for item in datos}
+
+    resultados_completos = []
+    for servicio in todos_los_servicios:
+        servicio_nombre = servicio['t_consulta']
+        if servicio_nombre in datos_dict:
+            resultados_completos.append(datos_dict[servicio_nombre])
+        else:
+            resultados_completos.append({
+                't_consulta': servicio_nombre,
+                'hombres': 0,
+                'mujeres': 0
+            })
+    
+    return JsonResponse(resultados_completos, safe=False)
     
 
 def obtener_datos_grafico_linea(request):
+
+    acno = request.GET.get('year', str(datetime.now().year))
+    
+    try:
+        acno = int(acno)
+    except ValueError:
+        return JsonResponse({'error': 'Año inválido'}, status=400)
+
+    # Filtrar por el año especificado
     datos_hombres = (
-        Datos_Para_Graficos.objects.filter(genero_persona='m')
+        Datos_Para_Graficos.objects.filter(genero_persona='m', fechas__year=acno)
         .annotate(mes=TruncMonth('fechas'))
         .values('mes')
         .annotate(cantidad_solicitudes=Count('id_consultas'))
@@ -202,7 +235,7 @@ def obtener_datos_grafico_linea(request):
     )
 
     datos_mujeres = (
-        Datos_Para_Graficos.objects.filter(genero_persona='f')
+        Datos_Para_Graficos.objects.filter(genero_persona='f', fechas__year=acno)
         .annotate(mes=TruncMonth('fechas'))
         .values('mes')
         .annotate(cantidad_solicitudes=Count('id_consultas'))
@@ -237,6 +270,26 @@ def obtener_datos_grafico_linea(request):
         })
 
     return JsonResponse(respuesta_final, safe=False)
+
+def obtener_datos_barra_asistencia(request):
+    datos_si = (
+        Datos_Para_Graficos.objects.filter(asistencia='Si')
+    )
+    datos_no= (
+        Datos_Para_Graficos.objects.filter(asistencia='No')
+    )
+
+    total = datos_si.count() + datos_no.count()
+    porcentaje_si = (datos_si.count() / total) * 100 if total > 0 else 0
+    porcentaje_no = (datos_no.count() / total) * 100 if total > 0 else 0
+
+    values  = [
+        {"value": porcentaje_si, "color": "#58d68d"},
+        {"value": porcentaje_no, "color": "#e74c3c"}
+    ]
+
+    return JsonResponse({'values': values})
+
 
 @csrf_exempt
 def registroTrabajador(request):
