@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar, BackHandler } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native';
+import { BackHandler } from 'react-native';
 import { useRouter } from 'expo-router';
 
 const Agenda: React.FC = () => {
@@ -10,9 +11,13 @@ const Agenda: React.FC = () => {
     router.push('/user');
   };
 
+  const handleBackPress = () => {
+    router.back();
+  };
+
   const handleReviewPress = () => {
     // Acción para revisar horario
-    router.push('/calendar');
+    router.push('/horario');
   };
 
   const handleExitPress = () => {
@@ -39,6 +44,9 @@ const Agenda: React.FC = () => {
         <Text style={styles.buttonText}>Revisar Horario</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.buttonExit} onPress={handleBackPress}>
+        <Text style={styles.buttonText}>Volver a Inicio</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.buttonExit} onPress={handleExitPress}>
         <Text style={styles.buttonText}>Salir</Text>
       </TouchableOpacity>

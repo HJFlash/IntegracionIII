@@ -43,7 +43,7 @@ const IndexScreen: React.FC = () => {
       </View>
 
       <View style={styles.buttonRow}>
-        <Pressable style={styles.buttonContainer} onPress={() => router.push('/agendar')}>
+        <Pressable style={styles.buttonContainer} onPress={() => router.push('/new_notification')}>
           <Text style={styles.buttonText}>Tests</Text>
         </Pressable>
       </View>
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     color: '#fff',
-    backgroundColor: '#C0392B', // Color diferente para el botón de salir
+    backgroundColor: '#E74C3C', // #C0392B Color diferente para el botón de salir
     borderRadius: 10,
     width: '100%',
   },

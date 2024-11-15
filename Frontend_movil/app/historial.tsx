@@ -23,6 +23,7 @@ const AppointmentHistoryScreen: React.FC = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
+        const token = 'auth-token'; 
         const response = await fetch('http://tu-dominio.com/appointment-history/', {
           method: 'GET',
           headers: {
@@ -39,7 +40,8 @@ const AppointmentHistoryScreen: React.FC = () => {
         setAppointments(data);
       } catch (error) {
         console.error('Error al obtener el historial de citas:', error);
-        Alert.alert('Error', error.message || 'No se pudo obtener el historial de citas');
+        const errorMessage = error instanceof Error ? error.message : 'No se pudo obtener el historial de citas';
+        Alert.alert('Error', errorMessage);
       }
     };
 

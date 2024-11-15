@@ -1,46 +1,67 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, Alert, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, ScrollView } from 'react-native';
+import * as DocumentPicker from 'expo-document-picker';
 import { useRouter } from 'expo-router';
 
 const RegisterScreen: React.FC = () => {
   const [rut, setRut] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [nombre, setNombre] = useState('');
   const [apellidos, setApellidos] = useState('');
   const [telefono, setTelefono] = useState('');
-  const [sector, setSector] = useState('');
-  const [calle, setCalle] = useState('');
-  const [ncasa, setNcasa] = useState('');
+  const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
 
   const router = useRouter();
 
+  const handleSelectPdf = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'application/pdf',
+      });
+      if (result.type === 'success') {
+        setSelectedPdf(result.uri); // Guardamos la URI del archivo
+      } else {
+        console.log('Selección de documento cancelada');
+      }
+    } catch (err) {
+      console.error('Error al seleccionar el documento:', err);
+    }
+  };
+
   const handleRegister = async () => {
+    if (!selectedPdf) {
+      alert('Por favor, sube el documento RSH.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('Rut', rut);
+    formData.append('Email', email);
+    formData.append('Contraseña', password);
+    formData.append('Nombre', nombre);
+    formData.append('Apellidos', apellidos);
+    formData.append('Telefono', telefono);
+    formData.append('RSH', {
+      uri: selectedPdf,
+      type: 'application/pdf',
+      name: 'RSH.pdf',
+    });
+
     try {
       const response = await fetch('http://localhost:8000/registro/', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify({
-          Rut: rut,
-          Contraseña: password,
-          Email: email,
-          Nombre: nombre,
-          Apellidos: apellidos,
-          Telefono: telefono,
-          Sector: sector,
-          Calle: calle,
-          Ncasa: ncasa,
-        }),
+        body: formData,
       });
 
       const data = await response.json();
       if (response.ok) {
         console.log('Usuario registrado con éxito:', data);
       } else {
-        console.log('Error en el registro:', data);  // Captura detalles de error
+        console.log('Error en el registro:', data);
       }
     } catch (error) {
       console.error('Error al enviar la solicitud:', error);
@@ -51,6 +72,7 @@ const RegisterScreen: React.FC = () => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Campos existentes */}
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Ingrese rut"
@@ -61,60 +83,14 @@ const RegisterScreen: React.FC = () => {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Ingrese correo electrónico"
-            style={styles.input}
-            placeholderTextColor="#999"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
+        {/* Botón para seleccionar PDF */}
+        <TouchableOpacity style={styles.uploadButton} onPress={handleSelectPdf}>
+          <Text style={styles.uploadText}>
+            {selectedPdf ? 'Documento seleccionado' : 'Subir documento RSH (PDF)'}
+          </Text>
+        </TouchableOpacity>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Ingrese Primer Nombre"
-            style={styles.input}
-            placeholderTextColor="#999"
-            value={nombre}
-            onChangeText={setNombre}
-          />
-        </View>
-
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Ingrese su Primer Apellido"
-            style={styles.input}
-            placeholderTextColor="#999"
-            value={apellidos}
-            onChangeText={setApellidos}
-          />
-        </View>
-
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Contraseña"
-            secureTextEntry
-            style={styles.input}
-            placeholderTextColor="#999"
-            value={password}
-            onChangeText={setPassword}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Teléfono"
-            style={styles.input}
-            placeholderTextColor="#999"
-            value={telefono}
-            onChangeText={setTelefono}
-          />
-        </View>
-
-
+        {/* Botón para enviar el registro */}
         <TouchableOpacity style={styles.loginButton} onPress={handleRegister}>
           <Text style={styles.loginText}>Enviar Solicitud de Registro</Text>
         </TouchableOpacity>
@@ -137,12 +113,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   scrollContainer: {
-    paddingBottom: 20, // Espacio adicional para evitar que el contenido se corte
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    paddingBottom: 20,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -152,7 +123,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 15,
-    width: '100%',
     backgroundColor: '#fff',
   },
   input: {
@@ -161,10 +131,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  uploadButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  uploadText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+  },
   loginButton: {
     backgroundColor: '#ff4d4d',
     paddingVertical: 15,
-    paddingHorizontal: 40,
     borderRadius: 10,
     marginBottom: 20,
   },
