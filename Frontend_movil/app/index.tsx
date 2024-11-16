@@ -43,7 +43,7 @@ const IndexScreen: React.FC = () => {
       </View>
 
       <View style={styles.buttonRow}>
-        <Pressable style={styles.buttonContainer} onPress={() => router.push('/new_notification')}>
+        <Pressable style={styles.buttonContainer} onPress={() => router.push('/user_select')}>
           <Text style={styles.buttonText}>Tests</Text>
         </Pressable>
       </View>
