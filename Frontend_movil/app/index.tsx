@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, Image, BackHandler, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Image, BackHandler, SafeAreaView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
@@ -7,7 +7,20 @@ const IndexScreen: React.FC = () => {
   const router = useRouter();
 
   const handleBackButton = useCallback(() => {
-    BackHandler.exitApp();
+    Alert.alert(
+      "Confirmar salida",
+      "¿Está seguro que desea salir de la aplicación?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        { 
+          text: "Salir", 
+          onPress: () => BackHandler.exitApp()
+        }
+      ]
+    );
     return true;
   }, []);
 

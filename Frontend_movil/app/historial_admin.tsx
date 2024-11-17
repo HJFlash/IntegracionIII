@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, StatusBar, BackHandler } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
 interface Appointment {
@@ -25,6 +25,17 @@ const AppointmentHistoryScreen: React.FC = () => {
   const router = useRouter();
   const { userId } = useLocalSearchParams();
   const appointments = mockAppointments[parseInt(userId as string)] || [];
+
+  useEffect(() => {
+    const backAction = () => {
+      router.back();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, []);
 
   return (
     <View style={styles.container}>

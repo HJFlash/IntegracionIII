@@ -13,6 +13,17 @@ const Agenda: React.FC = () => {
     BackHandler.exitApp();
   };
 
+  React.useEffect(() => {
+    const backAction = () => {
+      router.back();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, []);
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />

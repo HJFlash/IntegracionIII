@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, StatusBar, ScrollView, Alert, BackHandler } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { useRouter } from 'expo-router';
 
@@ -68,6 +68,28 @@ const RegisterScreen: React.FC = () => {
       console.error('Error al enviar la solicitud:', error);
     }
   };
+
+  const handleBackPress = () => {
+    if (rut || email || password || nombre || apellidos || telefono || selectedPdf) {
+      Alert.alert(
+        'Confirmación',
+        'Tienes datos sin guardar. ¿Estás seguro de que quieres salir?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Salir', onPress: () => router.back() },
+        ],
+        { cancelable: false }
+      );
+      return true;
+    }
+    router.back();
+    return true;
+  };
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+    return () => backHandler.remove();
+  }, [rut, email, password, nombre, apellidos, telefono, selectedPdf]);
 
   return (
     <View style={styles.container}>
