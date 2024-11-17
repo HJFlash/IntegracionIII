@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Picker } from '@react-native-picker/picker';
+import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const SelectServiceScreen: React.FC = () => {
   const [selectedService, setSelectedService] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([
+    { label: 'Selecciona un servicio', value: '' },
+    { label: 'Podología', value: 'Podología' },
+    { label: 'Peluquería', value: 'Peluquería' },
+    { label: 'Fonoaudiología', value: 'Fonoaudiología' },
+    { label: 'Asesoría Jurídica', value: 'Asesoría Jurídica' },
+  ]);
   const router = useRouter();
 
   const handleCalendarPress = () => {
@@ -33,17 +41,16 @@ const SelectServiceScreen: React.FC = () => {
       {/* Select Service */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Seleccionar Servicio</Text>
-        <Picker
-          selectedValue={selectedService}
+        <DropDownPicker
+          open={open}
+          value={selectedService}
+          items={items}
+          setOpen={setOpen}
+          setValue={setSelectedService}
+          setItems={setItems}
           style={styles.picker}
-          onValueChange={(itemValue) => setSelectedService(itemValue)}
-        >
-          <Picker.Item label="Selecciona un servicio" value="" />
-          <Picker.Item label="Podología" value="Podología" />
-          <Picker.Item label="Peluquería" value="Peluquería" />
-          <Picker.Item label="Fonoaudiología" value="Fonoaudiología" />
-          <Picker.Item label="Asesoría Jurídica" value="Asesoría Jurídica" />
-        </Picker>
+          placeholder="Selecciona un servicio"
+        />
       </View>
 
       {/* Select Date */}

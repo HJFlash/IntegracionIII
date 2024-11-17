@@ -42,11 +42,12 @@ const RegisterScreen: React.FC = () => {
     formData.append('Nombre', nombre);
     formData.append('Apellidos', apellidos);
     formData.append('Telefono', telefono);
-    formData.append('RSH', {
+    const pdfFile = {
       uri: selectedPdf,
       type: 'application/pdf',
       name: 'RSH.pdf',
-    });
+    } as any;
+    formData.append('RSH', pdfFile);
 
     try {
       const response = await fetch('http://localhost:8000/registro/', {
