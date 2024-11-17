@@ -41,6 +41,83 @@ export default function RootLayout() {
           headerTitleStyle: {
             fontSize: 24, // Tamaño de la letra
           },}} />
+      <Stack.Screen name="agendar" options={{
+        headerShown: true,
+          headerTitle: "Pagina de Agendamiento", // Cambia el título
+          headerStyle: {
+            backgroundColor: '#5499C7', // Color celeste para el fondo
+          },
+          headerTitleAlign: 'center', // Centra el título
+          headerTintColor: '#fff', // Cambia el color del texto a blanco
+          headerTitleStyle: {
+            fontSize: 24, // Tamaño de la letra
+          },}} />    
+      <Stack.Screen name="horario" options={{
+        headerShown: true,
+          headerTitle: "Horario", // Cambia el título
+          headerStyle: {
+            backgroundColor: '#5499C7', // Color celeste para el fondo
+          },
+          headerTitleAlign: 'center', // Centra el título
+          headerTintColor: '#fff', // Cambia el color del texto a blanco
+          headerTitleStyle: {
+            fontSize: 24, // Tamaño de la letra
+          },}} />
+      <Stack.Screen name="user" options={{
+        headerShown: true,
+          headerTitle: "Pagina de Usuario", // Cambia el título
+          headerStyle: {
+            backgroundColor: '#5499C7', // Color celeste para el fondo
+          },
+          headerTitleAlign: 'center', // Centra el título
+          headerTintColor: '#fff', // Cambia el color del texto a blanco
+          headerTitleStyle: {
+            fontSize: 24, // Tamaño de la letra
+          },}} />
+      <Stack.Screen name="new_notification" options={{
+        headerShown: true,
+          headerTitle: "Pagina de Testeo de Notificaciones", // Cambia el título
+          headerStyle: {
+            backgroundColor: '#5499C7', // Color celeste para el fondo
+          },
+          headerTitleAlign: 'center', // Centra el título
+          headerTintColor: '#fff', // Cambia el color del texto a blanco
+          headerTitleStyle: {
+            fontSize: 24, // Tamaño de la letra
+          },}} />
+      <Stack.Screen name="historial_admin" options={{
+        headerShown: true,
+          headerTitle: "Pagina de Historial-Admin", // Cambia el título
+          headerStyle: {
+            backgroundColor: '#5499C7', // Color celeste para el fondo
+          },
+          headerTitleAlign: 'center', // Centra el título
+          headerTintColor: '#fff', // Cambia el color del texto a blanco
+          headerTitleStyle: {
+            fontSize: 24, // Tamaño de la letra
+          },}} />
+      <Stack.Screen name="prestador" options={{
+        headerShown: true,
+          headerTitle: "Pagina de Prestador", // Cambia el título
+          headerStyle: {
+            backgroundColor: '#5499C7', // Color celeste para el fondo
+          },
+          headerTitleAlign: 'center', // Centra el título
+          headerTintColor: '#fff', // Cambia el color del texto a blanco
+          headerTitleStyle: {
+            fontSize: 24, // Tamaño de la letra
+          },}} />
+      <Stack.Screen name="user_select" options={{
+        headerShown: true,
+          headerTitle: "Pagina de Selección de Usuario", // Cambia el título
+          headerStyle: {
+            backgroundColor: '#5499C7', // Color celeste para el fondo
+          },
+          headerTitleAlign: 'center', // Centra el título
+          headerTintColor: '#fff', // Cambia el color del texto a blanco
+          headerTitleStyle: {
+            fontSize: 24, // Tamaño de la letra
+          },}} />
     </Stack>
   );
 }
