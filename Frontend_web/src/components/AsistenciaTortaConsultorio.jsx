@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 export const AsistenciaTortaConsultorio = () => {
     const [data, setData] = useState([]);

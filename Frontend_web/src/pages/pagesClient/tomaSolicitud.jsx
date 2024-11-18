@@ -6,32 +6,30 @@ function TomaSoli() {
   const [solicitud, setSolicitud] = useState("");
   const [hora, setHora] = useState("");
   const [dia, setDia] = useState("");
+  const [horasDisponibles, setHorasDisponibles] = useState([]);
 
   //Controla el paso en el que se encuentra
   const [paso, setPaso] = useState(1);
 
   // Opciones Solicitud
   const OpcionesDeSolicitud = [
-    "doctor",
-    "peluqueria",
-    "kinesiologia",
-    "fonoaudiologia",
-    "Atencion social",
+    "Podologia",
+    "Psicologia",
+    "Peluqueria",
+    "Kinesiologia",
+    "Fonoaudiologia",
+    "AsesoriaJuridica",
   ];
-  const OpcionesDeHora = [
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-  ];
+
+  const horasPorSolicitud = {
+    Podologia: ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:30", "14:00"],
+    Psicologia: ["09:00", "10:00", "11:00", "12:00", "13:00"],
+    Peluqueria: ["09:00","09:20", "09:30","10:00","10:20","10:40","11:00","11:20","11:40","12:00","12:20"],
+    Kinesiologia: ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:30", "14:00"],
+    Fonoaudiologia: ["09:00","09:20", "09:30","10:00","10:20","10:40","11:00","11:20","11:40","12:00","12:20"],
+    AsesoriaJuridica: ["09:00", "10:00", "11:00", "12:00", "13:00"]
+  };
+
   const OpcionesDeDia = [
     "lunes",
     "martes",
@@ -43,7 +41,9 @@ function TomaSoli() {
 
   const SeleccionarTipoSolicitud = (tipo) => {
     setSolicitud(tipo);
+    setHorasDisponibles(horasPorSolicitud[tipo]);
   };
+
 
   const SeleccionarHora = (horaSeleccionada) => {
     setHora(horaSeleccionada);
@@ -125,7 +125,7 @@ function TomaSoli() {
                   Elija la hora
                 </p>
                 <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
-                  {OpcionesDeHora.map((opcion) => (
+                  {horasDisponibles.map((opcion) => (
                     <button
                       key={opcion}
                       className={`text-lg p-4 rounded-lg border border-gray-300 cursor-pointer ${
