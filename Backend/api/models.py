@@ -114,3 +114,4 @@ class Datos_Para_Graficos(models.Model):
     t_consulta = models.CharField(max_length=100, blank=True, null=True)
     genero_persona = models.CharField(max_length=100, blank=True, null=True)
     asistencia = models.CharField(max_length=2,blank=True,null=True)
+    consultorio = models.IntegerField(blank=True,null=True)

@@ -27,7 +27,7 @@ function ProgressBar() {
 
   return (
     <div className='w-[400px] m-4 p-6 bg-white rounded-lg shadow-lg'>
-      <h1>Porcentaje de Asistencia</h1>
+      <h1>Porcentaje de Asistencia General</h1>
       <div className="flex w-full h-5 rounded-lg overflow-hidden">
         {data.map((value, index) => {
           const percentage = (value.value / total) * 100; // Calcular porcentaje

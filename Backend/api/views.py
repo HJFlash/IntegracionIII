@@ -273,10 +273,10 @@ def obtener_datos_grafico_linea(request):
 
 def obtener_datos_barra_asistencia(request):
     datos_si = (
-        Datos_Para_Graficos.objects.filter(asistencia='Si')
+        Datos_Para_Graficos.objects.filter(asistencia='si')
     )
     datos_no= (
-        Datos_Para_Graficos.objects.filter(asistencia='No')
+        Datos_Para_Graficos.objects.filter(asistencia='no')
     )
 
     total = datos_si.count() + datos_no.count()
@@ -289,6 +289,24 @@ def obtener_datos_barra_asistencia(request):
     ]
 
     return JsonResponse({'values': values})
+
+def obtener_datos_grafico_asistencia_consultorio(request):
+    consulta_data=[]
+
+    for consultorio in range(1, 8):
+        data = Datos_Para_Graficos.objects.filter(consultorio=consultorio)
+
+        si_count = data.filter(asistencia="si").count()
+        no_count = data.filter(asistencia="no").count()
+
+        consulta_data.append({
+            'consultorio': consultorio,
+            'si': si_count,
+            'no': no_count,
+        })
+
+
+    return JsonResponse(consulta_data, safe=False)
 
 
 @csrf_exempt
