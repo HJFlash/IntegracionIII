@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './Home';
 import Tomasoli from './pages/pagesClient/tomaSolicitud';
 import Login from './pages/pagesClient/Login';
+import PausePage from './components/PausePage'; // Importar la nueva página
 import Register from './pages/pagesClient/Register';
 import ModTrabajador from './pages/pagesTrabajador/trabajador';
 
@@ -18,6 +19,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<Login />} />
+        <Route path="/pause" element={<PausePage />} /> {/* Nueva ruta */}
         <Route path="/Register" element={<Register />} />
         <Route path="/TomaSoli" element={<Tomasoli />} />
         <Route path="/TrabajadorMod" element={<ModTrabajador />} />

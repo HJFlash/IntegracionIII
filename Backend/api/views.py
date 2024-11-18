@@ -33,6 +33,8 @@ from .utils import account_recovery_token
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny
+from django.shortcuts import render
+from django.utils.timezone import now
 
 
 
@@ -96,7 +98,12 @@ def login_vista(request):
             usuario = Usuario.objects.get(rut=rut)
 
             # Verificar la contraseña
-            if check_password(contrasena, usuario.contrasena):
+            if check_password(contrasena, usuario.password):
+                # Actualizar session_start al momento del inicio de sesión
+                usuario.session_start = now()  # Establecer la hora de inicio de sesión
+                usuario.save()  # Guardar los cambios en el usuario
+
+                # Generar tokens para el usuario
                 tokens = obtener_tokens_para_usuario(usuario)
                 return JsonResponse({
                     'message': 'Inicio de sesión exitoso',
@@ -461,3 +468,6 @@ class CrearConsulta(APIView):
         )
 
         return Response({"success": "Consulta agendada correctamente."}, status=status.HTTP_201_CREATED)
+
+def pause_page(request):
+    return render(request, 'pause.html', {"message": "Has excedido el tiempo máximo de uso. Por favor, toma un descanso."})

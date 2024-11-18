@@ -61,10 +61,14 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'api.middleware.TrackUsuarioActivityMiddleware',  # Middleware de inactividad
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Para almacenar sesiones en la base de datos
 
 ROOT_URLCONF = 'Backend.urls'
 
@@ -168,7 +172,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'USER_ID_FIELD': 'rut',  # Aquí especificamos que 'rut' es el identificador
     'USER_ID_CLAIM': 'rut',  # Aquí especificamos que el 'claim' del JWT será el 'rut'

@@ -82,6 +82,11 @@ class Usuario(models.Model):
     USERNAME_FIELD = 'rut'
     REQUIRED_FIELDS = ['nombres', 'apellidos']  # Campos requeridos
     
+    # Nuevos campos
+    last_active = models.DateTimeField(null=True, blank=True)  # Última actividad
+    session_start = models.DateTimeField(null=True, blank=True)  # Inicio de sesión
+    max_session_duration = models.IntegerField(default=1)  # Tiempo máximo (en minutos)
+    
     def __str__(self):
         return f'{self.nombres} {self.apellidos}'
 
