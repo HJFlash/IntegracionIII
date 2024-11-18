@@ -9,13 +9,13 @@
     "ajv-keywords": "^5.1.0",
     "axios": "^1.7.6",
     "fork-ts-checker-webpack-plugin": "^9.0.2",
+    "http-proxy-middleware": "^3.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
   },
-  "proxy": "http://localhost:8000",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
