@@ -1,40 +1,52 @@
 from datetime import timedelta
-from django.utils.timezone import now
+from django.utils import timezone
 from django.http import JsonResponse
 from .models import Usuario
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 import jwt
 from django.conf import settings
+import json
 
 class TrackUsuarioActivityMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
+        hora_local = timezone.localtime(timezone.now())
         print("Middleware ejecutado")  # Esto debería aparecer en la consola si el middleware está funcionando
-        print(f"Usuario en request: {request.user}")  # Verificar el usuario en la solicitud
-        if hasattr(request, 'user') and request.user.is_authenticated:
-            print("Usuario autenticado:", request.user.rut)  # Verificar que el usuario es autenticado
-            print(f"Usuario {request.user.rut} está siendo monitoreado para inactividad.")
-            user = request.user
-            user.last_active = now()
+        print(f"Usuario en request: {request}")  # Verificar el usuario en la solicitud
+        if request.path == "/logout/":
+            response = self.get_response(request)
+            return response
+        data = json.loads(request.body)
+        if list(data.keys()) == ["Rut", "Contraseña"]:
+            #print(data)
+            usuario = Usuario.objects.get(rut=data.get("Rut"))
+            if request.path == "/login/":
+                print(usuario.rut)
+                #print("Usuario autenticado:", usuario.nombres, usuario.apellidos)  # Verificar que el usuario es autenticado
+                #print(f"Usuario {usuario.nombres, usuario.apellidos} está siendo monitoreado para inactividad.")
+                usuario.last_active = hora_local
+                usuario.session_start = hora_local
 
-            if not user.session_start:
-                user.session_start = now()
-                user.save()
+                if not usuario.session_start:
+                    usuario.session_start = hora_local
+                    usuario.save()
 
-            session_duration = now() - user.session_start
-            if session_duration > timedelta(minutes=user.max_session_duration):
-                user.session_start = None
-                user.save()
-                print(f"Sesion del usuario {request.user.rut} ha expirado.")  # Verificación
+            session_duration = hora_local - usuario.session_start
+            print(session_duration)
+            if session_duration > timedelta(minutes=usuario.max_session_duration):
+                usuario.session_start = None
+                usuario.save()
+                print(f"Sesion del usuario {usuario.nombres, usuario.apellidos} ha expirado.")  # Verificación
                 return JsonResponse({'error': 'Sesión expiró, por favor inicie sesión nuevamente.'}, status=401)
 
-            user.save()
+            usuario.save()
         else:
             print("No hay usuario autenticado")
         response = self.get_response(request)
+            
         return response
 
 
