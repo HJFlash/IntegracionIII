@@ -19,6 +19,7 @@ import RegistrarTrabajador from "./pages/pagesDashBoard/RegistrarTrabajador";
 import SoliRegistroUsuario from "./pages/pagesDashBoard/SoliRegistroUsuario";
 import CrudCitas from "./pages/pagesTrabajador/CrudCitas";
 import PgReportes from "./pages/pagesDashBoard/pgReportes";
+import PgGraficosMensuales from "./pages/pagesDashBoard/pgGraficosMensuales";
 
 import TrabajadorMod from "./pages/pagesTrabajador/trabajador";
 import PerfilTrabajador from "./pages/pagesTrabajador/PerfilTrabajador";
@@ -48,6 +49,7 @@ function AppRoutes() {
           <Route path="RegistrarTrabajador" element={<RegistrarTrabajador />} />
           <Route path="SoliRegistroUsuario" element={<SoliRegistroUsuario />} />
           <Route path="PgReportes" element={<PgReportes />} />
+          <Route path="PgGraficosMensuales" element={<PgGraficosMensuales />} />
         </Route>
 
         {/* UserProfile */}

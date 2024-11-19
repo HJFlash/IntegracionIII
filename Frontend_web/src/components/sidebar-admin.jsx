@@ -97,9 +97,9 @@ function SideBar() {
           {activeMenu === 'reportes' && (
             <ul className="list-none p-0 m-0 pl-[10px] mt-[5px]">
               <li className="mb-[15px]">
-                <NavLink to="GraficosAdmin"
+                <NavLink to="PgGraficosMensuales"
                   className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                  Reportes Graficos Generales
+                  Reportes Graficos Mensuales
                 </NavLink>
               </li>
               <li className="mb-[15px]">

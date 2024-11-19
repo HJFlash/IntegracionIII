@@ -2,6 +2,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import login_vista, registro, logout_vista, DatosGraficos, obtener_datos_grafico_torta, obtener_datos_grafico_barras,obtener_datos_grafico_linea, registroTrabajador  
 from .views import obtener_datos_soli_registro, ConsultasAgendadasViewSet, actualizar_estado_usuario, obtener_datos_barra_asistencia, obtener_datos_grafico_asistencia_consultorio
+from .views import obtener_datos_grafico_torta_mes, obtener_datos_grafico_barras_mes, obtener_datos_grafico_asistencia_consultorio_mes
+
 
 router = DefaultRouter()
 router.register(r'consultas', ConsultasAgendadasViewSet, basename='consultas')
@@ -21,6 +23,9 @@ urlpatterns = [
     path('actualizar-estado-usuario/<int:rut>/', actualizar_estado_usuario, name='actualizar_estado_usuario'),
     path('obtener-datos-barra-asistencia/', obtener_datos_barra_asistencia, name='obtener_datos_barra_asistencia'),
     path('obtener-datos-grafico-asistencia-consultorio/', obtener_datos_grafico_asistencia_consultorio, name='obtener_datos_grafico_asistencia_consultorio'),
+    path('obtener-datos-grafico-torta-mes/', obtener_datos_grafico_torta_mes, name='obtener_datos_grafico_torta_mes'),
+    path('obtener-datos-graficos-barra-mes/', obtener_datos_grafico_barras_mes, name='obtener_datos_grafico_barras_mes'),
+    path('obtener-datos-grafico-asistencia-consultorio-mes/',obtener_datos_grafico_asistencia_consultorio_mes, name='obtener_datos_grafico_asistencia_consultorio_mes'),
 
     path('',include(router.urls)),
 ]

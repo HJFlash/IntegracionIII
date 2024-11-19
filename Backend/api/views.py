@@ -309,6 +309,74 @@ def obtener_datos_grafico_asistencia_consultorio(request):
     return JsonResponse(consulta_data, safe=False)
 
 
+# graficos datos mensuales
+def obtener_datos_grafico_torta_mes(request):
+    year = request.GET.get('year', datetime.now().year)
+    month = request.GET.get('month', datetime.now().month)
+    datos = Datos_Para_Graficos.objects.filter(fechas__year=year, fechas__month=month) \
+        .values('t_consulta') \
+        .annotate(cantidad=Count('t_consulta'))
+    return JsonResponse(list(datos), safe=False)
+
+def obtener_datos_grafico_barras_mes(request):
+    acno = request.GET.get('year', str(datetime.now().year))
+    month = request.GET.get('month', datetime.now().month)
+    
+    try:
+        acno = int(acno)
+        month = int(month)
+    except ValueError:
+        return JsonResponse({'error': 'Año o mes inválido'}, status=400)
+    
+    if month < 1 or month > 12:
+        return JsonResponse({'error': 'Mes inválido'}, status=400)
+
+    todos_los_servicios = Datos_Para_Graficos.objects.values('t_consulta').distinct()
+
+    datos = Datos_Para_Graficos.objects.filter(fechas__year=acno, fechas__month=month).values('t_consulta').annotate(
+        hombres=Count(Case(When(genero_persona='m', then=1))),
+        mujeres=Count(Case(When(genero_persona='f', then=1)))
+    )
+
+    datos_dict = {item['t_consulta']: item for item in datos}
+
+    resultados_completos = []
+    for servicio in todos_los_servicios:
+        servicio_nombre = servicio['t_consulta']
+        if servicio_nombre in datos_dict:
+            resultados_completos.append(datos_dict[servicio_nombre])
+        else:
+            resultados_completos.append({
+                't_consulta': servicio_nombre,
+                'hombres': 0,
+                'mujeres': 0
+            })
+    
+    return JsonResponse(resultados_completos, safe=False)
+
+
+def obtener_datos_grafico_asistencia_consultorio_mes(request):
+    month = int(request.GET.get('month', datetime.now().month))
+    year = int(request.GET.get('year', datetime.now().year))
+    
+    consulta_data = []
+
+    for consultorio in range(1, 8):
+        data = Datos_Para_Graficos.objects.filter(
+            consultorio=consultorio, fechas__year=year, fechas__month=month
+        )
+
+        si_count = data.filter(asistencia="si").count()
+        no_count = data.filter(asistencia="no").count()
+
+        consulta_data.append({
+            'consultorio': consultorio,
+            'si': si_count,
+            'no': no_count,
+        })
+
+    return JsonResponse(consulta_data, safe=False)
+
 @csrf_exempt
 def registroTrabajador(request):
     if request.method == 'POST':
