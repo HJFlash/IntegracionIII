@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'Backend',
     'api',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt'
 ]
 
 MIDDLEWARE = [
@@ -66,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'api.middleware.TrackUsuarioActivityMiddleware',  # Middleware de inactividad
+    'api.middleware.DebugMiddleware'
 ]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Para almacenar sesiones en la base de datos
@@ -152,6 +154,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Añade la URL de tu frontend
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 APPEND_SLASH = False
 

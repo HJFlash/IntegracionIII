@@ -15,7 +15,8 @@ from django.contrib.auth import logout
 from rest_framework.views import APIView
 from django.utils.dateparse import parse_date, parse_time
 import json , hashlib
-
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores
 from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, HorarioPrestadorSerializer
 from .utils import obtener_tokens_para_usuario
@@ -471,3 +472,22 @@ class CrearConsulta(APIView):
 
 def pause_page(request):
     return render(request, 'pause.html', {"message": "Has excedido el tiempo máximo de uso. Por favor, toma un descanso."})
+
+def ping(request):
+    print("Encabezados recibidos:", request.headers)
+    if request.method == 'POST':
+        auth = JWTAuthentication().authenticate(request.Authorization)
+        if auth is None:
+            raise AuthenticationFailed('No autenticado')
+
+        user = auth[0]  # El usuario autenticado
+        print(request)
+
+        try:
+            usuario = Usuario.objects.get(rut=user.rut)
+            usuario.last_active = now()
+            usuario.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Usuario.DoesNotExist:
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

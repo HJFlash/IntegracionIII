@@ -13,13 +13,15 @@ class TrackUsuarioActivityMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        data = dict({"NADA": "NADA", "NADA": "NADA"})
         hora_local = timezone.localtime(timezone.now())
         print("Middleware ejecutado")  # Esto debería aparecer en la consola si el middleware está funcionando
         print(f"Usuario en request: {request}")  # Verificar el usuario en la solicitud
         if request.path == "/logout/":
             response = self.get_response(request)
             return response
-        data = json.loads(request.body)
+        if request.body:
+            data = json.loads(request.body)
         if list(data.keys()) == ["Rut", "Contraseña"]:
             #print(data)
             usuario = Usuario.objects.get(rut=data.get("Rut"))
@@ -34,15 +36,6 @@ class TrackUsuarioActivityMiddleware:
                     usuario.session_start = hora_local
                     usuario.save()
 
-            session_duration = hora_local - usuario.session_start
-            print(session_duration)
-            if session_duration > timedelta(minutes=usuario.max_session_duration):
-                usuario.session_start = None
-                usuario.save()
-                print(f"Sesion del usuario {usuario.nombres, usuario.apellidos} ha expirado.")  # Verificación
-                return JsonResponse({'error': 'Sesión expiró, por favor inicie sesión nuevamente.'}, status=401)
-
-            usuario.save()
         else:
             print("No hay usuario autenticado")
         response = self.get_response(request)
@@ -85,3 +78,15 @@ class JWTAuthentication(BaseAuthentication):
 
         return (user, token)
 
+
+class DebugMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        print("Solicitud recibida en middleware:")
+        print("Método:", request.method)
+        print("Ruta:", request.path)
+        print("Encabezados:", request.headers)
+        response = self.get_response(request)
+        return response
