@@ -36,7 +36,7 @@ const Agenda: React.FC = () => {
       {/* Botones */}
       <ActionButton 
         label="Agendar Hora" 
-        onPress={() => handleNavigation('/user')} 
+        onPress={() => handleNavigation('/select_service')} 
         backgroundColor="#4682b4" 
       />
       <ActionButton 

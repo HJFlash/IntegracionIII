@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native';
-import { useRouter } from 'expo-router';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const SelectServiceScreen: React.FC = () => {
+  const { selectedHour } = useLocalSearchParams(); // Obtener la hora seleccionada de los parámetros
   const [selectedService, setSelectedService] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -22,7 +23,7 @@ const SelectServiceScreen: React.FC = () => {
     if (selectedDate) {
       router.push({
         pathname: '/horario',
-        params: { date: selectedDate.toISOString().split('T')[0] }
+        params: { date: selectedDate.toISOString().split('T')[0] },
       });
     }
   };
@@ -34,11 +35,28 @@ const SelectServiceScreen: React.FC = () => {
     }
   };
 
+  const confirmAppointment = () => {
+    if (!selectedService || !selectedDate || !selectedHour) {
+      Alert.alert('Error', 'Por favor selecciona un servicio, un día y una hora.');
+      return;
+    }
+    Alert.alert(
+      'Confirmación',
+      `Tu cita para ${selectedService} ha sido agendada el ${selectedDate.toLocaleDateString(
+        'es-ES'
+      )} a las ${selectedHour}.`
+    );
+  };
+
+  const cancelAppointment = () => {
+    router.back(); // Retroceder a la página anterior
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
 
-      {/* Select Service */}
+      {/* Selección de servicio */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Seleccionar Servicio</Text>
         <DropDownPicker
@@ -49,11 +67,11 @@ const SelectServiceScreen: React.FC = () => {
           setValue={setSelectedService}
           setItems={setItems}
           style={styles.picker}
-          placeholder="Selecciona un servicio"
+          containerStyle={styles.pickerContainer}
         />
       </View>
 
-      {/* Select Date */}
+      {/* Selección de fecha */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Seleccionar día</Text>
         <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
@@ -71,15 +89,32 @@ const SelectServiceScreen: React.FC = () => {
         />
       )}
 
-      {/* Button to navigate to Calendar */}
+      {/* Mostrar la hora seleccionada solo si existe */}
+      {selectedHour && (
+        <View style={styles.selectedHourContainer}>
+          <Text style={styles.selectedHourText}>Hora seleccionada: {selectedHour}</Text>
+        </View>
+      )}
+
+      {/* Botón para ver el calendario */}
       <TouchableOpacity style={styles.calendarButton} onPress={handleCalendarPress}>
         <Text style={styles.calendarText}>Ver Calendario</Text>
       </TouchableOpacity>
 
-      {/* Submit Button */}
-      <TouchableOpacity style={styles.submitButton}>
-        <Text style={styles.submitText}>Enviar</Text>
-      </TouchableOpacity>
+      {/* Mostrar botones solo si hay una hora seleccionada */}
+      {selectedHour && selectedHour !== '' && (
+        <View style={styles.actionButtonsContainer}>
+          {/* Botón de confirmación */}
+          <TouchableOpacity style={styles.confirmButton} onPress={confirmAppointment}>
+            <Text style={styles.confirmText}>Confirmar Hora</Text>
+          </TouchableOpacity>
+
+          {/* Botón de cancelar */}
+          <TouchableOpacity style={styles.cancelButton} onPress={cancelAppointment}>
+            <Text style={styles.cancelText}>Cancelar</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -92,17 +127,11 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#4682b4',
-    borderRadius: 10,
-    padding: 10,
-    backgroundColor: '#fff',
   },
   label: {
     fontSize: 18,
     color: '#4682b4',
     marginBottom: 5,
-    textAlign: 'center',
   },
   input: {
     fontSize: 16,
@@ -116,35 +145,62 @@ const styles = StyleSheet.create({
   },
   inputText: {
     fontSize: 16,
-    color: '#333',
+  },
+  pickerContainer: {
+    width: '100%',
   },
   picker: {
     height: 50,
-    width: '100%',
+  },
+  selectedHourContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#d4edda',
+    borderRadius: 5,
+  },
+  selectedHourText: {
+    fontSize: 18,
+    color: '#155724',
   },
   calendarButton: {
-    backgroundColor: '#4682b4',
-    paddingVertical: 15,
-    borderRadius: 10,
     marginTop: 20,
+    backgroundColor: '#4682b4',
+    padding: 15,
+    borderRadius: 10,
     alignItems: 'center',
   },
   calendarText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: 'bold',
   },
-  submitButton: {
-    backgroundColor: '#ff4d4d',
-    paddingVertical: 15,
-    borderRadius: 10,
+  actionButtonsContainer: {
     marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  confirmButton: {
+    flex: 1,
+    marginRight: 10,
+    backgroundColor: '#32CD32',
+    padding: 15,
+    borderRadius: 10,
     alignItems: 'center',
   },
-  submitText: {
+  confirmText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: 'bold',
+  },
+  cancelButton: {
+    flex: 1,
+    marginLeft: 10,
+    backgroundColor: '#FF4500',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  cancelText: {
+    color: '#fff',
+    fontSize: 18,
   },
 });
 

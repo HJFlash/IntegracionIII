@@ -43,7 +43,7 @@ const IndexScreen: React.FC = () => {
         />
       </View>
 
-      <Text style={styles.infoText}>Aquí encontrarás información de uso</Text>
+      <Text style={styles.infoText}>Bienvenido/a, seleccione una opcion:</Text>
 
       <View style={styles.buttonRow}>
         <Pressable style={styles.buttonContainer} onPress={() => router.push('/login')}>
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     color: '#fff',
-    backgroundColor: '#E74C3C',
+    backgroundColor: '#96c750',
     borderRadius: 10,
     width: '100%',
   },

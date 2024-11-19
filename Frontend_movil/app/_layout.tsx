@@ -5,7 +5,8 @@ export default function RootLayout() {
   return (
     <Stack>
       <Stack.Screen name="login" options={{
-        headerShown: true,
+          animation: 'slide_from_right', // Animación de entrada
+          headerShown: true,
           headerTitle: "Inicio de Sesión", // Cambia el título
           headerStyle: {
             backgroundColor: '#5499C7', // Color celeste para el fondo
@@ -18,6 +19,7 @@ export default function RootLayout() {
       <Stack.Screen 
         name="index" 
         options={{
+          animation: 'slide_from_right', // Animación de entrada
           headerShown: true,
           headerTitle: "Inicio", // Cambia el título
           headerStyle: {
@@ -31,7 +33,8 @@ export default function RootLayout() {
         }} 
       />
       <Stack.Screen name="register" options={{
-        headerShown: true,
+          animation: 'slide_from_right', // Animación de entrada
+          headerShown: true,
           headerTitle: "Registro", // Cambia el título
           headerStyle: {
             backgroundColor: '#5499C7', // Color celeste para el fondo
@@ -42,7 +45,8 @@ export default function RootLayout() {
             fontSize: 24, // Tamaño de la letra
           },}} />
       <Stack.Screen name="agendar" options={{
-        headerShown: true,
+          animation: 'slide_from_right', // Animación de entrada
+          headerShown: true,
           headerTitle: "Pagina de Agendamiento", // Cambia el título
           headerStyle: {
             backgroundColor: '#5499C7', // Color celeste para el fondo
@@ -53,7 +57,8 @@ export default function RootLayout() {
             fontSize: 24, // Tamaño de la letra
           },}} />    
       <Stack.Screen name="horario" options={{
-        headerShown: true,
+          animation: 'slide_from_right', // Animación de entrada
+          headerShown: true,
           headerTitle: "Horario", // Cambia el título
           headerStyle: {
             backgroundColor: '#5499C7', // Color celeste para el fondo
@@ -63,9 +68,10 @@ export default function RootLayout() {
           headerTitleStyle: {
             fontSize: 24, // Tamaño de la letra
           },}} />
-      <Stack.Screen name="user" options={{
-        headerShown: true,
-          headerTitle: "Pagina de Usuario", // Cambia el título
+      <Stack.Screen name="select_service" options={{
+          animation: 'slide_from_right', // Animación de entrada
+          headerShown: true,
+          headerTitle: "Pagina de Seleccion de Servicio", // Cambia el título
           headerStyle: {
             backgroundColor: '#5499C7', // Color celeste para el fondo
           },
@@ -75,7 +81,8 @@ export default function RootLayout() {
             fontSize: 24, // Tamaño de la letra
           },}} />
       <Stack.Screen name="new_notification" options={{
-        headerShown: true,
+          animation: 'slide_from_right', // Animación de entrada
+          headerShown: true,
           headerTitle: "Pagina de Testeo de Notificaciones", // Cambia el título
           headerStyle: {
             backgroundColor: '#5499C7', // Color celeste para el fondo
@@ -86,7 +93,8 @@ export default function RootLayout() {
             fontSize: 24, // Tamaño de la letra
           },}} />
       <Stack.Screen name="historial_admin" options={{
-        headerShown: true,
+          animation: 'slide_from_right', // Animación de entrada
+          headerShown: true,
           headerTitle: "Pagina de Historial-Admin", // Cambia el título
           headerStyle: {
             backgroundColor: '#5499C7', // Color celeste para el fondo
@@ -97,7 +105,8 @@ export default function RootLayout() {
             fontSize: 24, // Tamaño de la letra
           },}} />
       <Stack.Screen name="prestador" options={{
-        headerShown: true,
+          animation: 'slide_from_right', // Animación de entrada
+          headerShown: true,
           headerTitle: "Pagina de Prestador", // Cambia el título
           headerStyle: {
             backgroundColor: '#5499C7', // Color celeste para el fondo
@@ -108,7 +117,8 @@ export default function RootLayout() {
             fontSize: 24, // Tamaño de la letra
           },}} />
       <Stack.Screen name="user_select" options={{
-        headerShown: true,
+          animation: 'slide_from_right', // Animación de entrada
+          headerShown: true,
           headerTitle: "Pagina de Selección de Usuario", // Cambia el título
           headerStyle: {
             backgroundColor: '#5499C7', // Color celeste para el fondo

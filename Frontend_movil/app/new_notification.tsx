@@ -10,10 +10,14 @@ const NotificationScreen: React.FC = () => {
   useEffect(() => {
     // Solicitar permisos de notificación al cargar el componente
     registerForPushNotificationsAsync();
-    
+
     // Manejar la recepción de notificaciones
     const subscription = Notifications.addNotificationReceivedListener(notification => {
-      Alert.alert('Notificación Recibida', notification.request.content.title || 'Sin título');
+      Alert.alert(
+        'Notificación Recibida',
+        notification.request.content.title || 'Sin título',
+        [{ text: 'OK' }]
+      );
     });
 
     return () => subscription.remove();
@@ -39,32 +43,68 @@ const NotificationScreen: React.FC = () => {
     console.log('Token de notificación:', token);
   };
 
-  // Función para programar una notificación
-  const scheduleNotification = async () => {
+  // Funciones para programar notificaciones
+  const scheduleConfirmationNotification = async () => {
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Hola! Esta es una notificación de prueba.",
-        body: '¡Gracias por usar nuestra aplicación!',
-        data: { data: 'goes here' },
+        title: "Cita Confirmada ✔️",
+        body: "Tu cita para el servicio 'Peluquería' ha sido confirmada el 20 de noviembre a las 15:00.",
+        data: { type: 'confirmation', service: 'Peluquería', date: '20 de noviembre', time: '15:00' },
       },
-      trigger: { type: Notifications.TriggerType.TIME_INTERVAL, seconds: 2 }, // Notificación se mostrará después de 2 segundos
+      trigger: { seconds: 5 },
+    });
+  };
+
+  const scheduleReminderNotification = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Recordatorio de Cita 📅",
+        body: "Tienes una cita programada para 'Podología' mañana a las 10:00.",
+        data: { type: 'reminder', service: 'Podología', date: 'mañana', time: '10:00' },
+      },
+      trigger: { seconds: 10 },
+    });
+  };
+
+  const scheduleRescheduleNotification = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Cita Reprogramada 🔄",
+        body: "Tu cita para 'Asesoría Jurídica' se ha reprogramado al 21 de noviembre a las 14:00.",
+        data: { type: 'reschedule', service: 'Asesoría Jurídica', date: '21 de noviembre', time: '14:00' },
+      },
+      trigger: { seconds: 15 },
+    });
+  };
+
+  const scheduleCancellationNotification = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Cita Cancelada ❌",
+        body: "Tu cita para 'Fonoaudiología' ha sido cancelada. Por favor, contacta para reprogramar.",
+        data: { type: 'cancellation', service: 'Fonoaudiología' },
+      },
+      trigger: { seconds: 20 },
     });
   };
 
   return (
     <View style={styles.container}>
-        <Text style={styles.title}>Pantalla de Notificaciones</Text>
+      <Text style={styles.token}>
+        Token: {notificationToken || 'Esperando token...'}
+      </Text>
+      
+      <Button title="Cita Confirmada" onPress={scheduleConfirmationNotification} />
+      <Button title="Recordatorio de Cita" onPress={scheduleReminderNotification} />
+      <Button title="Cita Reprogramada" onPress={scheduleRescheduleNotification} />
+      <Button title="Cita Cancelada" onPress={scheduleCancellationNotification} />
 
-      <Text style={styles.token}>Token: {notificationToken || 'Esperando token...'}</Text>
-
-       <Button title="Programar Notificación" onPress={scheduleNotification} />
-
-        <Button title="Retroceder" onPress={() => router.back()} />
+      <Button title="Retroceder" onPress={() => router.back()} />
     </View>
   );
 };
 
-// Definición de estilos después del componente
+// Definición de estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -73,15 +113,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
   token: {
     marginBottom: 20,
     fontSize: 16,
     color: '#333',
+    textAlign: 'center',
   },
 });
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, memo } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const useAvailableHours = (date: string) => {
   const [availableHours, setAvailableHours] = useState<string[]>([]);
@@ -10,7 +10,6 @@ const useAvailableHours = (date: string) => {
   useEffect(() => {
     const fetchAvailableHours = async () => {
       try {
-        // Simulación de la obtención de horas disponibles para la fecha seleccionada
         const hours = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
         setAvailableHours(hours);
       } catch (err) {
@@ -26,15 +25,23 @@ const useAvailableHours = (date: string) => {
   return { availableHours, loading, error };
 };
 
-const HourBlock = memo(({ hour }: { hour: string }) => (
-  <View key={hour} style={styles.hourBlock} accessible accessibilityLabel={`Hora disponible ${hour}`}>
+const HourBlock = memo(({ hour, onSelect }: { hour: string; onSelect: (hour: string) => void }) => (
+  <TouchableOpacity style={styles.hourBlock} onPress={() => onSelect(hour)}>
     <Text style={styles.hourText}>{hour}</Text>
-  </View>
+  </TouchableOpacity>
 ));
 
 const Horario = () => {
-  const { date }: { date: string } = useLocalSearchParams();  // Obtener la fecha seleccionada
+  const { date }: { date: string } = useLocalSearchParams();
   const { availableHours, loading, error } = useAvailableHours(date);
+  const router = useRouter();
+
+  const handleHourSelect = (hour: string) => {
+    router.push({
+      pathname: '/select_service',
+      params: { selectedHour: hour },
+    });
+  };
 
   if (loading) {
     return (
@@ -57,7 +64,7 @@ const Horario = () => {
       <Text style={styles.header}>Horas disponibles para {date}</Text>
       <ScrollView contentContainerStyle={styles.hoursContainer}>
         {availableHours.map((hour) => (
-          <HourBlock key={hour} hour={hour} />
+          <HourBlock key={hour} hour={hour} onSelect={handleHourSelect} />
         ))}
       </ScrollView>
     </View>
