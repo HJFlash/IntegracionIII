@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
-import sendEmailNotification from '../utils/sendEmailNotification';
+//import sendEmailNotification from '../utils/sendEmailNotification';
 
 const EmailNotificationScreen = () => {
   const [email, setEmail] = useState('');

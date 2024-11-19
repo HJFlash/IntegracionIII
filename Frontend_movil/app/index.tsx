@@ -56,7 +56,7 @@ const IndexScreen: React.FC = () => {
       </View>
 
       <View style={styles.buttonRow}>
-        <Pressable style={styles.buttonContainer} onPress={() => router.push('/agendar')}>
+        <Pressable style={styles.buttonContainer} onPress={() => router.push('/agenda')}>
           <Text style={styles.buttonText}>Tests</Text>
         </Pressable>
       </View>
