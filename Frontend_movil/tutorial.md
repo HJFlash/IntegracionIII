@@ -17,6 +17,7 @@ Una vez listos, deben ejecutar el comando para iniciar sesion
 ## En segundo lugar, Build el Proyecto
 
 **npx eas build**
+**npx eas build -p android --profile preview**
 
 Si no funciona el eas, ejecute **npm install eas-cli**
 
@@ -24,6 +25,7 @@ el ultimo comando comenzara a construir(build) el proyecto, cabe destacar que pu
 
 por ahora queda pendiente las pruebas debido a lo ultimo
 
-## Pendiente
+## En tercer lugar
 
-Queda por revisar el error que se encuentra en el siguiente link **https://expo.dev/accounts/hjflash/projects/Frontend_movil/builds/531c74bd-79c1-4379-971a-a717f2cd6486#run-gradlew**
+Se pedira la opcion de hacer build para All(Ambos), Android e IOS. Par IOS se necesita una cuenta de Apple por el momento queda pendiente o se omitirá la build para IOS.
+
