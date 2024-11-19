@@ -113,7 +113,7 @@ function SideBar() {
                 <NavLink
                   to="PgReportes"
                   className="block py-2 px-4 text-[#CBD5E1] rounded-[4px] hover:bg-[#4c5483]">
-                  Reportes
+                  Reportes de Asistencia
                 </NavLink>
               </li>
             </ul>
