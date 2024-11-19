@@ -3,7 +3,7 @@ from .views import login_vista, registro, logout_vista, ConsultasAgendadasViewSe
 from .views import obtener_datos_soli_registro, ConsultasAgendadasViewSet
 from .views import send_email
 from django.urls import path, include
-from .views import appointment_history
+from .views import appointment_history, send_email_notification
 
 # Crear un router para las rutas automáticas de consultas y horarios
 router = DefaultRouter()
@@ -20,7 +20,7 @@ urlpatterns = [
     path('obtener-datos-graficos-linea/', obtener_datos_grafico_linea, name='obtener_datos_grafico_linea'),
     path('registroTrabajador/', registroTrabajador, name='registroTrabajador'),
     path('obtener-datos-registro_soli/', obtener_datos_soli_registro, name='obtener_datos_soli_registro'),
-    path('send-email/', send_email, name='send_email'),
+    path('api/send-email/', send_email_notification, name='send-email'),
     path('appointment-history/', appointment_history, name='appointment_history'),
 
     path('',include(router.urls)),

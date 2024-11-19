@@ -179,9 +179,8 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = 'api.Usuario'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.example.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@example.com'
-EMAIL_HOST_PASSWORD = 'your-email-password'
-DEFAULT_FROM_EMAIL = 'your-email@example.com'
+EMAIL_HOST = 'smtp.office365.com'  # Servidor SMTP de Outlook
+EMAIL_PORT = 587  # Puerto SMTP
+EMAIL_USE_TLS = True  # Habilitar TLS
+EMAIL_HOST_USER = 'tu_correo@outlook.com'  # Tu correo de Outlook
+EMAIL_HOST_PASSWORD = 'tu_contraseña_o_token_de_aplicación'  # Tu contraseña de Outlook o un token de aplicación

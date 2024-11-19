@@ -10,4 +10,14 @@ def obtener_tokens_para_usuario(usuario):
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
-    
+from django.core.mail import send_mail
+
+def send_notification_email(to_email, subject, message):
+    send_mail(
+        subject,
+        message,
+        'tu_correo@gmail.com',  # Correo desde donde se enviará
+        [to_email],            # Destinatarios
+        fail_silently=False,
+    )
+

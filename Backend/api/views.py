@@ -23,6 +23,7 @@ from .utils import obtener_tokens_para_usuario
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from .models import Appointment
+from .utils import send_notification_email
 
 
 
@@ -362,19 +363,22 @@ def enviar_notificacion_correo(destinatario, asunto, mensaje):
     )
 
 # Vista que recibe la solicitud y envía el correo
-@csrf_exempt
-def enviar_correo(request):
-    if request.method == 'POST':
-        datos = json.loads(request.body)
-        destinatario = datos['destinatario']
-        asunto = datos['asunto']
-        mensaje = datos['mensaje']
-        
-        enviar_notificacion_correo(destinatario, asunto, mensaje)
-        
-        return JsonResponse({'mensaje': 'Correo enviado correctamente'})
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+@api_view(['POST'])
+def send_email_notification(request):
+    data = request.data
+    to_email = data.get('email')
+    subject = data.get('subject')
+    message = data.get('message')
 
+    if not to_email or not subject or not message:
+        return JsonResponse({'error': 'Faltan datos'}, status=400)
+
+    try:
+        send_notification_email(to_email, subject, message)
+        return JsonResponse({'success': 'Correo enviado exitosamente'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
 @login_required
 def appointment_history(request):
     user = request.user
