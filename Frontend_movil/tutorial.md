@@ -29,3 +29,6 @@ por ahora queda pendiente las pruebas debido a lo ultimo
 
 Se pedira la opcion de hacer build para All(Ambos), Android e IOS. Par IOS se necesita una cuenta de Apple por el momento queda pendiente o se omitirá la build para IOS.
 
+una vez creada la build con el comando anteriormente mencionado en el segundo lugar, se deberia generar una apk que se puede instalar en cualquier dispositivo movil con OS Android.
+
+Nota: La build puede tardar entre 5 a 8 minutos.
