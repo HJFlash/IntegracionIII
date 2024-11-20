@@ -36,7 +36,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny
 from django.shortcuts import render
 from django.utils.timezone import now
-
+from django.db.models import Q
 
 
 
@@ -212,55 +212,77 @@ def validar_limite_diario(usuario, fecha, servicio=None):
 # -----------------------------------------------------------------------
 
 
-# -------------------- CRUD para Consultas Agendadas --------------------    
+def invalidate_cache(prefix="citas_"):
+    """
+    Invalida todas las claves de caché relacionadas con citas.
+    """
+    # Recupera todas las claves relevantes (si las estás almacenando)
+    keys = cache.get("cache_keys", [])
+    for key in keys:
+        if key.startswith(prefix):
+            cache.delete(key)
+    # Opcional: Limpia la lista de claves almacenadas si es necesario
+    keys = [key for key in keys if not key.startswith(prefix)]
+    cache.set("cache_keys", keys, None)
+
+
+
+
+# -------------------- CRUD para Consultas Agendadas --------------------
 class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
     queryset = Consultas_Agendadas.objects.all()
     serializer_class = ConsultaAgendadaSerializer
 
-    def get_permissions(self):
-        return []  # No requiere autenticación para ninguna acción
-
     def list(self, request, *args, **kwargs):
+        """
+        Lista de citas con filtros opcionales (fecha_inicio, fecha_fin, estado).
+        Resultados cacheados por 15 minutos.
+        """
         fecha_inicio = request.query_params.get('fecha_inicio')
         fecha_fin = request.query_params.get('fecha_fin')
         estado = request.query_params.get('estado')
 
-    # Clave para caché con parámetros de filtro
-        cache_key = f"citas_{fecha_inicio}_{fecha_fin}_{estado}"
-        cache_key = hashlib.md5(cache_key.encode()).hexdigest()
-
-    # Intentar obtener datos del caché
+        # Crear clave de caché
+        cache_key = hashlib.md5(f"citas_{fecha_inicio}_{fecha_fin}_{estado}".encode()).hexdigest()
         citas_cache = cache.get(cache_key)
         if citas_cache:
-            return JsonResponse(citas_cache, safe=False, status=200)
+            return Response(citas_cache, status=200)
 
-    # Consulta optimizada con select_related para reducir el número de consultas
-        citas = Consultas_Agendadas.objects.select_related('rut_usuario', 'rut_prestador')
-
-    # Filtros de fecha si están presentes
+        # Construir filtros dinámicamente
+        filtro = Q()
         if fecha_inicio and fecha_fin:
             try:
                 fecha_inicio = parse_date(fecha_inicio)
                 fecha_fin = parse_date(fecha_fin)
-                citas = citas.filter(fecha__range=(fecha_inicio, fecha_fin))
+                filtro &= Q(fecha__range=(fecha_inicio, fecha_fin))
             except ValueError:
-                return JsonResponse({'error': 'Formato de fecha inválido'}, status=400)
+                return Response({'error': 'Formato de fecha inválido'}, status=400)
 
-    # Filtrar por estado si se proporciona
         if estado:
-            citas = citas.filter(estado__iexact=estado)
+            filtro &= Q(estado__iexact=estado)
 
-    # Serializar datos
-        serializer = self.get_serializer(citas, many=True)
-        serialized_data = serializer.data
+        citas = Consultas_Agendadas.objects.select_related('rut_usuario', 'rut_prestador').filter(filtro)
+        serialized_data = self.get_serializer(citas, many=True).data
 
-    # Guardar en caché los resultados
+        # Guardar en caché
         cache.set(cache_key, serialized_data, 60 * 15)
+        return Response(serialized_data, status=200)
 
-        return JsonResponse(serialized_data, safe=False, status=200)
-    
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Recuperar una cita específica por ID.
+        """
+        try:
+            consulta = self.get_object()
+            serializer = self.get_serializer(consulta)
+            return Response(serializer.data, status=200)
+        except Consultas_Agendadas.DoesNotExist:
+            return Response({'error': 'Cita no encontrada'}, status=404)
 
     def create(self, request, *args, **kwargs):
+        """
+        Crear una nueva cita, con validaciones personalizadas.
+        """
         datos = request.data
         try:
             usuario = Usuario.objects.get(rut=datos['rut_usuario'])
@@ -268,17 +290,11 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
             fecha_cita = datos['fecha']
             hora_inicio = datos['hora_inicio']
 
-        # Validar límite diario de citas por usuario
-            limite_diario = validar_limite_diario(usuario, fecha_cita)
-            if not limite_diario['disponible']:
-                return JsonResponse({'error': limite_diario['error']}, status=400)
+            # Validar límite diario de citas
+            validar_limite_diario(usuario, fecha_cita)
+            validar_disponibilidad(prestador.rut, fecha_cita, hora_inicio)
 
-        # Validar disponibilidad del prestador
-            disponibilidad = validar_disponibilidad(prestador.rut, fecha_cita, hora_inicio)
-            if not disponibilidad['disponible']:
-                return JsonResponse({'error': disponibilidad['error']}, status=400)
-
-            # Calcular la hora de término (Ejemplo: 1 hora de duración)
+            # Calcular hora de término (1 hora por defecto)
             duracion_servicio = timedelta(hours=1)
             hora_inicio_obj = parse_time(hora_inicio)
             hora_termino = (datetime.combine(date.today(), hora_inicio_obj) + duracion_servicio).time()
@@ -293,113 +309,43 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
                 servicio=prestador.servicio
             )
 
-        # Invalida el caché si se actualizan las citas
-            cache.delete('todas_las_citas')
-            return JsonResponse({'message': 'Cita creada exitosamente'}, status=201)
-
+            # Invalidar caché
+            invalidate_cache("citas_")
+            return Response({'message': 'Cita creada exitosamente'}, status=201)
         except Usuario.DoesNotExist:
-            return JsonResponse({'error': 'Usuario no encontrado'}, status=400)
+            return Response({'error': 'Usuario no encontrado'}, status=400)
         except Prestador.DoesNotExist:
-            return JsonResponse({'error': 'Prestador no encontrado'}, status=400)
+            return Response({'error': 'Prestador no encontrado'}, status=400)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+            return Response({'error': str(e)}, status=400)
 
-    
-    
-    
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
-        cache.delete('todas_las_citas')  # Invalida el caché
+        invalidate_cache("citas_")  # Invalida caché
         return response
 
     def destroy(self, request, *args, **kwargs):
         response = super().destroy(request, *args, **kwargs)
-        cache.delete('todas_las_citas')  # Invalida el caché
+        invalidate_cache("citas_")  # Invalida caché
         return response
-    
-    # Nueva acción para cancelar la cita
+
+
     @action(detail=True, methods=['post'])
     def cancelar(self, request, pk=None):
         try:
             consulta = Consultas_Agendadas.objects.get(pk=pk)
 
             if consulta.estado == 'cancelado':
-                return Response(
-                    {"error": "Esta cita ya ha sido cancelada."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            elif consulta.estado == 'finalizado':
-                return Response(
-                    {"error": "No se puede cancelar una cita que ya ha sido finalizada."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+                return Response({"error": "Esta cita ya ha sido cancelada."}, status=400)
+            if consulta.estado == 'finalizado':
+                return Response({"error": "No se puede cancelar una cita finalizada."}, status=400)
 
-            # Si la cita está en estado 'pendiente', se puede cancelar
             consulta.estado = 'cancelado'
             consulta.save()
-            return Response(
-                {"success": "La cita ha sido cancelada con éxito."},
-                status=status.HTTP_200_OK
-            )
-
+            invalidate_cache("citas_")  # Invalida caché
+            return Response({"success": "La cita ha sido cancelada con éxito."}, status=200)
         except Consultas_Agendadas.DoesNotExist:
-            return Response(
-                {"error": "Cita no encontrada."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        
-        
-
-# -------------------- LEER --------------------
-@csrf_exempt
-@cache_page(60 * 15)  # Cachear por 15 minutos
-def obtener_citas(request):
-    if request.method == 'GET':
-        citas = Consultas_Agendadas.objects.all()
-        serializer = ConsultaAgendadaSerializer(citas, many=True)
-        return JsonResponse(serializer.data, safe=False, status=200)
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
-
-@csrf_exempt
-def obtener_cita_por_id(request, id):  # Cambié el parámetro a 'id'
-    if request.method == 'GET':
-        try:
-            # Buscamos la cita por 'id_consulta' usando el valor de 'id' que recibimos
-            cita = Consultas_Agendadas.objects.get(id_consulta=id)
-            serializer = ConsultaAgendadaSerializer(cita)
-            return JsonResponse(serializer.data, safe=False, status=200)
-        except Consultas_Agendadas.DoesNotExist:
-            return JsonResponse({'error': 'Cita no encontrada'}, status=404)
-
-# -------------------- ACTUALIZAR --------------------
-@csrf_exempt
-def actualizar_cita(request, id_consulta):
-    if request.method == 'PUT':
-        try:
-            # Buscamos la cita por id_consulta
-            cita = Consultas_Agendadas.objects.get(id_consulta=id_consulta)
-            data = json.loads(request.body)
-            serializer = ConsultaAgendadaSerializer(cita, data=data, partial=True)  # partial=True permite actualización parcial
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, safe=False, status=200)
-            return JsonResponse(serializer.errors, status=400)
-        except Consultas_Agendadas.DoesNotExist:
-            return JsonResponse({'error': 'Cita no encontrada'}, status=404)
-
-# -------------------- ELIMINAR --------------------
-
-@csrf_exempt
-def eliminar_cita(request, id):
-    if request.method == 'DELETE':
-        try:
-            cita = Consultas_Agendadas.objects.get(id=id)
-            cita.delete()  # Elimina la cita de la base de datos
-            return JsonResponse({'message': 'Cita eliminada exitosamente'}, status=200)
-        except Consultas_Agendadas.DoesNotExist:
-            return JsonResponse({'error': 'Cita no encontrada'}, status=404)
-
-
+            return Response({"error": "Cita no encontrada."}, status=404)
 # ---------------------------------------------------------------------------
 
 
@@ -443,32 +389,6 @@ class ValidarDisponibilidadView(APIView):
 
         return Response({'success': 'El prestador está disponible.'}, status=status.HTTP_200_OK)
 
-
-# Clase para la creación de consultas
-class CrearConsulta(APIView):
-    def post(self, request):
-        # Obtener los datos del request
-        rut_prestador = request.data.get('rut_prestador')
-        fecha = request.data.get('fecha')
-        hora = request.data.get('hora')
-
-        # Validar disponibilidad
-        validar_disponibilidad = ValidarDisponibilidadView()
-        response = validar_disponibilidad.post(request)
-
-        if response.status_code != status.HTTP_200_OK:
-            return response  # Si no está disponible, retorna el mensaje de error
-
-        # Si está disponible, proceder a crear la consulta
-        consulta = Consultas_Agendadas.objects.create(
-            rut_usuario=request.data.get('rut_usuario'),
-            rut_prestador=rut_prestador,
-            fecha=fecha,
-            hora_inicio=hora,
-            estado='pendiente'
-        )
-
-        return Response({"success": "Consulta agendada correctamente."}, status=status.HTTP_201_CREATED)
 
 def pause_page(request):
     return render(request, 'pause.html', {"message": "Has excedido el tiempo máximo de uso. Por favor, toma un descanso."})
