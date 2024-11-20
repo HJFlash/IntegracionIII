@@ -37,8 +37,11 @@ from rest_framework.permissions import AllowAny
 from django.shortcuts import render
 from django.utils.timezone import now
 from django.db.models import Q
-
-
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import force_bytes, force_str
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 """
     ---------------registro----------            
@@ -123,54 +126,71 @@ def logout_vista(request):
         return JsonResponse({'message': 'Cierre de sesión exitoso'}, status=200)
 
 
+from django.conf import settings
+# ---------------------recuperar contraseña-------------------------------------------
+User = get_user_model()  # Tu modelo Usuario
 
-# recuperar contraseña
-
-class PasswordResetRequestView(APIView):
-    permission_classes = [AllowAny]
+@method_decorator(csrf_exempt, name='dispatch')
+class PasswordResetRequestView(View):
     def post(self, request):
-        email = request.data.get('email')
-        if not email:
-            return Response({'error': 'Se requiere el correo electrónico.'}, status=status.HTTP_400_BAD_REQUEST)
+        data = json.loads(request.body)
+        rut = data.get('rut')  # Obtenemos el RUT enviado en el cuerpo de la solicitud
 
+        # Buscar usuario por RUT
         try:
-            user = Usuario.objects.get(email=email)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = account_recovery_token.make_token(user)
-            reset_url = request.build_absolute_uri(
-                reverse('password-reset-confirm', kwargs={'uidb64': uid, 'token': token})
-            )
-            send_mail(
-                subject="Recuperación de Contraseña",
-                message=f"Usa este enlace para restablecer tu contraseña: {reset_url}",
-                from_email='tu-correo@dominio.com',
-                recipient_list=[email],
-            )
-            return Response({'message': 'Correo de recuperación enviado.'}, status=status.HTTP_200_OK)
+            user = User.objects.get(rut=rut)
         except User.DoesNotExist:
-            return Response({'error': 'No se encontró un usuario con ese correo electrónico.'}, status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
 
+        # Validar que el usuario tenga un email registrado
+        if not user.email:
+            return JsonResponse({'error': 'El usuario no tiene un correo electrónico registrado'}, status=400)
 
-class PasswordResetConfirmView(APIView):
-    permission_classes = [AllowAny]
+        # Generar token y enlace de restablecimiento
+        token_generator = PasswordResetTokenGenerator()
+        token = token_generator.make_token(user)
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        
+        # El enlace de restablecimiento
+        reset_link = f"{request.scheme}://{request.get_host()}/password-reset/{uidb64}/{token}/"
 
-    def post(self, request, uidb64, token):
+        # Enviar correo
         try:
-            uid = urlsafe_base64_decode(uidb64).decode()
-            user = get_object_or_404(User, pk=uid)
+            send_mail(
+                subject="Recuperación de contraseña",
+                message=f"Hola, haz clic en el siguiente enlace para restablecer tu contraseña: {reset_link}",
+                from_email=settings.EMAIL_HOST_USER,  # Correo de la cuenta de envío desde settings
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+            return JsonResponse({'message': 'Correo de recuperación enviado'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': f'Error al enviar el correo: {str(e)}'}, status=500)
 
-            if not account_recovery_token.check_token(user, token):
-                return Response({'error': 'Token no válido o expirado.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            new_password = request.data.get('new_password')
-            if not new_password:
-                return Response({'error': 'Se requiere una nueva contraseña.'}, status=status.HTTP_400_BAD_REQUEST)
+class PasswordResetView(View):
+    def post(self, request, uidb64, token):
+        data = request.POST
+        new_password = data.get('new_password')
 
+        try:
+            # Decodificar uidb64
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+
+            # Validar token
+            token_generator = PasswordResetTokenGenerator()
+            if not token_generator.check_token(user, token):
+                return JsonResponse({'error': 'Token inválido o expirado'}, status=400)
+
+            # Cambiar contraseña
             user.set_password(new_password)
             user.save()
-            return Response({'message': 'Contraseña restablecida con éxito.'}, status=status.HTTP_200_OK)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            return Response({'error': 'Token no válido.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            return JsonResponse({'message': 'Contraseña actualizada correctamente'}, status=200)
+
+        except (User.DoesNotExist, ValueError):
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
 
 # -------------------- Validaciones para el CRUD de Consultas Agendadas --------------------
 def validar_disponibilidad(rut_prestador, fecha, hora):
