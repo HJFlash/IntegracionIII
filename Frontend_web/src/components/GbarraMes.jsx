@@ -1,14 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-const GraficoBarras = () => {
+const GraficoBarrasMes = () => {
     const [data, setData] = useState([]);
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+
+    const months = [
+        { value: 1, label: "Enero" },
+        { value: 2, label: "Febrero" },
+        { value: 3, label: "Marzo" },
+        { value: 4, label: "Abril" },
+        { value: 5, label: "Mayo" },
+        { value: 6, label: "Junio" },
+        { value: 7, label: "Julio" },
+        { value: 8, label: "Agosto" },
+        { value: 9, label: "Septiembre" },
+        { value: 10, label: "Octubre" },
+        { value: 11, label: "Noviembre" },
+        { value: 12, label: "Diciembre" }
+    ];
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/obtener-datos-graficos-barra/?year=${selectedYear}`);
+                const response = await fetch(`http://localhost:8000/obtener-datos-graficos-barra-mes/?month=${selectedMonth}`);
                 const result = await response.json();
                 setData(result);
             } catch (error) {
@@ -16,23 +31,25 @@ const GraficoBarras = () => {
             }
         };
         fetchData();
-    }, [selectedYear]);
-    
+    }, [selectedMonth]);
 
     return (
         <div className="p-6 w-full bg-white rounded-lg shadow-lg my-5">
+            
 
             <div className="mb-4">
-                <label htmlFor="year" className="mr-2">Selecciona el año:</label>
+                <label htmlFor="month" className="mr-2">Selecciona el mes:</label>
                 <select
-                    id="year"
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
+                    id="month"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
                     className="p-2 border rounded"
                 >
-                    <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
+                    {months.map(month => (
+                        <option key={month.value} value={month.value}>
+                            {month.label} del {new Date().getFullYear()}
+                        </option>
+                    ))}
                 </select>
             </div>
 
@@ -54,4 +71,4 @@ const GraficoBarras = () => {
     );
 }
 
-export default GraficoBarras;
+export default GraficoBarrasMes;

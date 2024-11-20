@@ -49,7 +49,7 @@ const SoliRegistroUsuario = () => {
 
   return (
     <div>
-        <div className='max-w-max mx-auto p-6 bg-white shadow-lg rounded-lg'>
+        <div className='max-w-max mx-auto p-6 bg-white shadow-lg rounded-lg mt-7'>
             <div className="mb-4">
                 <label htmlFor="filterEstado" className="mr-2 text-gray-700 font-semibold">Filtrar por estado:</label>
                 <select
@@ -74,13 +74,13 @@ const SoliRegistroUsuario = () => {
                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>2°Nombre</th>
                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>1°Apellido</th>
                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>2°Apellido</th>
-                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>RUT</th>
-                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>contacto</th>
-                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>calle</th>
-                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>num_apar </th>
-                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>num_casa </th>
-                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>tipo usuario</th>
-                         <th className='px-6 py-3 text-left text-gray-700 font-semibold'>Estado</th>
+                        <th className='px-6 py-3 text-left text-gray-700 font-semibold'>RUT</th>
+                        <th className='px-6 py-3 text-left text-gray-700 font-semibold'>contacto</th>
+                        <th className='px-6 py-3 text-left text-gray-700 font-semibold'>calle</th>
+                        <th className='px-6 py-3 text-left text-gray-700 font-semibold'>num_apar </th>
+                        <th className='px-6 py-3 text-left text-gray-700 font-semibold'>num_casa </th>
+                        <th className='px-6 py-3 text-left text-gray-700 font-semibold'>tipo usuario</th>
+                        <th className='px-6 py-3 text-left text-gray-700 font-semibold'>Estado</th>
 
                     </tr>
                 </thead>

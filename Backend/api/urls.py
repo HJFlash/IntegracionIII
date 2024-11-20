@@ -5,10 +5,11 @@ from .views import send_email
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import login_vista, registro, logout_vista, DatosGraficos, obtener_datos_grafico_torta, obtener_datos_grafico_barras,obtener_datos_grafico_linea, registroTrabajador  
-from .views import obtener_datos_soli_registro, ConsultasAgendadasViewSet, actualizar_estado_usuario
+from .views import obtener_datos_soli_registro, ConsultasAgendadasViewSet, actualizar_estado_usuario, obtener_datos_barra_asistencia, obtener_datos_grafico_asistencia_consultorio
+from .views import obtener_datos_grafico_torta_mes, obtener_datos_grafico_barras_mes, obtener_datos_grafico_asistencia_consultorio_mes
 from .views import appointment_history
 
-# Crear un router para las rutas automáticas de consultas y horarios
+
 router = DefaultRouter()
 router.register(r'consultas', ConsultasAgendadasViewSet, basename='consultas')
 router.register(r'horarios', HorarioPrestadoresViewSet, basename='horarios')  # Agregamos las rutas para los horarios
@@ -24,6 +25,11 @@ urlpatterns = [
     path('registroTrabajador/', registroTrabajador, name='registroTrabajador'),
     path('obtener-datos-registro_soli/', obtener_datos_soli_registro, name='obtener_datos_soli_registro'),
     path('actualizar-estado-usuario/<int:rut>/', actualizar_estado_usuario, name='actualizar_estado_usuario'),
+    path('obtener-datos-barra-asistencia/', obtener_datos_barra_asistencia, name='obtener_datos_barra_asistencia'),
+    path('obtener-datos-grafico-asistencia-consultorio/', obtener_datos_grafico_asistencia_consultorio, name='obtener_datos_grafico_asistencia_consultorio'),
+    path('obtener-datos-grafico-torta-mes/', obtener_datos_grafico_torta_mes, name='obtener_datos_grafico_torta_mes'),
+    path('obtener-datos-graficos-barra-mes/', obtener_datos_grafico_barras_mes, name='obtener_datos_grafico_barras_mes'),
+    path('obtener-datos-grafico-asistencia-consultorio-mes/',obtener_datos_grafico_asistencia_consultorio_mes, name='obtener_datos_grafico_asistencia_consultorio_mes'),
     path('CrearConsulta/', CrearConsulta.as_view(), name='CrearConsulta'),
     path('send-email/', send_email, name='send_email'),
     path('appointment-history/', appointment_history, name='appointment_history'),

@@ -14,17 +14,22 @@ class Centro_Comunitario(models.Model):
         unique=True,
         primary_key=True
     )
-    tipo_usuario = models.CharField(max_length=30,choices={
-                                            "admin": "Administrador",
-                                            "adultomayor": "Adulto mayor",
-                                            "prestador": "Profesional"
-                                                })
+    tipo_usuario = models.CharField(
+        max_length=30,
+        choices=[
+            ("admin", "Administrador"),
+            ("adultomayor", "Adulto mayor"),
+            ("prestador", "Profesional")
+        ],
+        default="adultomayor"
+    )
     
     estado_solicitud_opciones = [
         ('Pendiente', 'Pendiente'),
         ('Aceptado', 'Aceptado'),
         ('Rechazado', 'Rechazado'),
     ]
+    
     estado_solicitud = models.CharField(max_length=25,choices=estado_solicitud_opciones,default='Pendiente')
 
 class UsuarioManager(BaseUserManager):
@@ -205,6 +210,8 @@ class Datos_Para_Graficos(models.Model):
     horas = models.TimeField()
     t_consulta = models.CharField(max_length=100, blank=True, null=True)
     genero_persona = models.CharField(max_length=100, blank=True, null=True)
+    asistencia = models.CharField(max_length=2,blank=True,null=True)
+    consultorio = models.IntegerField(blank=True,null=True)
 
 
 class Appointment(models.Model):

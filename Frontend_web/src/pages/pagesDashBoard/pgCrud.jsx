@@ -40,52 +40,62 @@ const PgCrud = () => {
 
   return (
     <div>
-      <div>
-        <label>
-          Fecha de Inicio:
-          <input
-            type="date"
-            value={fechaInicio}
-            onChange={(e) => setFechaInicio(e.target.value)}
-          />
-        </label>
-        <label>
-          Fecha de Término:
-          <input
-            type="date"
-            value={fechaTermino}
-            onChange={(e) => setFechaTermino(e.target.value)}
-          />
-        </label>
-        <button onClick={handleFetchData}>Filtrar Citas</button>
+      <div className='max-w-max mx-auto p-6 bg-white shadow-lg rounded-lg mt-7'>
+      
+        <div className='flex justify-between items-center mb-3'>
+          <label className='flex items-center'>
+            <p>Fecha de Inicio:</p>
+            <input
+              className='p-0 pl-1'
+              type="date"
+              value={fechaInicio}
+              onChange={(e) => setFechaInicio(e.target.value)}
+            />
+          </label>
+          <label className='flex items-center'>
+            <p>Fecha de Término:</p>
+            <input
+              className='p-0 pl-1'
+              type="date"
+              value={fechaTermino}
+              onChange={(e) => setFechaTermino(e.target.value)}
+            />
+          </label>
+          <button className="px-2 py-1 bg-naranja-claro text-white rounded-md shadow-md mb-3"
+            onClick={handleFetchData}>Filtrar Citas</button>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        </div>
+        
+        <div>
+          <table className='min-w-full table-auto text-sm'>
+            <thead>
+              <tr className='bg-gray-200'>
+                <th className='px-6 py-3 text-left text-gray-700 font-semibold'>id</th>
+                <th className='px-6 py-3 text-left text-gray-700 font-semibold'>fecha</th>
+                <th className='px-6 py-3 text-left text-gray-700 font-semibold'>hora</th>
+                <th className='px-6 py-3 text-left text-gray-700 font-semibold'>rut user</th>
+                <th className='px-6 py-3 text-left text-gray-700 font-semibold'>rut prest</th>
+                <th className='px-6 py-3 text-left text-gray-700 font-semibold'>estado</th>
+                <th className='px-6 py-3 text-left text-gray-700 font-semibold'>servicio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item, index) => (
+                <tr key={index}>
+                  <td className='px-2 py-1 text-gray-950'>{item.id_consulta}</td>
+                  <td className='px-2 py-1 text-gray-950 bg-gray-200'>{item.fecha}</td>
+                  <td className='px-2 py-1 text-gray-950'>{item.hora_inicio}</td>
+                  <td className='px-2 py-1 text-gray-950 bg-gray-200'>{item.rut_usuario}</td>
+                  <td className='px-2 py-1 text-gray-950'>{item.rut_prestador}</td>
+                  <td className='px-2 py-1 text-gray-950 bg-gray-200'>{item.estado}</td>
+                  <td className='px-2 py-1 text-gray-950'>{item.servicio}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <table>
-        <thead>
-          <tr>
-            <th>id</th>
-            <th>fecha</th>
-            <th>hora</th>
-            <th>rut user</th>
-            <th>rut prest</th>
-            <th>estado</th>
-            <th>servicio</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
-              <td>{item.id_consulta}</td>
-              <td>{item.fecha}</td>
-              <td>{item.hora_inicio}</td>
-              <td>{item.rut_usuario}</td>
-              <td>{item.rut_prestador}</td>
-              <td>{item.estado}</td>
-              <td>{item.servicio}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      
     </div>
   );
 };

@@ -6,7 +6,7 @@ function infoSoliUser() {
 
       <div className='max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg mb-5'>
         <div>
-          <p className='font-bold flex item justify-center mb-4'>Servicios Restantes</p>
+          <p className='font-bold flex item justify-center mb-4'>Servicios Solicitados</p>
         </div>
         <div className='flex gap-5 items-center justify-center'>
           <div className='w-[110px] h-[135px] bg-orange-600 flex flex-col items-center rounded-lg shadow-lg'>
