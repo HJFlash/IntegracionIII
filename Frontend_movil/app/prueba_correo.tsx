@@ -1,40 +1,63 @@
-import React from 'react';
-import { View, Button, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Button, StyleSheet } from 'react-native';
+//import sendEmailNotification from '../utils/sendEmailNotification';
 
-const enviarCorreo = async () => {
-  try {
-    const response = await fetch('http://tu-dominio.com/send-email/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        subject: 'Asunto del correo',
-        message: 'Contenido del correo',
-        recipient_list: ['destinatario@example.com'],
-      }),
-    });
+const EmailNotificationScreen = () => {
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
 
-    if (!response.ok) {
-      throw new Error('Error en la solicitud');
+  const handleSendEmail = () => {
+    if (!email || !subject || !message) {
+      alert('Por favor, completa todos los campos.');
+      return;
     }
+    sendEmailNotification(email, subject, message);
+  };
 
-    const data = await response.json();
-    Alert.alert('Éxito', 'Correo enviado correctamente');
-    console.log(data);
-  } catch (error) {
-    console.error('Error al enviar el correo:', error);
-    Alert.alert('Error', error.message || 'No se pudo enviar el correo');
-  }
-};
-
-// Componente principal
-const App: React.FC = () => {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Button title="Enviar Correo" onPress={enviarCorreo} />
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Correo del destinatario"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Asunto"
+        value={subject}
+        onChangeText={setSubject}
+      />
+      <TextInput
+        style={[styles.input, styles.textArea]}
+        placeholder="Mensaje"
+        value={message}
+        onChangeText={setMessage}
+        multiline
+      />
+      <Button title="Enviar Correo" onPress={handleSendEmail} />
     </View>
   );
 };
 
-export default App;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: 'top',
+  },
+});
+
+export default EmailNotificationScreen;

@@ -1,25 +1,28 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar, BackHandler } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar } from 'react-native';
+import { BackHandler } from 'react-native';
 import { useRouter } from 'expo-router';
 
 const Agenda: React.FC = () => {
   const router = useRouter();
 
-  const handleSchedulePress = () => {
-    // Acción para agendar hora
-    router.push('/user');
-  };
-
-  const handleReviewPress = () => {
-    // Acción para revisar horario
-    router.push('/calendar');
-  };
+  // Funciones de manejo de acciones
+  const handleNavigation = (route: string) => router.push(route);
 
   const handleExitPress = () => {
-    // Acción para salir (puede ser redirigir a una pantalla de inicio o logout)
     BackHandler.exitApp();
-    return true;
   };
+
+  React.useEffect(() => {
+    const backAction = () => {
+      router.back();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -27,24 +30,49 @@ const Agenda: React.FC = () => {
       
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Página de Agendamiento</Text>
+        <Text style={styles.title}>Seleccione una opcion:</Text>
       </View>
 
       {/* Botones */}
-      <TouchableOpacity style={styles.button} onPress={handleSchedulePress}>
-        <Text style={styles.buttonText}>Agendar Hora</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={handleReviewPress}>
-        <Text style={styles.buttonText}>Revisar Horario</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.buttonExit} onPress={handleExitPress}>
-        <Text style={styles.buttonText}>Salir</Text>
-      </TouchableOpacity>
+      <ActionButton 
+        label="Agendar Hora" 
+        onPress={() => handleNavigation('/select_service')} 
+        backgroundColor="#4682b4" 
+      />
+      <ActionButton 
+        label="Revisar Horario" 
+        onPress={() => handleNavigation('/horario')} 
+        backgroundColor="#4682b4" 
+      />
+      <ActionButton 
+        label="Volver a Inicio" 
+        onPress={() => router.back()} 
+        backgroundColor="#ffa500" 
+      />
+      <ActionButton 
+        label="Salir" 
+        onPress={handleExitPress} 
+        backgroundColor="#ff4d4d" 
+      />
     </View>
   );
 };
+
+// Componente reutilizable para botones
+const ActionButton: React.FC<{ label: string; onPress: () => void; backgroundColor: string }> = ({
+  label,
+  onPress,
+  backgroundColor,
+}) => (
+  <TouchableOpacity 
+    style={[styles.button, { backgroundColor }]} 
+    onPress={onPress}
+    accessibilityRole="button"
+    accessibilityLabel={label}
+  >
+    <Text style={styles.buttonText}>{label}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -63,7 +91,6 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    backgroundColor: '#4682b4',
     paddingVertical: 15,
     borderRadius: 10,
     marginBottom: 20,
@@ -73,12 +100,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  buttonExit: {
-    backgroundColor: '#ff4d4d',
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: 'center',
   },
 });
 

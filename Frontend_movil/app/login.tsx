@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, StatusBar, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, StatusBar, Alert, BackHandler } from 'react-native';
 import { useRouter } from 'expo-router';
 
 const LoginScreen: React.FC = () => {
@@ -7,6 +7,32 @@ const LoginScreen: React.FC = () => {
 
   const [rut, setRut] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(
+        'Confirmación',
+        '¿Estás seguro de que deseas retroceder?',
+        [
+          {
+            text: 'Cancelar',
+            onPress: () => null,
+            style: 'cancel',
+          },
+          {
+            text: 'Sí',
+            onPress: () => router.back(),
+          },
+        ],
+        { cancelable: false }
+      );
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => backHandler.remove();
+  }, []);
 
   const handleLogin = async () => {
     try {

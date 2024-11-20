@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, Image, BackHandler, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Image, BackHandler, SafeAreaView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
@@ -7,7 +7,20 @@ const IndexScreen: React.FC = () => {
   const router = useRouter();
 
   const handleBackButton = useCallback(() => {
-    BackHandler.exitApp();
+    Alert.alert(
+      "Confirmar salida",
+      "¿Está seguro que desea salir de la aplicación?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        { 
+          text: "Salir", 
+          onPress: () => BackHandler.exitApp()
+        }
+      ]
+    );
     return true;
   }, []);
 
@@ -30,7 +43,7 @@ const IndexScreen: React.FC = () => {
         />
       </View>
 
-      <Text style={styles.infoText}>Aquí encontrarás información de uso</Text>
+      <Text style={styles.infoText}>Bienvenido/a, seleccione una opcion:</Text>
 
       <View style={styles.buttonRow}>
         <Pressable style={styles.buttonContainer} onPress={() => router.push('/login')}>
@@ -43,7 +56,7 @@ const IndexScreen: React.FC = () => {
       </View>
 
       <View style={styles.buttonRow}>
-        <Pressable style={styles.buttonContainer} onPress={() => router.push('/agendar')}>
+        <Pressable style={styles.buttonContainer} onPress={() => router.push('/agenda')}>
           <Text style={styles.buttonText}>Tests</Text>
         </Pressable>
       </View>
@@ -95,7 +108,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     color: '#fff',
-    backgroundColor: '#E74C3C',
+    backgroundColor: '#96c750',
     borderRadius: 10,
     width: '100%',
   },
@@ -110,7 +123,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     color: '#fff',
-    backgroundColor: '#C0392B', // Color diferente para el botón de salir
+    backgroundColor: '#E74C3C', // #C0392B Color diferente para el botón de salir
     borderRadius: 10,
     width: '100%',
   },
