@@ -26,21 +26,6 @@ function Home() {
           </div>
         </div>
       </div>
-
-
-
-      <div className='Borrar'>
-        <p>Temporal</p>
-        <Link to="/Admin">
-          <button className='mx-2'>Admin Modo</button>
-        </Link>
-        <Link to="/TrabajadorMod">
-          <button className='mx-2'>TrabajadorModo</button>
-        </Link>
-        <Link to="/profileUser">
-          <button className='mx-2'>Prerfil</button>
-        </Link>
-      </div>
     </div>
   );
 }

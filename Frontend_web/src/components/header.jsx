@@ -61,7 +61,7 @@ function Header() {
           <span className="absolute -bottom-1 right-1/2 w-0 transition-all h-0.5 bg-naranja-claro group-hover:w-3/6"></span>
         </Link>
 
-        <Link to="/" className='text-base font-semibold m-6 group relative w-max'>
+        <Link to="/SolicitudUsuario" className='text-base font-semibold m-6 group relative w-max'>
           Solicitar Servicio
           <span className="absolute -bottom-1 left-1/2 w-0 transition-all h-0.5 bg-naranja-claro group-hover:w-3/6"></span>
           <span className="absolute -bottom-1 right-1/2 w-0 transition-all h-0.5 bg-naranja-claro group-hover:w-3/6"></span>

@@ -6,6 +6,7 @@ import Tomasoli from './pages/pagesClient/tomaSolicitud';
 import FuncionamientoUser from "./pages/pagesClient/FuncionamientoUser";
 import Login from './pages/pagesClient/Login';
 import Register from './pages/pagesClient/Register';
+import SolicitudUsuario from "./pages/pagesClient/SolicitudUsuario";
 
 import PerfilUser from './pages/pagesClient/perfilUser';
 import InfoProfileUser from './pages/pagesClient/InfoProfileUser';
@@ -36,6 +37,8 @@ function AppRoutes() {
         <Route path="/Register" element={<Register />} />
         <Route path="/FuncionamientoUser" element={<FuncionamientoUser />} />
         <Route path="/TomaSoli" element={<Tomasoli />} />
+
+        <Route path="/SolicitudUsuario" element={<SolicitudUsuario />} />
         <Route path="/TrabajadorMod" element={<ModTrabajador />} />
 
 
