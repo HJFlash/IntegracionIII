@@ -1,4 +1,6 @@
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.mail import send_mail
+from .models import Prestador, Horario_Prestadores
 
 def obtener_tokens_para_usuario(usuario):
     refresh = RefreshToken.for_user(usuario)
@@ -10,7 +12,6 @@ def obtener_tokens_para_usuario(usuario):
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
-from django.core.mail import send_mail
 
 def send_notification_email(to_email, subject, message):
     send_mail(
@@ -21,3 +22,26 @@ def send_notification_email(to_email, subject, message):
         fail_silently=False,
     )
 
+def validar_disponibilidad(servicio, fecha, hora_inicio):
+    try:
+        # Obtener el prestador para el servicio solicitado
+        prestadores_disponibles = Prestador.objects.filter(servicio__nombre_servicio=servicio)
+        if not prestadores_disponibles:
+            return {"error": "No hay prestadores disponibles para el servicio seleccionado."}
+
+        # Traducir la fecha al día de la semana en español
+        dia_semana = Horario_Prestadores.traducir_dia(fecha)
+
+        # Buscar un prestador disponible en el horario
+        for prestador in prestadores_disponibles:
+            horarios = Horario_Prestadores.objects.filter(rut_prestador=prestador, dia=dia_semana)
+
+            for horario in horarios:
+                # Verificar si la hora de inicio está dentro del horario disponible, sin contar el descanso
+                if (horario.hora_inicio <= hora_inicio < horario.hora_termino) and (
+                    hora_inicio < horario.descanso or hora_inicio >= horario.hora_termino):
+                    return {"prestador": prestador}  # Se encontró un prestador disponible
+
+        return {"error": "No hay prestadores disponibles para el servicio y horario seleccionados."}
+    except Exception as e:
+        return {"error": f"Error al validar disponibilidad: {str(e)}"}

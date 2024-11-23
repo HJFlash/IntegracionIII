@@ -33,7 +33,7 @@ class Centro_Comunitario(models.Model):
     estado_solicitud = models.CharField(max_length=25,choices=estado_solicitud_opciones,default='Pendiente')
 
 class UsuarioManager(BaseUserManager):
-    def create_user(self, rut, primer_nombre, primer_apellido, contacto, contrasena=None):
+    def create_user(self, rut, primer_nombre, primer_apellido, contacto, contrasena):
         if not rut:
             raise ValueError("El rut debe ser proporcionado")
         user = self.model(
@@ -143,33 +143,13 @@ class Horario_Prestadores(models.Model):
         ('sábado', 'Sábado'),
         ('domingo', 'Domingo'),
     ]
-
-    rut_prestador = models.ForeignKey('Prestador', on_delete=models.CASCADE)
-    dia = models.CharField(max_length=15, choices=DIAS)
-    hora_inicio = models.TimeField()
-    hora_fin = models.TimeField()
-    hora_termino = models.TimeField()
-    descanso = models.TimeField()
-
-    def clean(self):
-        # Validar si el prestador existe
-        if not Prestador.objects.filter(rut=self.rut_prestador).exists():
-            raise ValidationError(f"El prestador con RUT {self.rut_prestador} no está registrado.")
-
-        # Validar que la hora de inicio sea anterior a la hora de fin
-        if self.hora_inicio >= self.hora_fin:
-            raise ValidationError("La hora de inicio debe ser anterior a la hora de fin.")
-
-        # Validar que la hora de descanso esté dentro del horario
-        if not (self.hora_inicio < self.descanso < self.hora_fin):
-            raise ValidationError("La hora de descanso debe estar dentro del horario laboral.")
-
+    
     @staticmethod
     def traducir_dia(fecha):
-        # Obtener el día de la semana de la fecha en español
+        # Asegúrate de que 'fecha' sea una cadena con formato '%Y-%m-%d' o un objeto datetime
         dia_semana = datetime.strptime(fecha, '%Y-%m-%d').strftime('%A')
 
-        # Mapa para traducir el día de la semana a español
+        # Mapa para traducir el día de la semana de inglés a español
         dias_traducidos = {
             'Monday': 'lunes',
             'Tuesday': 'martes',
@@ -180,10 +160,8 @@ class Horario_Prestadores(models.Model):
             'Sunday': 'domingo'
         }
 
-        return dias_traducidos.get(dia_semana)
-
-    def __str__(self):
-        return f"{self.rut_prestador} - {self.dia} ({self.hora_inicio} - {self.hora_termino})"
+        # Retorna el día traducido, o 'lunes' como valor por defecto si no se encuentra el día
+        return dias_traducidos.get(dia_semana, 'lunes')
 
 class Consultas_Agendadas(models.Model):
     id_consulta = models.AutoField(primary_key=True)

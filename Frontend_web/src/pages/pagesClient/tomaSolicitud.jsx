@@ -4,9 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 
 function TomaSoli() {
   const [solicitud, setSolicitud] = useState("");
-  const [hora, setHora] = useState("");
-  const [fecha, setFecha] = useState("");  // Cambiar de `dia` a `fecha`
-  const [dia, setDia] = useState("");
+  const [hora, setHora] = useState(null); // Cambiado de "null" a null
+  const [fecha, setFecha] = useState(""); 
   const [horasDisponibles, setHorasDisponibles] = useState([]);
 
   //Controla el paso en el que se encuentra
@@ -32,15 +31,6 @@ function TomaSoli() {
     AsesoriaJuridica: ["09:00", "10:00", "11:00", "12:00", "13:00"]
   };
 
-  const OpcionesDeDia = [
-    "lunes",
-    "martes",
-    "miercoles",
-    "Jueves",
-    "Viernes",
-    "Sabado",
-  ];
-
   const SeleccionarTipoSolicitud = (tipo) => {
     setSolicitud(tipo);
     setHorasDisponibles(horasPorSolicitud[tipo]);
@@ -50,9 +40,9 @@ function TomaSoli() {
     const rutUsuario = localStorage.getItem('rutUsuario');
     const dataToSend = {
       rut_usuario: rutUsuario,
-      servicio: solicitud,  // Enviar el tipo de servicio en lugar del rut del prestador
-      fecha: fecha,  // Formato YYYY-MM-DD
-      hora_inicio: `${hora}:00`  // Asegurar el formato de hora con segundos "HH:MM:SS"
+      servicio: solicitud,
+      fecha: fecha, 
+      hora_inicio: `${hora}:00`
     };
 
     console.log("Datos enviados:", JSON.stringify(dataToSend, null, 2));
@@ -129,7 +119,7 @@ function TomaSoli() {
                     <button
                       key={opcion}
                       className={`text-lg p-4 rounded-lg border border-gray-300 cursor-pointer ${hora === opcion ? "bg-naranja-claro text-white border-naranja-claro" : ""} ${["12:00", "17:00"].includes(opcion) ? "bg-[#F97A7A] text-[#F8F2E8] cursor-auto" : ""}`}
-                      onClick={() => !["12:00", "17:00"].includes(opcion) && SeleccionarHora(opcion)}
+                      onClick={() => !["12:00", "17:00"].includes(opcion) && setHora(opcion)}
                       disabled={["12:00", "17:00"].includes(opcion)}
                     >
                       {opcion}
