@@ -1,0 +1,110 @@
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.formulario {
+  margin-top:70px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #D4E6F1;
+}
+
+.contenedorOpciones {
+  background-color: #EBF5FB;
+  padding: 2rem;
+}
+
+.contenedorOpciones p {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+
+
+.solicitud-options,
+.dia-options{
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1rem;
+}
+
+.hora-options{
+  display: grid;
+  grid-template-columns: repeat(6,1fr);
+  gap: 1rem;
+}
+
+.opcion-button {
+  margin: 10px;
+  padding: 10px;
+  background-color: #F8F8F8;
+  border: 1px solid rgba(0, 0, 0, .1);
+  cursor: pointer;
+  font-size: 18px;
+}
+
+
+.opcion-button.OpcionSelecionada {
+  background-color: #E74C3C;
+  color: white;
+  border: 1px solid #E74C3C;
+}
+
+.opcion-button.horaNoDisponible{
+  background-color: #F97A7A;
+  color: #F8F2E8;
+}
+
+.buttonsSolicitud {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.buttonsSolicitud button {
+  all: unset;          
+  display: inline-block; 
+  cursor: pointer;    
+  padding: 10px 20px; 
+  text-align: center;
+  background-color: #E74C3C;
+  color: white;
+  border-radius: 5px;
+  font-size: 16px;
+  border: 2px solid #E74C3C;
+  margin: 0 .3rem 0 .3rem;
+}
+
+.resumen-solicitud{
+  background-color: #EBF5FB;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.botonesResumen{
+  margin-top: 1rem;
+}
+
+.resumen-solicitud button{
+  all: unset;          
+  display: inline-block; 
+  cursor: pointer;    
+  padding: 10px 20px; 
+  text-align: center;
+  background-color: #E74C3C;
+  color: white;
+  border-radius: 5px;
+  font-size: 16px;
+  border: 2px solid #E74C3C;
+  margin: 0 .3rem 0 .3rem;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "integracioniii",
+  "version": "1.0.0",
+  "description": "Readme proyecto integracion III\r Este es un proyecto de Taller de Inte",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,144 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.login{
+    display: flex;
+    flex-direction: column;
+    background-color: #EBF5FB;
+    width: 50%;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.regresar{
+    margin-bottom:3rem ;
+}
+
+.regresar .btn-inicio{
+    color: #E74C3C;
+    text-decoration: none;
+}
+
+.regresar .btn-inicio:hover{
+    text-decoration: underline;
+}
+.contentLog{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.contentLog h2{
+    margin-bottom: 2rem;
+}
+
+
+form{
+    display: flex;
+    flex-direction: column;
+}
+
+.rut,
+.contrasena{
+    min-width: 350px;
+}
+
+input {
+    border: none;
+    outline: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 1px 10px;
+    margin: 0;
+    font: inherit;
+}
+
+label{
+    font-size: 14px;
+    padding: 0px 10px;
+    color: rgba(0, 0, 0, .5);
+}
+
+.rutContainer,
+.contrasenaContainer{
+    border: 2px solid #E74C3C;
+    display: flex;
+    margin: 1rem 0 1rem 0;
+}
+.IconRed{
+    width: 5px;
+    background-color: #E74C3C;
+}
+.rut,
+.contrasena{
+    display: flex;
+    flex-direction: column;
+}
+
+.btn-orange button{
+    background-color: #E74C3C;
+    border: 1px solid #E74C3C;
+    color: #EBF5FB;
+    padding: 1rem;
+    font-size: 16px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-orange button:hover{
+    background-color: #cd4739fe;
+}
+
+.mostrarContrasena {
+    display: flex;
+    align-items: center;
+    padding: 1px;
+    margin: 0.3rem 0 2rem 0;
+}
+
+.mostrarContrasena p{
+    margin-left: 1rem;
+}
+
+
+.btn-orange{
+    display: flex;
+    justify-content: center;
+}
+
+
+
+
+
+
+.initRegister{
+    background-color: #5499C7;
+    width: 50%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.containerRegister{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30%;
+}
+
+.containerRegister p{
+    font-size: 24px;
+    font-weight: bold;
+    color: #EBF5FB;
+    margin-bottom: 3rem;
+}
