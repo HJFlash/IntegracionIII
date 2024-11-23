@@ -1,5 +1,5 @@
 #====================================JSON====================================#
-import json
+import json, hashlib
 #============================================================================#
 
 #====================================DJANGO====================================#
@@ -9,70 +9,39 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from django.utils import timezone
+from django.utils.timezone import now
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.dateparse import parse_date, parse_time
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import logout
-from django.db.models import Count, Case, When
+from django.db.models import Count, Case, When, Q
 from django.db.models.functions import TruncMonth
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.urls import reverse
+from django.shortcuts import get_object_or_404, render
 #==============================================================================#
 
 #============================REST FRAMEWORK===============================#
 from rest_framework.response import Response
 from rest_framework import status, viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.views import APIView
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.authentication import JWTAuthentication
 #=========================================================================#
 
 #============================ARCHIVOS NUESTROS============================#
-from .utils import obtener_tokens_para_usuario, send_notification_email, validar_disponibilidad
+from .utils import obtener_tokens_para_usuario, send_notification_email, validar_disponibilidad, account_recovery_token
 from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores, Appointment, AdultoMayor, Datos_Para_Graficos
 from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer
 #=========================================================================#
-from django.utils.dateparse import parse_date, parse_time
-import json , hashlib
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores
-from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, HorarioPrestadorSerializer
-from .utils import obtener_tokens_para_usuario
-from django.views.decorators.cache import cache_page
-from django.core.cache import cache
-from django.utils import timezone
 
 #=================================PYTHON=================================#
 from datetime import datetime, timedelta
 #========================================================================#
-
-from django.core.mail import send_mail
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes
-from django.urls import reverse
-from django.shortcuts import get_object_or_404
-from .utils import account_recovery_token
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth import get_user_model
-from rest_framework.permissions import AllowAny
-from django.shortcuts import render
-from django.utils.timezone import now
-from django.db.models import Q
-
-
-
-"""
-    ---------------registro----------            
-        Fnombre = datos.get('Fnombre')
-        Snombre = datos.get('Snombre')
-        Fapellido = datos.get('Fapellido')
-        Sapellido = datos.get('Sapellido') 
-        
-        
-        if rut and Fnombre and Fapellido:
-        
-        validUser = Usuario(rut=rut, Fnombre=Fnombre, Snombre=Snombre, Fapellido=Fapellido, Sapellido=Sapellido, contrasena=contrasena, contacto=contacto, calle=calle, num_casa=num_casa, num_apar=num_apar, id_centro=id_centro)
-"""
 
 @csrf_exempt
 def send_email(request):
@@ -165,9 +134,8 @@ def login_vista(request):
         try:
             usuario = Usuario.objects.get(rut=rut)
 
-            if check_password(contrasena, usuario.contrasena):
             # Verificar la contraseña
-            if check_password(contrasena, usuario.password):
+            if check_password(contrasena, usuario.contrasena):
                 # Actualizar session_start al momento del inicio de sesión
                 usuario.session_start = now()  # Establecer la hora de inicio de sesión
                 usuario.save()  # Guardar los cambios en el usuario
@@ -186,7 +154,6 @@ def login_vista(request):
                     'contacto': usuario.contacto,
                     'rut': usuario.rut,
                     'tipo_usuario': usuario.tipo_usuario,
-
                 }, status=200)
             else:
                 return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
@@ -202,18 +169,17 @@ def logout_vista(request):
 
 #=======================================CRUD para Consultas Agendadas(INICIO)=======================================#
 
-
 # recuperar contraseña
-
 class PasswordResetRequestView(APIView):
     permission_classes = [AllowAny]
+    
     def post(self, request):
-        email = request.data.get('email')
-        if not email:
+        correo_electronico = request.data.get('correo_electronico')  # Cambié 'email' por 'correo_electronico'
+        if not correo_electronico:
             return Response({'error': 'Se requiere el correo electrónico.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = Usuario.objects.get(email=email)
+            user = Usuario.objects.get(correo_electronico=correo_electronico)  # Cambié 'email' por 'correo_electronico'
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = account_recovery_token.make_token(user)
             reset_url = request.build_absolute_uri(
@@ -223,33 +189,42 @@ class PasswordResetRequestView(APIView):
                 subject="Recuperación de Contraseña",
                 message=f"Usa este enlace para restablecer tu contraseña: {reset_url}",
                 from_email='tu-correo@dominio.com',
-                recipient_list=[email],
+                recipient_list=[correo_electronico],
             )
             return Response({'message': 'Correo de recuperación enviado.'}, status=status.HTTP_200_OK)
-        except User.DoesNotExist:
+        except Usuario.DoesNotExist:
             return Response({'error': 'No se encontró un usuario con ese correo electrónico.'}, status=status.HTTP_404_NOT_FOUND)
-
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token):
         try:
+            # Decodificar el uid y obtener el objeto Usuario
             uid = urlsafe_base64_decode(uidb64).decode()
-            user = get_object_or_404(User, pk=uid)
+            user = get_object_or_404(Usuario, pk=uid)  # Usar el modelo 'Usuario' en lugar de 'User'
 
+            # Verificar el token
             if not account_recovery_token.check_token(user, token):
                 return Response({'error': 'Token no válido o expirado.'}, status=status.HTTP_400_BAD_REQUEST)
 
+            # Obtener la nueva contraseña desde los datos de la solicitud
             new_password = request.data.get('new_password')
             if not new_password:
                 return Response({'error': 'Se requiere una nueva contraseña.'}, status=status.HTTP_400_BAD_REQUEST)
 
+            # Establecer la nueva contraseña y guardarla
             user.set_password(new_password)
             user.save()
+
             return Response({'message': 'Contraseña restablecida con éxito.'}, status=status.HTTP_200_OK)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            return Response({'error': 'Token no válido.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Usuario.DoesNotExist:
+            # Si el usuario no se encuentra, devolver un error específico
+            return Response({'error': 'Usuario no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Captura otros errores generales
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # -------------------- Validaciones para el CRUD de Consultas Agendadas --------------------
 def validar_disponibilidad(rut_prestador, fecha, hora):
@@ -304,27 +279,24 @@ def invalidate_cache(prefix="citas_"):
     keys = [key for key in keys if not key.startswith(prefix)]
     cache.set("cache_keys", keys, None)
 
-
-
-
 # -------------------- CRUD para Consultas Agendadas --------------------
 class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
     queryset = Consultas_Agendadas.objects.all()
     serializer_class = ConsultaAgendadaSerializer
 
     def list(self, request, *args, **kwargs):
-        # Obtener los parámetros de la solicitud
         """
         Lista de citas con filtros opcionales (fecha_inicio, fecha_fin, estado).
         Resultados cacheados por 15 minutos.
         """
         fecha_inicio = request.query_params.get('fecha_inicio')
         fecha_fin = request.query_params.get('fecha_fin')
+        estado = request.query_params.get('estado')
 
-        # Filtrar por fechas si están presentes
         # Crear clave de caché
         cache_key = hashlib.md5(f"citas_{fecha_inicio}_{fecha_fin}_{estado}".encode()).hexdigest()
         citas_cache = cache.get(cache_key)
+
         if citas_cache:
             return Response(citas_cache, status=200)
 
@@ -334,32 +306,20 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
             try:
                 fecha_inicio = parse_date(fecha_inicio)
                 fecha_fin = parse_date(fecha_fin)
-                citas = Consultas_Agendadas.objects.filter(fecha__range=(fecha_inicio, fecha_fin))
                 filtro &= Q(fecha__range=(fecha_inicio, fecha_fin))
             except ValueError:
                 return JsonResponse({'error': 'Formato de fecha inválido'}, status=400)
-        else:
-            citas = Consultas_Agendadas.objects.all()
-                return Response({'error': 'Formato de fecha inválido'}, status=400)
 
-        # Intentar obtener los datos de la caché
-        citas_cache = cache.get('todas_las_citas')
         if estado:
             filtro &= Q(estado__iexact=estado)
 
-        if not citas_cache:
-            # Si no están en caché, serializamos las citas
-            serializer = self.get_serializer(citas, many=True)
-            cache.set('todas_las_citas', serializer.data, 60 * 15)  # 15 minutos
-            return JsonResponse(serializer.data, safe=False, status=200)
-        citas = Consultas_Agendadas.objects.select_related('rut_usuario', 'rut_prestador').filter(filtro)
-        serialized_data = self.get_serializer(citas, many=True).data
+        citas = Consultas_Agendadas.objects.filter(filtro)
 
-        # Si ya están en caché, devolverlos directamente
-        return JsonResponse(citas_cache, safe=False, status=200)
-        # Guardar en caché
-        cache.set(cache_key, serialized_data, 60 * 15)
-        return Response(serialized_data, status=200)
+        # Serializar y guardar en caché si no están en caché
+        serializer = self.get_serializer(citas, many=True)
+        cache.set(cache_key, serializer.data, 60 * 15)  # 15 minutos
+
+        return Response(serializer.data, status=200)
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -384,7 +344,6 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
             # Validación de fecha y hora en el pasado
             fecha_cita = datos['fecha']
             hora_inicio = datos['hora_inicio']
-
             fecha_hora_cita = timezone.datetime.strptime(f"{fecha_cita} {hora_inicio}", '%Y-%m-%d %H:%M:%S')
 
             if timezone.is_naive(fecha_hora_cita):
@@ -393,19 +352,18 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
             if fecha_hora_cita < timezone.now():
                 return JsonResponse({'error': 'No puedes agendar una cita en una fecha pasada.'}, status=400)
 
+            # Validación de conflictos de cita
             conflicto_usuario = Consultas_Agendadas.objects.filter(
                 rut_usuario=usuario.rut,
-                fecha=datos['fecha'],
+                fecha=fecha_cita,
                 hora_inicio=hora_inicio
             ).exists()
 
             if conflicto_usuario:
                 return JsonResponse({'error': 'Ya tienes una cita programada en esa fecha/hora.'}, status=400)
-            # Validar límite diario de citas
-            validar_limite_diario(usuario, fecha_cita)
-            validar_disponibilidad(prestador.rut, fecha_cita, hora_inicio)
 
-            disponibilidad = validar_disponibilidad(prestador.rut, datos['fecha'], hora_inicio)
+            # Validar disponibilidad del prestador
+            disponibilidad = validar_disponibilidad(prestador.rut, fecha_cita, hora_inicio)
             if not disponibilidad['disponible']:
                 return JsonResponse({'error': 'El prestador no está disponible en esa fecha/hora.'}, status=400)
 
@@ -417,8 +375,6 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
             # Calcular hora de término (1 hora por defecto)
             duracion_servicio = timedelta(hours=1)
             hora_termino = (fecha_hora_cita + duracion_servicio).time()
-            hora_inicio_obj = parse_time(hora_inicio)
-            hora_termino = (datetime.combine(date.today(), hora_inicio_obj) + duracion_servicio).time()
 
             nueva_cita = Consultas_Agendadas.objects.create(
                 rut_usuario=usuario,
@@ -434,50 +390,43 @@ class ConsultasAgendadasViewSet(viewsets.ModelViewSet):
             cache.delete('todas_las_citas')
 
             return JsonResponse({'message': 'Cita creada exitosamente'}, status=201)
-
-            # Invalidar caché
-            invalidate_cache("citas_")
-            return Response({'message': 'Cita creada exitosamente'}, status=201)
         except Usuario.DoesNotExist:
-            return Response({'error': 'Usuario no encontrado'}, status=400)
+            return JsonResponse({'error': 'Usuario no encontrado'}, status=400)
         except Prestador.DoesNotExist:
-            return Response({'error': 'Prestador no encontrado'}, status=400)
+            return JsonResponse({'error': 'Prestador no encontrado'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-            return Response({'error': str(e)}, status=400)
-
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
-        invalidate_cache("citas_")  # Invalida caché
+        cache.delete('todas_las_citas')  # Invalida caché
         return response
 
     def destroy(self, request, *args, **kwargs):
         response = super().destroy(request, *args, **kwargs)
-        invalidate_cache("citas_")  # Invalida caché
+        cache.delete('todas_las_citas')  # Invalida caché
         return response
-
-
 
     @action(detail=True, methods=['post'])
     def cancelar(self, request, pk=None):
+        """
+        Cancelar una cita específica.
+        """
         try:
             consulta = Consultas_Agendadas.objects.get(pk=pk)
 
             if consulta.estado == 'cancelado':
                 return Response({"error": "Esta cita ya ha sido cancelada."}, status=status.HTTP_400_BAD_REQUEST)
-            elif consulta.estado == 'finalizado':
-                return Response({"error": "No se puede cancelar una cita que ya ha sido finalizada."}, status=status.HTTP_400_BAD_REQUEST)
-                return Response({"error": "Esta cita ya ha sido cancelada."}, status=400)
             if consulta.estado == 'finalizado':
-                return Response({"error": "No se puede cancelar una cita finalizada."}, status=400)
+                return Response({"error": "No se puede cancelar una cita finalizada."}, status=status.HTTP_400_BAD_REQUEST)
 
             consulta.estado = 'cancelado'
             consulta.save()
-            return Response({"success": "La cita ha sido cancelada con éxito."}, status=status.HTTP_200_OK)
 
-            invalidate_cache("citas_")  # Invalida caché
-            return Response({"success": "La cita ha sido cancelada con éxito."}, status=200)
+            # Invalida el caché
+            cache.delete('todas_las_citas')
+
+            return Response({"success": "La cita ha sido cancelada con éxito."}, status=status.HTTP_200_OK)
         except Consultas_Agendadas.DoesNotExist:
             return Response({"error": "Cita no encontrada."}, status=status.HTTP_404_NOT_FOUND)
         
@@ -533,10 +482,6 @@ def eliminar_cita(request, id):
 #========================================================================================#
 
 #=======================================CRUD para Consultas Agendadas(FINAL)=======================================#
-
-            return Response({"error": "Cita no encontrada."}, status=404)
-# ---------------------------------------------------------------------------
-
 
 # --------------------- Horario Prestador ---------------------------------------
 class HorarioPrestadoresViewSet(viewsets.ModelViewSet):
@@ -640,17 +585,36 @@ class CrearConsulta(APIView):
         fecha = request.data.get('fecha')
         hora_inicio = request.data.get('hora_inicio')
 
+# Vista para manejar la página de pausa
 def pause_page(request):
     return render(request, 'pause.html', {"message": "Has excedido el tiempo máximo de uso. Por favor, toma un descanso."})
+        
+# Vista para el ping y la agendación de consulta
+class PingView(APIView):
+    def post(self, request):
+        # Obtener los encabezados para la autenticación
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            raise AuthenticationFailed('No autenticado')
 
+        auth = JWTAuthentication().authenticate(auth_header)
+        if auth is None:
+            raise AuthenticationFailed('No autenticado')
+
+        # Obtener datos de la solicitud
+        rut_usuario = request.data.get('rut_usuario')
+        fecha = request.data.get('fecha')
+        hora_inicio = request.data.get('hora_inicio')
+        servicio = request.data.get('servicio')
+
+        # Convertir la fecha al formato adecuado
         try:
-            # Convertir la fecha recibida al formato adecuado
             fecha = datetime.strptime(fecha.split('T')[0], '%Y-%m-%d').date()
         except ValueError:
             return Response({"error": "El formato de la fecha es inválido, debe ser YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Obtener el usuario
         try:
-            # Obtener el usuario
             usuario = Usuario.objects.get(rut=rut_usuario)
         except Usuario.DoesNotExist:
             return Response({"error": "El usuario no existe."}, status=status.HTTP_400_BAD_REQUEST)
@@ -663,19 +627,11 @@ def pause_page(request):
         disponibilidad = validar_disponibilidad(servicio, fecha, hora_inicio)
         if 'error' in disponibilidad:
             return Response(disponibilidad, status=status.HTTP_400_BAD_REQUEST)
-def ping(request):
-    print("Encabezados recibidos:", request.headers)
-    if request.method == 'POST':
-        auth = JWTAuthentication().authenticate(request.Authorization)
-        if auth is None:
-            raise AuthenticationFailed('No autenticado')
+
+        # Obtener el prestador disponible
+        prestador = disponibilidad.get('prestador')  # Asumiendo que 'prestador' está en la respuesta de disponibilidad
 
         try:
-            # Obtener el prestador disponible
-            prestador = disponibilidad['prestador']  # Prestador disponible obtenido en `validar_disponibilidad`
-        user = auth[0]  # El usuario autenticado
-        print(request)
-
             # Crear la consulta agendada
             consulta = Consultas_Agendadas.objects.create(
                 rut_usuario=usuario,
@@ -986,20 +942,29 @@ def obtener_citas(request):
 @csrf_exempt
 def actualizar_estado_usuario(request, rut):
     if request.method == 'POST':
-            
+        try:
+            # Obtener los datos del cuerpo de la solicitud
             data = json.loads(request.body)
             nuevo_estado = data.get('estado_solicitud')
+
+            # Verificar si el estado de la solicitud fue enviado
+            if not nuevo_estado:
+                return JsonResponse({'error': 'El estado de la solicitud es requerido.'}, status=400)
             
+            # Obtener el usuario por RUT
             usuario = Usuario.objects.get(rut=rut)
+
+            # Actualizar el estado de la solicitud
             usuario.estado_solicitud = nuevo_estado
             usuario.save()
-            
-    return JsonResponse({'message': 'Estado actualizado exitosamente'}, status=200)
-        try:
-            usuario = Usuario.objects.get(rut=user.rut)
-            usuario.last_active = now()
-            usuario.save()
-            return JsonResponse({'status': 'success'}, status=200)
+
+            return JsonResponse({'message': 'Estado actualizado exitosamente'}, status=200)
+
         except Usuario.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'El cuerpo de la solicitud no es un JSON válido.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': f'Ocurrió un error: {str(e)}'}, status=500)
+
     return JsonResponse({'error': 'Método no permitido'}, status=405)
