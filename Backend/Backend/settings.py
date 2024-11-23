@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'Backend',
     'api',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt'
 ]
 
 MIDDLEWARE = [
@@ -61,10 +62,15 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'api.middleware.TrackUsuarioActivityMiddleware',  # Middleware de inactividad
+    'api.middleware.DebugMiddleware'
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Para almacenar sesiones en la base de datos
 
 ROOT_URLCONF = 'Backend.urls'
 
@@ -102,6 +108,9 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
+                'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
     }
 }
 
@@ -132,7 +141,6 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'America/Santiago'
 
-
 USE_I18N = True
 
 USE_TZ = True
@@ -155,6 +163,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8081",  # Servidor web de Expo
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 APPEND_SLASH = False
 
 REST_AUTH = {
@@ -174,7 +184,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'USER_ID_FIELD': 'rut',  # Aquí especificamos que 'rut' es el identificador
     'USER_ID_CLAIM': 'rut',  # Aquí especificamos que el 'claim' del JWT será el 'rut'
@@ -182,9 +192,11 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'api.Usuario'
 
+# ---------- Email ---------------
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.office365.com'  # Servidor SMTP de Outlook
 EMAIL_PORT = 587  # Puerto SMTP
 EMAIL_USE_TLS = True  # Habilitar TLS
 EMAIL_HOST_USER = 'tu_correo@outlook.com'  # Tu correo de Outlook
 EMAIL_HOST_PASSWORD = 'tu_contraseña_o_token_de_aplicación'  # Tu contraseña de Outlook o un token de aplicación
+DEFAULT_FROM_EMAIL = ''

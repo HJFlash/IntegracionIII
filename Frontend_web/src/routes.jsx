@@ -5,6 +5,7 @@ import Home from './Home';
 import Tomasoli from './pages/pagesClient/tomaSolicitud';
 import FuncionamientoUser from "./pages/pagesClient/FuncionamientoUser";
 import Login from './pages/pagesClient/Login';
+import PausePage from './components/PausePage'; // Importar la nueva página
 import Register from './pages/pagesClient/Register';
 import SolicitudUsuario from "./pages/pagesClient/SolicitudUsuario";
 
@@ -34,6 +35,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<Login />} />
+        <Route path="/pause" element={<PausePage />} /> {/* Nueva ruta */}
         <Route path="/Register" element={<Register />} />
         <Route path="/FuncionamientoUser" element={<FuncionamientoUser />} />
         <Route path="/TomaSoli" element={<Tomasoli />} />

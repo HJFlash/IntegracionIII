@@ -1,6 +1,7 @@
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.mail import send_mail
 from .models import Prestador, Horario_Prestadores
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 def obtener_tokens_para_usuario(usuario):
     refresh = RefreshToken.for_user(usuario)
@@ -45,3 +46,8 @@ def validar_disponibilidad(servicio, fecha, hora_inicio):
         return {"error": "No hay prestadores disponibles para el servicio y horario seleccionados."}
     except Exception as e:
         return {"error": f"Error al validar disponibilidad: {str(e)}"}
+
+class AccountRecoveryTokenGenerator(PasswordResetTokenGenerator):
+    pass
+
+account_recovery_token = AccountRecoveryTokenGenerator()

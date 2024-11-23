@@ -59,6 +59,9 @@ class UsuarioManager(BaseUserManager):
         user.is_superuser = True
         user.save(using=self._db)
         return user
+    
+    def get_email_field_name(self):
+        return 'email'
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     rut = models.IntegerField(unique=True, primary_key=True)
@@ -90,16 +93,39 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'rut'
     REQUIRED_FIELDS = ['primer_nombre', 'primer_apellido']
+    # Nuevos campos
+    last_active = models.DateTimeField(null=True, blank=True)  # Última actividad
+    session_start = models.DateTimeField(null=True, blank=True)  # Inicio de sesión
+    max_session_duration = models.IntegerField(default=1)  # Tiempo máximo (en minutos)
 
     def save(self, *args, **kwargs):
         if self.contrasena and not self.contrasena.startswith('pbkdf2_'):
             self.contrasena = make_password(self.contrasena)
         super().save(*args, **kwargs)
 
+    def get_short_name(self):
+        return self.nombres
+    
+    def get_email_field_name(self):
+        return 'email'
+    
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+    
     class Meta:
         permissions = [
             ("can_view_sensitive_data", "Puede ver datos sensibles"),
         ]
+    
+    def save(self, *args, **kwargs):
+        if self.contrasena and not self.contrasena.startswith('pbkdf2_'):  # Evitar hashear si ya está encriptada
+            self.contrasena = make_password(self.contrasena)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.primer_nombre} {self.primer_apellido}'
