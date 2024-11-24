@@ -12,11 +12,11 @@ function Footer() {
 
 
                 <Link to="/SolicitudUsuario" class="hover:underline me-4 md:me-6">
-                    Privacy Policy
+                    Política de Privacidad
                 </Link>
 
                 <Link to="/SolicitudUsuario" class="hover:underline me-4 md:me-6">
-                    Licensing
+                    Licencias
                 </Link>
             </ul>
         </div>

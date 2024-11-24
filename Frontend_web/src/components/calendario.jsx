@@ -132,7 +132,7 @@ const Calendario = () => {
 
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center rounded-lg shadow-lg">
+    <div className="flex flex-col items-center justify-center">
       {/* Tipo de solicitud */}
       <div className="max-w-[1000px] bg-white px-5 py-2 mb-4 rounded-lg shadow-md">
         <p className="font-semibold text-gray-700 mt-2 mb-6 text-center">

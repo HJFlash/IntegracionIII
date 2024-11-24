@@ -1,4 +1,12 @@
 import React, { useState } from 'react';
+import Kine from '../assets/Kine300x200.webp';
+import Fono from '../assets/Fono300x200.webp';
+import Pelu from '../assets/Peluqueria300x200.webp';
+import Psic from '../assets/Psicologia300x200.webp';
+import Podo from '../assets/Podologia300x200.webp';
+import Ases from '../assets/Asesoria300x200.webp';
+
+
 
 const ServiceCard = ({ image, servicio, descripcion, duracion, cost }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -35,37 +43,37 @@ const ServiceCards = () => {
   const Servicios = [
     {
         servicio: 'Podología',
-        image: 'https://via.placeholder.com/300x200',
+        image: Podo,
         descripcion: 'Servicio de podología está diseñado para atender las necesidades específicas de los pies de los adultos mayores. Con un enfoque en la salud y el bienestar. Este servicio ayuda a prevenir problemas que pueden afectar la movilidad y calidad de vida.',
         duracion: '30 minutos',
     },
     {
         servicio: 'Peluquería',
-        image: 'https://via.placeholder.com/300x200',
+        image: Pelu,
         descripcion: 'Servicios de peluquería adaptados a las preferencias y necesidades de los adultos mayores.',
         duracion: '20 minutos',
     },
     {
         servicio: 'Asesoría Jurídica',
-        image: 'https://via.placeholder.com/300x200',
+        image: Ases,
         descripcion: 'Servicio de asesoría jurídica se especializa en brindar orientación legal a adultos mayores en temas como herencias, testamentos y derechos de los ancianos.',
         duracion: '45 minutos',
     },
     {
         servicio: 'kinesiologia',
-        image: 'https://via.placeholder.com/300x200',
+        image: Kine,
         descripcion: 'Servicio de kinesiología está orientado a ayudar a los adultos mayores a mantener y mejorar su movilidad.',
         duracion: '30 minutos',
     },
     {
         servicio: 'Psicología',
-        image: 'https://via.placeholder.com/300x200',
+        image: Psic,
         descripcion: 'Servicio de psicología ofrece sesiones individuales para abordar temas como la soledad, la adaptación a cambios en la vida y la gestión del estrés. ',
         duracion: '1 hora',
     },
     {
         servicio: 'Fonoaudiología',
-        image: 'https://via.placeholder.com/300x200',
+        image: Fono,
         descripcion: 'Servicio de fonoaudiología se centra en mejorar la comunicación y audicion',
         duracion: '20 minutos',
     },
