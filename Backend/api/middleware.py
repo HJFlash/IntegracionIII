@@ -88,5 +88,6 @@ class DebugMiddleware:
         print("Método:", request.method)
         print("Ruta:", request.path)
         print("Encabezados:", request.headers)
+
         response = self.get_response(request)
         return response

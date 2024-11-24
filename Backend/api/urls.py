@@ -8,7 +8,7 @@ from .views import login_vista, registro, logout_vista, DatosGraficos, obtener_d
 from .views import obtener_datos_soli_registro, ConsultasAgendadasViewSet, actualizar_estado_usuario, obtener_datos_barra_asistencia, obtener_datos_grafico_asistencia_consultorio
 from .views import obtener_datos_grafico_torta_mes, obtener_datos_grafico_barras_mes, obtener_datos_grafico_asistencia_consultorio_mes
 from .views import appointment_history, send_email_notification
-from .views import login_vista, registro, logout_vista, ConsultasAgendadasViewSet, HorarioPrestadoresViewSet, ValidarDisponibilidadView, ping  # Importamos la vista de validación
+from .views import login_vista, registro, logout_vista, ConsultasAgendadasViewSet, HorarioPrestadoresViewSet, ValidarDisponibilidadView # Importamos la vista de validación
 from .views import PasswordResetRequestView, PasswordResetConfirmView
 from django.views.generic import TemplateView
 
@@ -48,7 +48,5 @@ urlpatterns = [
     
     # Nueva ruta para la página de pausa
     path('pause/', TemplateView.as_view(template_name='index.html')),  # Requiere que el build de React esté configurado
-    
-    path('ping/', ping, name='ping') # Endpoint para manejar el ping
 
 ]
