@@ -161,12 +161,18 @@ def login_vista(request):
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
         
 class PerfilUsuarioView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
-        usuario = Usuario.objects.get(rut=request.user.rut)
-        serializer = UsuarioSerializador(usuario)
-        return Response(serializer.data)
+        if request.user.is_authenticated:
+            try:
+                usuario = Usuario.objects.get(rut=request.user.rut)
+                serializer = UsuarioSerializador(usuario)
+                return Response(serializer.data)
+            except Usuario.DoesNotExist:
+                return Response({"detail": "Usuario no encontrado."}, status=404)
+        else:
+            return Response({"detail": "Usuario no autenticado."}, status=401)
 
 @csrf_exempt
 def logout_vista(request):

@@ -5,7 +5,7 @@ import ServiceCards from '../../components/cardServicios';
 
 function FuncionamientoUser() {
   return (
-    <div className='flex justify-center items-center flex-col'>
+    <div className='flex justify-center items-center flex-col bg-gray-200'>
         <Header />
         <div className='max-w-[1100px]'>
 

@@ -10,14 +10,19 @@ function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/perfil/", {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-    })
-        .then((res) => setUser(res.data))
-        .catch((err) => console.error(err));
-  }, []);
+    const token = localStorage.getItem("access_token");
+    if (token) {
+        axios.get("http://localhost:8000/api/perfil/", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((res) => setUser(res.data))
+            .catch((err) => console.error(err));
+    } else {
+        console.log("No se encontro un token ");
+    }
+}, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
