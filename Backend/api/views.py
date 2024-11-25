@@ -35,7 +35,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 #============================ARCHIVOS NUESTROS============================#
 from .utils import obtener_tokens_para_usuario, send_notification_email, validar_disponibilidad, account_recovery_token
-from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores, Appointment, AdultoMayor, Datos_Para_Graficos
+from .models import Servicios, Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores, Appointment, AdultoMayor, Datos_Para_Graficos
 from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer
 #=========================================================================#
 
@@ -584,6 +584,51 @@ class CrearConsulta(APIView):
         rut_usuario = request.data.get('rut_usuario')
         fecha = request.data.get('fecha')
         hora_inicio = request.data.get('hora_inicio')
+
+        # Verificar si el servicio existe en api_servicio
+        try:
+            # Obtén el servicio por nombre
+            servicio_obj = Servicios.objects.get(nombre_servicio=servicio)
+        except Servicios.DoesNotExist:
+            return Response({"error": "Servicio no encontrado."}, status=status.HTTP_400_BAD_REQUEST)
+        except Servicios.MultipleObjectsReturned:
+            return Response({"error": "Hay múltiples servicios con el mismo nombre."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Buscar al prestador asociado con el servicio
+        # Aquí, suponiendo que `servicio_id` es una relación entre `api_prestador` y `api_servicio`
+        prestador = Prestador.objects.filter(servicio=servicio_obj).first()
+        if not prestador:
+            return Response({"error": "No hay prestadores disponibles para este servicio."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validar disponibilidad del prestador
+        #disponibilidad = validar_disponibilidad(prestador.rut, fecha, hora_inicio)
+        #if 'error' in disponibilidad:
+        #    return Response(disponibilidad, status=status.HTTP_400_BAD_REQUEST)
+
+        # Obtener el usuario
+        try:
+            usuario = Usuario.objects.get(rut=rut_usuario)
+        except Usuario.DoesNotExist:
+            return Response({"error": "El usuario no existe."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Comprobar si ya existe una consulta en la misma fecha y hora para el usuario
+        if Consultas_Agendadas.objects.filter(rut_usuario=usuario, fecha=fecha, hora_inicio=hora_inicio).exists():
+            return Response({"error": "El usuario ya tiene una consulta agendada para este horario."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Crear la consulta agendada
+        try:
+            consulta = Consultas_Agendadas.objects.create(
+                rut_usuario=usuario,
+                rut_prestador=prestador,
+                fecha=fecha,
+                hora_inicio=hora_inicio,
+                estado='pendiente',
+                servicio=servicio_obj  # Asociamos el servicio
+            )
+            return Response({"success": "Consulta agendada correctamente."}, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Vista para manejar la página de pausa
 def pause_page(request):
