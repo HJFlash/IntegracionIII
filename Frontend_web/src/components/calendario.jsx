@@ -22,7 +22,7 @@ const Calendario = () => {
   const OpcionesDeSolicitud = [
     "Podologia",
     "Psicologia",
-    "Peluqueria",
+    "peluqueria",
     "Kinesiologia",
     "Fonoaudiologia",
     "AsesoriaJuridica",
@@ -31,7 +31,7 @@ const Calendario = () => {
   const horasPorSolicitud = {
     Podologia: ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:30", "14:00"],
     Psicologia: ["09:00", "10:00", "11:00", "12:00", "13:00"],
-    Peluqueria: ["09:00","09:20", "09:30","10:00","10:20","10:40","11:00","11:20","11:40","12:00","12:20"],
+    peluqueria: ["09:00","09:20", "09:30","10:00","10:20","10:40","11:00","11:20","11:40","12:00","12:20"],
     Kinesiologia: ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:30", "14:00"],
     Fonoaudiologia: ["09:00","09:20", "09:30","10:00","10:20","10:40","11:00","11:20","11:40","12:00","12:20"],
     AsesoriaJuridica: ["09:00", "10:00", "11:00", "12:00", "13:00"]
@@ -40,7 +40,7 @@ const Calendario = () => {
   const diasHabilitadosPorSolicitud = {
     Podologia: [1, 2, 3, 4, 5],
     Psicologia: [2, 3, 4, 5],  
-    Peluqueria: [1, 2, 3, 4, 5, 6],
+    peluqueria: [1, 2, 3, 4, 5, 6],
     Kinesiologia: [1, 2, 3, 4, 5],
     Fonoaudiologia: [1, 2, 3, 4, 5, 6],
     AsesoriaJuridica: [1, 3, 5],
@@ -98,7 +98,7 @@ const Calendario = () => {
     const dataToSend = {
       rut_usuario: rutUsuario,
       servicio: solicitud,  // Enviar el tipo de servicio en lugar del rut del prestador
-      fecha: seleccionarFecha,  // Formato YYYY-MM-DD
+      fecha: format(seleccionarFecha, "yyyy-MM-dd"),  // Formato YYYY-MM-DD
       hora_inicio: `${horaSeleccionada}:00`  // Asegurar el formato de hora con segundos "HH:MM:SS"
     };
 
