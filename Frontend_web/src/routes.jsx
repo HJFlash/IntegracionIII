@@ -27,6 +27,7 @@ import TrabajadorMod from "./pages/pagesTrabajador/trabajador";
 import PerfilTrabajador from "./pages/pagesTrabajador/PerfilTrabajador";
 import ModTrabajador from './pages/pagesTrabajador/trabajador';
 
+import Perfiles from "./components/prueba";
 
 
 function AppRoutes() {
@@ -43,6 +44,7 @@ function AppRoutes() {
         <Route path="/TrabajadorMod" element={<ModTrabajador />} />
 
 
+        <Route path="/perfiles" element={<Perfiles />} />
 
         {/* Dashboard Admin   */}
         <Route path="/admin" element={<DashboardAdmin />}>

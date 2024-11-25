@@ -1,34 +1,37 @@
-// AuthContext.js
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem("token") || "");
 
-  useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-  }, []);
+    useEffect(() => {
+        if (token) {
+            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+            axios.get("/api/perfil/")
+                .then((res) => setUser(res.data))
+                .catch(() => setUser(null));
+        }
+    }, [token]);
 
-  const login = (userData) => {
-    setUser(userData);
-    setIsAuthenticated(true);
-  };
+    const login = (newToken) => {
+        setToken(newToken);
+        localStorage.setItem("token", newToken);
+    };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-  };
+    const logout = () => {
+        setToken("");
+        setUser(null);
+        localStorage.removeItem("token");
+    };
 
-  return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider value={{ user, token, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
-export default AuthContext;
+export default AuthProvider;

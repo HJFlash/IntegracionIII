@@ -50,29 +50,13 @@ function Login() {
     })
     .then(data => {
       console.log(data);
-      alert(data.message);
-      localStorage.setItem('access_token', data.access);
-      localStorage.setItem('refresh_token', data.refresh);
-      localStorage.setItem('nombreUsuario', data.primer_nombre);
-      localStorage.setItem('correoUsuario', data.correo_electronico);
-
-      localStorage.setItem('nombreUsuariosegundo', data.segundo_nombre);
-      localStorage.setItem('apellidoUsuario', data.primer_apellido);
-      localStorage.setItem('apellidoUsuariosegundo', data.segundo_apellido);
-      localStorage.setItem('telefonoUsuario', data.contacto);
-
-      localStorage.setItem('rutUsuario', data.rut);
-      localStorage.setItem('tipousuario', data.tipo_usuario);
-      
-      if (data.tipo_usuario === 'admin') {
-        navigate('/Admin');
-      }else if(data.tipo_usuario === 'prestador'){
-        navigate('/TrabajadorMod');
-      }else{
-        navigate('/')
+      if (data.access && data.refresh) {
+        localStorage.setItem('access_token', data.access);
+        localStorage.setItem('refresh_token', data.refresh);
+        navigate('/');
+      } else {
+        throw new Error('Tokens no recibidos');
       }
-
-
     })
     .catch(error => {
       alert(`Error: ${error.message}`);

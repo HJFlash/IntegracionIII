@@ -1,71 +1,37 @@
 import { useState, useEffect} from 'react';
+import axios from "axios";
+
 
 function InfoProfileUser() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  
-  const [nombreUsuario, setNombreUsuario] = useState('');
-  const [nombreUsuariosegundo, setnombreUsuariosegundo] = useState('');
-  const [apellidoUsuario, setapellidoUsuario] = useState('');
-  const [apellidoUsuariosegundo, setapellidoUsuariosegundo] = useState('');
-  const [correoUsuario, setCorreoUsuario] = useState('');
-  const [telefonoUsuario, settelefonoUsuario] = useState('');
-  const [rutUsuario, setRut] = useState('');
+  const [user, setUser] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    const nombre = localStorage.getItem('nombreUsuario');
-    const correo = localStorage.getItem('correoUsuario');
-
-    const segnombre = localStorage.getItem('nombreUsuariosegundo');
-    const apellido = localStorage.getItem('apellidoUsuario');
-    const segapellido = localStorage.getItem('apellidoUsuariosegundo');
-    const tel = localStorage.getItem('telefonoUsuario');
-    const rut = localStorage.getItem('rutUsuario');
-    
-    if (token) {
-      setIsAuthenticated(true);
-      setNombreUsuario(nombre);
-      setCorreoUsuario(correo);
-
-      setnombreUsuariosegundo(segnombre);
-      setapellidoUsuario(apellido);
-      setapellidoUsuariosegundo(segapellido);
-      settelefonoUsuario(tel);
-      setRut(rut);
-    } else {
-      setIsAuthenticated(false);
-    }
-  }, []);
-
+    axios.get("http://localhost:8000/api/perfil/", {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+    })
+        .then((res) => setUser(res.data))
+        .catch((err) => console.error(err));
+}, []);
+  
 
   return (
     <diva>
-      {isAuthenticated ? (
+      {user ? (
       <div>
           <div className='max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg grid grid-cols-10 gap-6'>
           <div className='grid grid-cols-2  gap-4 col-span-9'>
             <div className='items-center'>
               <div>
                 <p className='text-gray-600 text-sm mb-2'>Nombre Completo</p>
-                <p className='text-gray-900 font-semibold'>{nombreUsuario} {nombreUsuariosegundo} {apellidoUsuario} {apellidoUsuariosegundo}</p>
-              </div>
-            </div>
-            <div className='flex items-center'>
-              <div>
-                <p className='text-gray-600 text-sm mb-2'>Fecha de Nacimiento</p>
-                <p className='text-gray-900 font-semibold'>10/10/1950</p>
+                <p className='text-gray-900 font-semibold'>{user.primer_nombre} {user.segundo_nombre} {user.primer_apellido} {user.segundo_apellido}</p>
               </div>
             </div>
             <div className='flex items-center'>
               <div>
                 <p className='text-gray-600 text-sm mb-2'>Rut</p>
-                <p className='text-gray-900 font-semibold'>{rutUsuario}</p>
-              </div>
-            </div>
-            <div className='flex items-center'>
-              <div>
-                <p className='text-gray-600 text-sm mb-2'>Direccion</p>
-                <p className='text-gray-900 font-semibold'>Bach 0110</p>
+                <p className='text-gray-900 font-semibold'>{user.rut}</p>
               </div>
             </div>
           </div>
@@ -89,19 +55,19 @@ function InfoProfileUser() {
               <div className='flex items-center'>
                 <div className='p-2'>
                   <p className='text-gray-600 text-sm mb-2'>Correo Electronico</p>
-                  <p className='text-gray-700 font-semibold'>{correoUsuario}</p>
+                  <p className='text-gray-700 font-semibold'>{user.correo_electronico}</p>
                 </div>
               </div>
               <div className='flex items-center'>
                 <div className='p-2'>
                   <p className='text-gray-600 text-sm mb-2'>Telefono</p>
-                  <p className='text-gray-700 font-semibold'>{telefonoUsuario}</p>
+                  <p className='text-gray-700 font-semibold'>{user.contacto}</p>
                 </div>
               </div>
               <div className='flex items-center'>
                 <div className='p-2'>
                   <p className='text-gray-600 text-sm mb-2'>Tel. Emergencia</p>
-                  <p className='text-gray-700 font-semibold'>{telefonoUsuario}</p>
+                  <p className='text-gray-700 font-semibold'>{user.contacto}</p>
                 </div>
               </div>
             </div>

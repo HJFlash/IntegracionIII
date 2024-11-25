@@ -1,44 +1,31 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LogoMuni from '../assets/logo-temuco-1024x791.webp';
+import axios from "axios";
+
 
 function Header() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [nombreUsuario, setNombreUsuario] = useState('');
-  const [correoUsuario, setCorreoUsuario] = useState('');
-  const [tipousuario, setTipoUsuario] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    const nombre = localStorage.getItem('nombreUsuario');
-    const correo = localStorage.getItem('correoUsuario');
-    const tipo = localStorage.getItem('tipousuario');
-
-    console.log('Token:', token);  // Verifica el token
-    console.log('Tipo de Usuario:', tipo);  // Verifica el tipo de usuario
-
-    if (token) {
-      setIsAuthenticated(true);
-      setNombreUsuario(nombre);
-      setCorreoUsuario(correo);
-      setTipoUsuario(tipo)
-    } else {
-      setIsAuthenticated(false);
-    }
+    axios.get("http://localhost:8000/api/perfil/", {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+    })
+        .then((res) => setUser(res.data))
+        .catch((err) => console.error(err));
   }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('nombreUsuario');
-    localStorage.removeItem('correoUsuario');
-    localStorage.removeItem('tipousuario');
-    setIsAuthenticated(false);
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    navigate('/');
   };
 
   return (
@@ -69,20 +56,20 @@ function Header() {
       </nav>
 
       <div className="relative">
-        {isAuthenticated ? (
+        {user ? (
           <div className="bg-naranja-claro w-10 h-10 rounded-full cursor-pointer" onClick={toggleMenu}>
             <span className='bg-naranja-claro w-10 h-10 rounded-full flex items-center justify-center text-white font-bold'>
-              {nombreUsuario.charAt(0).toUpperCase()}
+              {user.primer_nombre.charAt(0).toUpperCase()}
             </span>
             {isMenuOpen && (
               <div className="absolute top-12 right-0 bg-white border border-gray-300 rounded-md shadow-lg p-3 w-60 z-10">
                 <div className="flex items-center space-x-3 mb-3 cursor-text">
                   <div className="bg-naranja-claro w-10 h-10 rounded-full flex items-center justify-center text-white font-bold">
-                    {nombreUsuario.charAt(0).toUpperCase()}
+                    {user.primer_nombre.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-semibold">{nombreUsuario}</p>
-                    <p className="text-sm text-gray-500">{correoUsuario}</p>
+                    <p className="font-semibold">{user.primer_nombre}</p>
+                    <p className="text-sm text-gray-500">{user.correo_electronico}</p>
                   </div>
                 </div>
 
@@ -96,19 +83,19 @@ function Header() {
                     <Link to="/ProfileUser/InfoSoliUser" className='block w-full h-full'>Solicitudes Activas</Link>
                   </li>
 
-                  {tipousuario === 'admin' && (
+                  {user.tipo_usuario === 'admin' && (
                     <li className="m-1 py-1 px-4 hover:bg-gray-100 cursor-pointer min-w-[150px]">
                       <Link to="/Admin" className='block w-full h-full'>Panel Admin</Link>
                     </li>
                   )}
 
-                  {tipousuario === 'prestador' && (
+                  {user.tipo_usuario === 'prestador' && (
                     <li className="m-1 py-1 px-4 hover:bg-gray-100 cursor-pointer min-w-[150px]">
                       <Link to="/TrabajadorMod" className='block w-full h-full'>Panel Trabajador</Link>
                     </li>
                   )}
                   
-                  <li className='m-1 py-1 px-4 hover:bg-gray-100 cursor-pointer block w-full h-full' onClick={handleLogout}>
+                  <li className='m-1 py-1 px-4 hover:bg-gray-100 cursor-pointer block w-full h-full' onClick={logout}>
                     Cerrar sesión
                   </li>
                 </ul>

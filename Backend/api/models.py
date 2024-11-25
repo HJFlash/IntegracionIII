@@ -67,7 +67,8 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     rut = models.IntegerField(unique=True, primary_key=True)
     tipo_usuario = models.CharField(
         max_length=30,
-        choices=[("admin", "Administrador"), ("adultomayor", "Adulto mayor"), ("prestador", "Profesional")]
+        choices=[("admin", "Administrador"), ("adultomayor", "Adulto mayor"), ("prestador", "Profesional")],
+        default="adultomayor"
     )
     estado_solicitud = models.CharField(
         max_length=25,

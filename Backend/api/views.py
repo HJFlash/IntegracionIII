@@ -159,6 +159,14 @@ def login_vista(request):
                 return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
         except Usuario.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+        
+class PerfilUsuarioView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        usuario = Usuario.objects.get(rut=request.user.rut)
+        serializer = UsuarioSerializador(usuario)
+        return Response(serializer.data)
 
 @csrf_exempt
 def logout_vista(request):

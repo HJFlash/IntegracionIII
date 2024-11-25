@@ -1,44 +1,38 @@
 import { useState, useEffect} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from "axios";
+
 
 import LogoMuni from '../assets/logo-temuco-1024x791.webp';
 
 
 const SidebarProfiles = ({ content }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [nombreUsuario, setNombreUsuario] = useState('');
-    const [apellidoUsuario, setapellidoUsuario] = useState('');
+    const [user, setUser] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('access_token');
-        const nombre = localStorage.getItem('nombreUsuario');
-        const apellido = localStorage.getItem('apellidoUsuario');
-        
-        if (token) {
-          setIsAuthenticated(true);
-          setNombreUsuario(nombre);
-          setapellidoUsuario(apellido);
-        } else {
-          setIsAuthenticated(false);
-        }
-      }, []);
+        axios.get("http://localhost:8000/api/perfil/", {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+        })
+            .then((res) => setUser(res.data))
+            .catch((err) => console.error(err));
+    }, []);
+
+
 
     const handleLogout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('nombreUsuario');
-        localStorage.removeItem('apellidoUsuario');
-        setIsAuthenticated(false);
+        localStorage.removeItem("access_token");
         navigate('/');
-        };
+    };
 
   return (
     <div>
-        {isAuthenticated ? (
+        {user ? (
         <div className='flex flex-col items-center w-[250px] bg-[#ebf5fb] p-5 h-screen overflow-y-auto '>
             <div className='text-center mb-5 flex flex-col justify-center items-center'>
-                <p className='m-0 text-black flex flex-col'>Bienvenido! <span className='font-bold m-0 text-[#f97a7a]' >{nombreUsuario} {apellidoUsuario}</span></p>
+                <p className='m-0 text-black flex flex-col'>Bienvenido! <span className='font-bold m-0 text-[#f97a7a]' >{user.primer_nombre} {user.primer_apellido}</span></p>
                 <img src={LogoMuni} className="w-[100px] h-[100px] mt-[10px] rounded-full object-cover border border-naranja-claro" alt="Logotipo Municipalidad de Temuco" />
             </div>
 

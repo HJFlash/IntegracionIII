@@ -8,7 +8,7 @@ from .views import login_vista, registro, logout_vista, DatosGraficos, obtener_d
 from .views import obtener_datos_soli_registro, ConsultasAgendadasViewSet, actualizar_estado_usuario, obtener_datos_barra_asistencia, obtener_datos_grafico_asistencia_consultorio
 from .views import obtener_datos_grafico_torta_mes, obtener_datos_grafico_barras_mes, obtener_datos_grafico_asistencia_consultorio_mes
 from .views import appointment_history, send_email_notification
-from .views import login_vista, registro, logout_vista, ConsultasAgendadasViewSet, HorarioPrestadoresViewSet, ValidarDisponibilidadView # Importamos la vista de validación
+from .views import login_vista, registro, logout_vista, PerfilUsuarioView ,ConsultasAgendadasViewSet, HorarioPrestadoresViewSet, ValidarDisponibilidadView # Importamos la vista de validación
 from .views import PasswordResetRequestView, PasswordResetConfirmView
 from django.views.generic import TemplateView
 
@@ -37,6 +37,7 @@ urlpatterns = [
     path('CrearConsulta/', CrearConsulta.as_view(), name='CrearConsulta'),
     path('send-email/', send_email, name='send_email'),
     path('appointment-history/', appointment_history, name='appointment_history'),
+    path('api/perfil/', PerfilUsuarioView.as_view(), name='perfil-usuario'),
 
     # Incluir las rutas generadas por el router para las operaciones CRUD
     path('', include(router.urls)),
