@@ -17,7 +17,7 @@ from django.utils.dateparse import parse_date, parse_time
 import json , hashlib
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores
+from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores, Recordatorio
 from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer, HorarioPrestadorSerializer
 from .utils import obtener_tokens_para_usuario
 from django.views.decorators.cache import cache_page
@@ -34,7 +34,7 @@ from .utils import account_recovery_token
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.timezone import now
 from django.db.models import Q
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -42,6 +42,10 @@ from django.utils.encoding import force_bytes, force_str
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+
+
+
 
 """
     ---------------registro----------            
@@ -127,6 +131,7 @@ def logout_vista(request):
 
 
 from django.conf import settings
+
 # ---------------------recuperar contraseña-------------------------------------------
 User = get_user_model()  # Tu modelo Usuario
 
@@ -191,6 +196,7 @@ class PasswordResetView(View):
 
         except (User.DoesNotExist, ValueError):
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
+# -----------------------------------------------------------------
 
 # -------------------- Validaciones para el CRUD de Consultas Agendadas --------------------
 def validar_disponibilidad(rut_prestador, fecha, hora):
@@ -431,3 +437,78 @@ def ping(request):
         except Usuario.DoesNotExist:
             return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+# ---------------------- notificacion al correo ----------------------
+
+
+
+
+
+@api_view(['POST'])
+def enviar_recordatorios_api(request):
+    try:
+        # Obtener la hora actual en la zona local
+        ahora = localtime(now())
+        print(f'Hora actual: {ahora}')
+        
+        # Calcular el rango de búsqueda de consultas
+        tiempo_anticipacion = timedelta(hours=1)
+        rango_inicio = ahora
+        rango_fin = ahora + tiempo_anticipacion
+        print(f'Buscando consultas entre {rango_inicio} y {rango_fin}')
+
+        # Filtrar consultas dentro del rango
+        consultas = Consultas_Agendadas.objects.filter(
+            fecha=ahora.date(),  # Consultas para hoy
+            recordatorio_enviado=False  # Evitar duplicados
+        ).filter(
+            hora_inicio__gte=ahora.time(),
+            hora_inicio__lte=(rango_fin).time()
+        )
+
+        print(f'Consultas encontradas: {consultas}')
+
+        if not consultas.exists():
+            return Response({"status": "No hay consultas para enviar recordatorios."})
+
+        for consulta in consultas:
+            usuario = consulta.rut_usuario  # Ajusta según el campo del modelo
+            if not hasattr(usuario, 'email') or not usuario.email:
+                print(f"Usuario sin correo: {usuario}")
+                continue
+
+            # Crear mensaje del correo
+            mensaje = f"""
+            Hola {usuario.nombres},
+
+            Este es un recordatorio de que tienes una cita agendada para hoy a las {consulta.hora_inicio.strftime('%H:%M')}.
+            Por favor, asegúrate de estar disponible a tiempo.
+
+            Saludos,
+            Equipo de Agendamiento
+            """
+
+            try:
+                # Enviar correo
+                send_mail(
+                    subject='Recordatorio de Cita',
+                    message=mensaje,
+                    from_email=None,  # Toma el EMAIL_HOST_USER configurado en settings.py
+                    recipient_list=[usuario.email],
+                    fail_silently=False,
+                )
+
+                # Marcar la consulta como enviada
+                consulta.recordatorio_enviado = True
+                consulta.save()
+                print(f"Recordatorio enviado para la consulta {consulta.id_consulta}")
+            except Exception as mail_error:
+                print(f"Error al enviar correo para la consulta {consulta.id_consulta}: {mail_error}")
+
+        return Response({"status": "Recordatorios enviados correctamente."})
+
+    except Exception as e:
+        return Response({"error": f"Error al enviar recordatorios: {str(e)}"}, status=500)
+    
+#-------------------------------------------------------------------------------------------

@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
 from datetime import timedelta, datetime
-
+from django.core.mail import send_mail
 
 class Centro_Comunitario(models.Model):
     id_centro = models.IntegerField()  # max_length eliminado
@@ -118,8 +118,6 @@ class Usuario(models.Model):
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
 
-    
-
 class Prestador(models.Model):
     rut = models.IntegerField(unique=True, primary_key=True)
     nombres = models.CharField(max_length=100, blank=True, null=True)
@@ -205,10 +203,40 @@ class Consultas_Agendadas(models.Model):
         ('cancelado', 'Cancelado'),  # Nuevo estado para citas canceladas
     ]
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
+    recordatorio_enviado = models.BooleanField(default=False)
 
 
     def __str__(self):
         return f"{self.rut_usuario} - {self.fecha} a las {self.hora_inicio}"
+
+
+class Recordatorio(models.Model):
+    consulta = models.ForeignKey('Consultas_Agendadas', on_delete=models.CASCADE)
+    tiempo_anticipacion = models.IntegerField(help_text="Tiempo en minutos antes de la cita para enviar el recordatorio.")
+    metodo = models.CharField(
+        max_length=20,
+        choices=[('email', 'Email'), ('notificacion', 'Notificación Push')],
+        default='email'
+    )
+    mensaje = models.TextField(default="Recordatorio: Tienes una cita agendada.")
+
+    def __str__(self):
+        return f"Recordatorio para {self.consulta} - {self.tiempo_anticipacion} minutos antes"
+
+    def enviar_recordatorio(self):
+        """Función para enviar el recordatorio al usuario."""
+        if self.metodo == 'email':
+            # Enviar un correo electrónico al usuario
+            send_mail(
+                'Recordatorio de cita',
+                self.mensaje,
+                'from@example.com',  # Cambia esto a tu dirección de correo desde la que se enviarán los correos
+                [self.consulta.rut_usuario.email],  # Correo del usuario
+                fail_silently=False,
+            )
+        elif self.metodo == 'notificacion':
+            # Lógica para enviar notificación push
+            pass  # Aquí puedes agregar la lógica para enviar notificaciones push (si usas una librería como Firebase)
 
 
 class Admin(models.Model):
