@@ -15,8 +15,10 @@ const RegistrarTrabajador = () => {
     contrasena: "",
     contacto: "",
     calle: "",
+    correo_electronico: "",
     num_casa: "",
     num_apar: "",
+    servicio: ""
   });
   
 
@@ -32,7 +34,7 @@ const RegistrarTrabajador = () => {
     e.preventDefault();
 
     const errors = {};
-    for (const field of ['rut', 'primer_nombre', 'primer_apellido', 'segundo_nombre','segundo_apellido', 'correo_electronico']) {
+    for (const field of ['rut', 'primer_nombre', 'primer_apellido', 'segundo_nombre','segundo_apellido']) {
       switch(field){
         case 'rut':
           const rutError = validarRut(formData.rut);
@@ -53,10 +55,6 @@ const RegistrarTrabajador = () => {
         case 'segundo_apellido':
           const segundoapellidoError = validarNombre(formData.segundo_apellido);
           if (segundoapellidoError) errors.segundo_apellido = segundoapellidoError;
-          break;
-        case 'correo_electronico':
-          const emailError = validarEmail(formData.correo_electronico);
-          if (emailError) errors.correo_electronico = emailError;
           break;
         case 'tel':
           const telError = validarTel(formData.tel);
@@ -82,8 +80,10 @@ const RegistrarTrabajador = () => {
       contrasena: formData.contrasena,
       contacto: formData.contacto,
       calle: formData.calle,
+      correo_electronico: formData.correo_electronico,
       num_casa: formData.num_casa,
       num_apar: formData.num_apar,
+      servicio: formData.servicio
     };
 
     
@@ -317,24 +317,29 @@ const RegistrarTrabajador = () => {
             <div className="border-2 border-gray-200 mb-4 rounded-lg">
               <div className="flex flex-col">
                 <label
-                  htmlFor="tipo_trabajo"
                   value={tipoTrabajo}
-                  onChange={(e) => setTipoTrabajo(e.target.value)}
+                  htmlFor="tipo_trabajo"
                   className="text-gray-500  px-2"
                 >
                   Selecione el Area de trabajo
                 </label>
                 <select
+                  value={formData.servicio}
+                  onChange={(e) => {
+                    setTipoTrabajo(e.target.value);
+                    setFormData({ ...formData, servicio: e.target.value });
+                  }}
+                  
                    className="text-gray-800 p-2 rounded-md focus:outline-none focus:ring-2" 
                   id="tipo_trabajo"
                 >
                     <option value="Sin area designada" className="bg-gray-200 text-gray-800">Sin área designada</option>
-                    <option value="Peluqueria" className='bg-gray-200 text-gray-800'>Peluqueria</option>
-                    <option value="Psicologia" className='bg-gray-200 text-gray-800'>Psicologia</option>
-                    <option value="Podologia" className='bg-gray-200 text-gray-800'>Podologia</option>
-                    <option value="Kinesiologia" className='bg-gray-200 text-gray-800'>Kinesiologia</option>  
-                    <option value="Fonoaudiologia" className='bg-gray-200 text-gray-800'>Fonoaudiologia</option>
-                    <option value="Asesoria Juridica" className='bg-gray-200 text-gray-800'>Asesoria Juridica</option>
+                    <option value="peluqueria" className='bg-gray-200 text-gray-800'>Peluqueria</option>
+                    <option value="psicologia" className='bg-gray-200 text-gray-800'>Psicologia</option>
+                    <option value="podologia" className='bg-gray-200 text-gray-800'>Podologia</option>
+                    <option value="kinesiologia" className='bg-gray-200 text-gray-800'>Kinesiologia</option>  
+                    <option value="fonoaudiologia" className='bg-gray-200 text-gray-800'>Fonoaudiologia</option>
+                    <option value="asesoria_juridica" className='bg-gray-200 text-gray-800'>Asesoria Juridica</option>
                 </select>
               </div>
             </div>
@@ -342,18 +347,18 @@ const RegistrarTrabajador = () => {
             <div className="border-2 border-gray-200 mb-4 rounded-lg">
               <div className="flex flex-col">
                 <label
-                  htmlFor="num_casa"
+                  htmlFor="correo_electronico"
                   className="text-gray-500  px-2"
                 >
                   Ingrese Correo Electronico
                 </label>
                 <input
                   type="text"
-                  id="num_casa"
-                  name="num_casa"
+                  id="correo_electronico"
+                  name="correo_electronico"
                   required
                   onChange={handleChange}
-                  value={formData.num_casa}
+                  value={formData.correo_electronico}
                   className="outline-none bg-transparent px-2 py-2"
                 />
               </div>

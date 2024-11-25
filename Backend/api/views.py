@@ -35,7 +35,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 #============================ARCHIVOS NUESTROS============================#
 from .utils import obtener_tokens_para_usuario, send_notification_email, validar_disponibilidad, account_recovery_token
-from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores, Appointment, AdultoMayor, Datos_Para_Graficos
+from .models import Usuario, Prestador, Consultas_Agendadas, Horario_Prestadores, Appointment, AdultoMayor, Datos_Para_Graficos, Servicios
 from .serializers import UsuarioSerializador, ConsultaAgendadaSerializer
 #=========================================================================#
 
@@ -898,9 +898,11 @@ def registroTrabajador(request):
             segundo_apellido = datos.get('segundo_apellido')
             contrasena = datos.get('contrasena')
             contacto = datos.get('contacto')
+            correo_electronico = datos.get("correo_electronico")
             calle = datos.get('calle')
             num_casa = datos.get('num_casa')
             num_apar = datos.get('num_apar')
+            servicio = datos.get('servicio')
     
             # Crear y guardar la nueva instancia de 
             nueva_datos = Usuario.objects.create(
@@ -912,10 +914,16 @@ def registroTrabajador(request):
                 contrasena=contrasena,
                 contacto=contacto,
                 calle=calle,
+                correo_electronico=correo_electronico,
                 num_casa=num_casa,
                 num_apar=num_apar,
                 tipo_usuario='prestador'
             )
+
+            obj_servicio = Servicios.objects.get(nombre_servicio=servicio)
+            prestador = Prestador(rut=rut, servicio=obj_servicio)
+            prestador.save()
+
             return JsonResponse({'mensaje': 'Dato creado con éxito', 'id': nueva_datos.rut}, status=201)
 
         except Exception as e:
