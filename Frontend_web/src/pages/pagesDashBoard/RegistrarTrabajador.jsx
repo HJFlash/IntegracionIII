@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { validarRut, validarNombre, validarApellidos, validarEmail, validarTel} from '../../auth/valicion';
+import { validarRut, validarNombre, validarApellidos,  validarTel} from '../../auth/valicion';
 
 
 const RegistrarTrabajador = () => {

@@ -28,8 +28,3 @@ class ConsultaAgendadaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Consultas_Agendadas
         fields = ['id_consulta', 'rut_usuario', 'rut_prestador', 'fecha', 'hora_inicio', 'estado', 'servicio']
-
-#class HorarioPrestadorSerializer(serializers.ModelSerializer):
-#   class Meta:
-#        model = Horario_Prestadores
-#        fields = '__all__'  # O puedes especificar los campos que deseas incluir

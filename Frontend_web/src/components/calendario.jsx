@@ -119,7 +119,7 @@ const Calendario = () => {
       .then(data => {
         if (data.success) {
           alert('Cita agendada correctamente.');
-          navigate('/InfoSoliUser');
+          navigate('/profileUser');
         } else {
           alert(`Error: ${data.error || 'No se pudo agendar la cita.'}`);
         }
