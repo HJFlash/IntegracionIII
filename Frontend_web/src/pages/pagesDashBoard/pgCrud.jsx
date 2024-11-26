@@ -9,7 +9,7 @@ const PgCrud = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/consultas/');
+        const response = await fetch('http://localhost:8000/consultas/');
         const result = await response.json();
         setData(result);
       } catch (error) {

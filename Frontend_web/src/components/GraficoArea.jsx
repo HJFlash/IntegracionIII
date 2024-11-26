@@ -7,7 +7,7 @@ const GraficoArea = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:8000/obtener-datos-graficos-area/');
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/obtener-datos-graficos-area/`);
                 const result = await response.json();
                 setData(result);
             } catch (error) {

@@ -994,6 +994,7 @@ def registroTrabajador(request):
 
 def obtener_datos_soli_registro(request):
     datos = Usuario.objects.filter(tipo_usuario="adultomayor").values()
+    print("######################################################")
     return JsonResponse(list(datos), safe=False)
 
 # -------------------- LEER --------------------

@@ -23,7 +23,7 @@ export const GraficoTortaMes = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/obtener-datos-grafico-torta-mes/?month=${selectedMonth}`);
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/obtener-datos-grafico-torta-mes/?month=${selectedMonth}`);
                 const result = await response.json();
                 setData(result);
             } catch (error) {

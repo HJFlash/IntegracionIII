@@ -12,7 +12,7 @@ function Header() {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (token) {
-        axios.get("http://localhost:8000/api/perfil/", {
+        axios.get(`${process.env.REACT_APP_API_URL}/api/perfil/`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
